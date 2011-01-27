@@ -1,0 +1,913 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Discounts framework for Ubercart.
+ */
+
+require_once(dirname(__FILE__) .'/uc_discount.ca.inc');
+
+/******************************************************************************
+ * Drupal Hooks                                                               *
+ ******************************************************************************/
+
+/**
+ * Implementation of hook_menu().
+ */
+function uc_discount_menu() {
+  $items = array();
+
+  $items['discounts/calculate'] = array(
+    'title' => 'Calculate discounts',
+    'page callback' => 'uc_discount_javascript',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['discounts/autocomplete'] = array(
+    'title' => 'Node autocomplete for discounts',
+    'page callback' => 'uc_discount_autocomplete',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK
+  );
+
+  return $items;
+}
+
+/**
+ * Implementation of hook_form_alter().
+ *
+ * Add JavaScript functions and settings on the checkout and order-edit pages.
+ */
+function uc_discount_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'uc_cart_checkout_form') {
+    if (isset($form['panes']['payment'])) {
+      drupal_add_js(drupal_get_path('module', 'uc_discount') .'/uc_discount.js');
+    }
+  }
+  elseif ($form_id == 'uc_order_edit_form') {
+    if (isset($form['quotes'])) {
+      drupal_add_js(drupal_get_path('module', 'uc_discount') .'/uc_discount.js');
+    }
+  }
+  else {
+    $triggers = array_keys(uc_discount_ca_trigger());
+
+    if ($form_id == 'ca_predicate_meta_form') {
+      if ($predicate = ca_load_predicate($form['predicate_pid']['#value']) && in_array($predicate['#trigger'], $triggers)) {
+        $form['#submit'][] = 'uc_discount_clear_price_cache';
+      }
+    }
+    elseif ($form_id == 'ca_conditions_form' || $form_id == 'ca_actions_form') {
+      if ($predicate = ca_load_predicate($form['pid']['#value']) && in_array($predicate['#trigger'], $triggers)) {
+        if ($form_id == 'ca_conditions_form') {
+          $form['save']['#submit'][] = 'uc_discount_clear_price_cache';
+        }
+        else {
+          $form['submit']['#submit'][] = 'uc_discount_clear_price_cache';
+        }
+      }
+    }
+  }
+}
+
+/******************************************************************************
+ * Ubercart hooks                                                             *
+ ******************************************************************************/
+
+/**
+ * Implementation of hook_uc_price_handler().
+ */
+function uc_discount_uc_price_handler() {
+  return array(
+    'alter' => array(
+      'title' => t('Discount price handler'),
+      'description' => t('Adds discounts to product prices.'),
+      'callback' => 'uc_discount_price_handler_alter',
+    ),
+  );
+}
+
+function uc_discount_price_handler_alter(&$price_info, &$context, &$options) {
+  global $user;
+  static $prices = array();
+
+  switch ($context['type']) {
+    case 'product':
+      if (isset($context['field']) && $context['field'] != 'sell_price') {
+        // Don't discount list_price or cost.
+        return;
+      }
+      $node = clone $context['subject']['node'];
+      $cache = 'node:'. $node->nid .':'. $price_info['price'];
+      break;
+    case 'cart_item':
+      $node = clone $context['subject']['node'];
+      $item = $context['subject']['cart_item'];
+      $cache = 'cart_item:'. $node->nid .':'. $price_info['price'] .':'. serialize($item->data);
+      break;
+    case 'order_product':
+      if (isset($context['subject']['node'])){
+        $node = clone $context['subject']['node'];
+        $item = $context['subject']['product'];
+        $cache = 'order_product:'. $node->nid .':'. $price_info['price'] .':'. serialize($item->data);
+      }
+      else if (isset($context['subject']['order_product'])){
+        $order_product = clone $context['subject']['order_product'];
+        $cache = 'order_product:'. $order_product->nid .':'. $price_info['price'] .':'. serialize($order_product->data);
+      }
+      break;
+    default:
+      // Nothing to do.
+      return;
+  }
+
+  if (!isset($prices[$cache])) {
+    // The discount action modifies the node's sell_price field.
+    $node->sell_price = $price_info['price'];
+    ca_pull_trigger('calculate_product_discounts', $node, $user);
+    $prices[$cache] = $node->sell_price;
+  }
+  else {
+    $node->sell_price = $prices[$cache];
+  }
+
+  // Alter the price given in place.
+  $price_info['price'] = $node->sell_price;
+}
+
+/**
+ * Update and save discount line items to the order.
+ */
+function uc_discount_order($op, &$arg1, $arg2) {
+  switch ($op) {
+    case 'save':
+      $changes = array();
+      $discounts = uc_line_item_discount('load', $arg1);
+
+      // Compare newly calculated discounts to those already present.
+      // Delete line items that weren't calculated, update those that have
+      // the same titles with the new amounts, and add any that were not there
+      // before.
+      $context = array(
+        'revision' => 'formatted',
+        'type' => 'line_item',
+        'subject' => array(
+          'order' => $arg1,
+        ),
+      );
+      if (is_array($arg1->line_items)) {
+        foreach ($arg1->line_items as $i => $line) {
+          if ($line['type'] == 'discount') {
+            $delete = TRUE;
+            foreach ($discounts as $id => $new_line) {
+              // Only change line items if the titles are the same, but the
+              // amounts are not.
+              if ($new_line['title'] == $line['title']) {
+                if ($new_line['amount'] != $line['amount']) {
+                  $context['subject']['line_item'] = $new_line;
+                  uc_order_update_line_item($line['line_item_id'], $new_line['title'], $new_line['amount']);
+                  $arg1->line_items[$i]['amount'] = $new_line['amount'];
+                  $changes[] = t('Changed %title to %amount.', array('%amount' => uc_price($new_line['amount'], $context), '%title' => $new_line['title']));
+                }
+
+                // Hide this discount so we don't add or delete it later.
+                unset($discounts[$id]);
+                $delete = FALSE;
+
+                // Shortcut to the next line item.
+                break;
+              }
+            }
+
+            // This line item did not have a discount calculated again.
+            // It is obsolete, so delete it.
+            if ($delete) {
+              uc_order_delete_line_item($line['line_item_id']);
+              unset($arg1->line_items[$i]);
+              $changes[] = t('Removed %title.', array('%title' => $line['title']));
+            }
+          }
+        }
+      }
+
+      // Add new discounts.
+      if (is_array($discounts)) {
+        foreach ($discounts as $line) {
+          uc_order_line_item_add($arg1->order_id, $line['id'], $line['title'], $line['amount'], $line['weight']);
+          $line['type'] = 'discount';
+          $arg1->line_items[] = $line;
+          $context['subject']['line_item'] = $line;
+          $changes[] = t('Added %amount for %title.', array('%amount' => uc_price($line['amount'], $context), '%title' => $line['title']));
+        }
+      }
+
+      // Log any changes.
+      if (count($changes)) {
+        uc_order_log_changes($arg1->order_id, $changes);
+      }
+    break;
+  }
+}
+
+/**
+ * Implementation of hook_line_item().
+ */
+function uc_discount_line_item() {
+  $items = array();
+
+  $items[] = array(
+    'id' => 'discount',
+    'title' => t('Discount'),
+    'callback' => 'uc_line_item_discount',
+    'weight' => 5,
+    'stored' => TRUE,
+    'default' => FALSE,
+    'calculated' => TRUE,
+    'display_only' => FALSE,
+  );
+
+  return $items;
+}
+
+/**
+ * Callback function for the discount line item.
+ */
+function uc_line_item_discount($op, $order) {
+  switch ($op) {
+    case 'load':
+      $discounts = uc_discount_calculate_discounts($order);
+      $lines = array();
+      foreach ($discounts as $discount) {
+        $lines[] = array(
+          'id' => 'discount',
+          'title' => $discount['title'],
+          'amount' => $discount['amount'],
+          'weight' => variable_get('uc_li_discount_weight', 5),
+        );
+      }
+      return $lines;
+  }
+}
+
+/**
+ * Implementation of hook_line_item_alter().
+ */
+function uc_discount_line_item_alter(&$line_item, $order) {
+  $account = user_load($order->uid);
+  ca_pull_trigger('calculate_line_item_discounts', $line_item, $account);
+}
+
+function uc_discount_checkout_pane() {
+  $panes[] = array(
+    'id' => 'coupon_discount',
+    'callback' => 'uc_checkout_pane_coupon_discount',
+    'title' => t('Coupon Discount'),
+    'desc' => t('Allows shoppers to use a coupon during checkout for order discounts.'),
+    'weight' => 5,
+    'process' => TRUE,
+  );
+
+  return $panes;
+}
+
+function uc_checkout_pane_coupon_discount($op, &$arg1, $arg2) {
+  switch ($op) {
+    case 'view':
+      $description = t('Enter a coupon code for this order.');
+      $contents['coupon_code'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Coupon code'),
+        '#default_value' => $arg1->data['coupon_code'],
+        '#size' => 25,
+      );
+      return array('description' => $description, 'contents' => $contents);
+    case 'process':
+      if ($arg2['coupon_code']) {
+        $arg1->data['coupon_code'] = $arg2['coupon_code'];
+
+        if (uc_discount_validate_coupon($arg1)) {
+          $changes = array(t('Coupon code %code redeemed.', array('%code' => $arg1->data['coupon_code'])));
+          uc_order_log_changes($arg1->order_id, $changes);
+        }
+        else {
+          unset($arg1->data['coupon_code']);
+          drupal_set_message(t('Invalid coupon code.'), 'error');
+        }
+      }
+
+      // Continue processing even if the coupon doesn't apply.
+      return TRUE;
+  }
+}
+
+/**
+ * Implementation of hook_order_pane
+ */
+function uc_discount_order_pane() {
+  $panes[] = array(
+    'id' => 'coupon_code',
+    'callback' => 'uc_order_pane_coupon_discount',
+    'title' => t('Coupon Codes'),
+    'desc' => t('Coupon codes.'),
+    'class' => 'pos-left',
+    'weight' => 7,
+    'show' => array('edit'),
+  );
+
+  return $panes;
+}
+
+/**
+ * Callback from hook_order_pane
+ */
+function uc_order_pane_coupon_discount($op, $arg1) {
+  switch ($op) {
+    case 'edit-form':
+      $pane = uc_checkout_pane_coupon_discount('view', $arg1, NULL);
+      $form['coupons'] = $pane['contents'];
+      unset($form['coupons']['coupon_code']['#title']);
+
+      $form['coupons']['add_coupon'] = array(
+        '#type' => 'submit',
+        '#value' => t('Apply coupon'),
+      );
+
+      return $form;
+    case 'edit-theme':
+      return drupal_render($arg1['coupons']);
+    case 'edit-ops':
+      return array(t('Apply coupon'));
+    case t('Apply coupon'):
+      if ($order = uc_order_load($arg1['order_id'])) {
+        $changes = array();
+        $order->data['coupon_code'] = $arg1['coupon_code'];
+
+        if (uc_discount_validate_coupon($order)) {
+          $changes[] = t('Coupon code %code redeemed.', array('%code' => $order->data['coupon_code']));
+        }
+        else {
+          unset($order->data['coupon_code']);
+          drupal_set_message(t('Invalid coupon code.'), 'error');
+        }
+
+        uc_order_save($order);
+
+        // Log any changes.
+        if (count($changes)) {
+          uc_order_log_changes($order->order_id, $changes);
+        }
+      }
+      break;
+  }
+}
+
+/**
+ * Implementation of hook_discount_registry().
+ */
+function uc_discount_discount_registry() {
+  $discounts = array();
+
+  $discounts['order'] = array(
+    'title' => t('Order total'),
+    'callback' => 'uc_discount_order_total_discount',
+    'context' => 'order',
+  );
+  $discounts['order_products'] = array(
+    'title' => t('Order products'),
+    'callback' => 'uc_discount_order_product_discount',
+    'form' => 'uc_discount_order_product_discount_form',
+    'context' => 'order',
+  );
+  $discounts['line_items'] = array(
+    'title' => t('Line items'),
+    'callback' => 'uc_discount_line_items_discount',
+    'form' => 'uc_discount_line_items_discount_form',
+    'context' => 'order',
+  );
+  $discounts['nodes'] = array(
+    'title' => t('Products'),
+    'callback' => 'uc_discount_node_discount',
+    'context' => 'product',
+  );
+
+  return $discounts;
+}
+
+/**
+ * Allows discounts based on the order total.
+ *
+ * This discount does not have any settings, so it does not provide a form.
+ *
+ * @param $order
+ *   The order object for which the discount is calculated.
+ * @param $settings
+ *   The settings array from the conditional action form.
+ * @return The $order->total.
+ */
+function uc_discount_order_total_discount($order, $settings) {
+  $total = uc_order_get_total($order, TRUE);
+
+  return $total;
+}
+
+function uc_discount_order_product_discount($order, $settings) {
+  $multiplier = 0;
+
+  $context = array(
+    'revision' => 'altered',
+    'type' => 'order_product',
+    'subject' => array(
+      'order' => $order,
+    ),
+  );
+
+  foreach ($order->products as $product) {
+    if ($product->nid == $settings['product']) {
+      $context['subject']['product'] = $product;
+      $context['subject']['node'] = node_load($product->nid);
+      $price_info = array(
+        'price' => $product->price,
+        'qty' => min($settings['qty'], $product->qty),
+      );
+
+      $multiplier += uc_price($price_info, $context);
+    }
+  }
+
+  return $multiplier;
+}
+
+function uc_discount_order_product_discount_form($form_state, $settings = array()) {
+  $form = array();
+
+  $form['qty'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Max. quantity'),
+    '#default_value' => $settings['qty'],
+    '#description' => t('The discount will apply to each matching product in the order up to this number.'),
+  );
+
+  $form['product'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Products'),
+    '#autocomplete_path' => 'discounts/autocomplete',
+    '#element_validate' => array('uc_discount_autocomplete_validate'),
+    '#default_value' => isset($settings['product']) ? ('[nid:'. $settings['product'] .']') : '',
+  );
+
+  return $form;
+}
+
+/**
+ * Validate an autocomplete element.
+ *
+ * Remove the wrapper layer and set the right element's value.
+ * This will move the nested value at 'field-name-0-nid-nid'
+ * back to its original location, 'field-name-0-nid'.
+ */
+function uc_discount_autocomplete_validate($element, &$form_state) {
+  $value = $element['#value'];
+  $nid = NULL;
+  if (!empty($value)) {
+    preg_match('/^(?:\s*|(.*) )?\[\s*nid\s*:\s*(\d+)\s*\]$/', $value, $matches);
+    if (!empty($matches)) {
+      // Explicit [nid:n].
+      list(, $title, $nid) = $matches;
+      if (!empty($title) && ($n = node_load($nid)) && $title != $n->title) {
+        form_error($element, t('Products: title mismatch. Please check your selection.'));
+      }
+    }
+    else {
+      // No explicit nid.
+      $reference = uc_discount_potential_references($value, 'equals', NULL, 1);
+      if (empty($reference)) {
+        form_error($element, t('Products: found no valid post with that title.'));
+      }
+      else {
+        // TODO:
+        // the best thing would be to present the user with an additional form,
+        // allowing the user to choose between valid candidates with the same title
+        // ATM, we pick the first matching candidate...
+        $nid = key($reference);
+      }
+    }
+  }
+  form_set_value($element, $nid, $form_state);
+}
+
+/**
+ * Fetch an array of all candidate referenced nodes.
+ */
+function uc_discount_potential_references($string = '', $match = 'contains', $ids = array()) {
+  static $results = array();
+
+  // Create unique id for static cache.
+  $cid = $match .':'. ($string !== '' ? $string : implode('-', $ids)) .':'. $limit;
+
+  if (!isset($results[$cid])) {
+    $related_types = array();
+    $where = array();
+    $args = array();
+
+    foreach (array_keys(uc_product_type_names()) as $related_type) {
+      $related_types[] = "n.type = '%s'";
+      $args[] = $related_type;
+    }
+
+    $where[] = implode(' OR ', $related_types);
+
+    if (!count($related_types)) {
+      return array();
+    }
+
+    if ($string !== '') {
+      $match_operators = array(
+        'contains' => "LIKE '%%%s%%'",
+        'equals' => "= '%s'",
+        'starts_with' => "LIKE '%s%%'",
+      );
+      $where[] = 'n.title '. (isset($match_operators[$match]) ? $match_operators[$match] : $match_operators['contains']);
+      $args[] = $string;
+    }
+    elseif ($ids) {
+      $where[] = 'n.nid IN ('. db_placeholders($ids) . ')';
+      $args = array_merge($args, $ids);
+    }
+
+    $where_clause = $where ? 'WHERE ('. implode(') AND (', $where) .')' : '';
+    $sql = db_rewrite_sql("SELECT n.nid, n.title AS node_title, n.type AS node_type FROM {node} n $where_clause ORDER BY n.title, n.type");
+    $result = $limit ? db_query_range($sql, $args, 0, $limit) : db_query($sql, $args);
+    $references = array();
+    while ($node = db_fetch_object($result)) {
+      $references[$node->nid] = array(
+        'title' => $node->node_title,
+        'rendered' => $node->node_title,
+      );
+    }
+
+    $results[$cid] = $references;
+  }
+
+  return $results[$cid];
+}
+
+/**
+ * Menu callback; Retrieve a pipe delimited string of autocomplete suggestions for existing users
+ */
+function uc_discount_autocomplete($string = '') {
+  $references = uc_discount_potential_references($string, 'contains', array(), 10);
+  foreach ($references as $id => $row) {
+    // Add a class wrapper for a few required CSS overrides.
+    $matches[$row['title'] ." [nid:$id]"] = '<div class="reference-autocomplete">'. $row['rendered'] .'</div>';
+  }
+  drupal_json($matches);
+}
+
+/**
+ * Allows discounts based on the line items.
+ *
+ * @param $order
+ *   The order object for which the discount is calculated.
+ * @param $settings
+ *   The settings array from the conditional action form.
+ * @return The value of the selected line items at the time discounts were
+ *   calculated.
+ */
+function uc_discount_line_items_discount($order, $settings) {
+  $total = 0;
+
+  if (is_array($order->line_items)) {
+    foreach ($order->line_items as $i => $item) {
+      if (in_array($item['type'], $settings['line_items'])) {
+        $total += $item['amount'];
+      }
+    }
+  }
+  if (in_array('discount', $settings['line_items'])) {
+    foreach ($order->discounts as $other_discount) {
+      $amount += $other_discount['amount'];
+    }
+  }
+
+  return $total;
+}
+
+function uc_discount_line_items_discount_form($form_state, $settings = array()) {
+  $form = array();
+
+  $line_items = _line_item_list();
+  $options = array();
+  foreach ($line_items as $i => $item) {
+    // Remove lines like Subtotal and Total. These are merely conveniently
+    // displayed values, not real line items.
+    if ($item['calculated']) {
+      $options[$i] = $item['title'];
+    }
+  }
+
+  $form['line_items'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Line items'),
+    '#options' => $options,
+    '#default_value' => (array)$settings['line_items'],
+    '#description' => t('Select the line items which should be discounted.'),
+  );
+
+  return $form;
+}
+
+/**
+ * Allows discounts based on the products' price.
+ *
+ * @param $order
+ *   The order object for which the discount is calculated.
+ * @param $settings
+ *   The settings array from the conditional action form.
+ * @return The total price of the products selected from the action's settings..
+ */
+function uc_discount_node_discount($product, $settings) {
+  return $product->sell_price;
+}
+
+/******************************************************************************
+ * Module and Helper Functions                                                *
+ ******************************************************************************/
+
+/**
+ * Retrieves information about defined discount types.
+ *
+ * @param $key
+ *   The discount ID. Only information about the corresponding discount is
+ *   returned, if set.
+ * @return
+ *   The discount definition. This array contains the callback information as
+ *   well as the ID and title.
+ */
+function uc_discount_get_discounts($op = NULL, $key = NULL) {
+  static $discounts;
+
+  if (!isset($discounts)) {
+    $discounts = module_invoke_all('discount_registry');
+  }
+
+  if (isset($key)) {
+    if (isset($discounts[$key])) {
+      return $discounts[$key];
+    }
+    else {
+      return FALSE;
+    }
+  }
+
+  return $discounts;
+}
+
+/**
+ * Formats the defined discounts as an option list.
+ *
+ * @return
+ *   An array of options for a select element whose keys are the discount IDs
+ *   and whose values are the discount names.
+ */
+function uc_discount_get_discount_options($context) {
+  static $discounts;
+
+  if (!isset($discounts)) {
+    $discounts = module_invoke_all('discount_registry');
+  }
+
+  $options = array();
+  foreach ($discounts as $id => $discount) {
+    if (!isset($discount['context']) || $discount['context'] == $context) {
+      $options[$id] = $discount['title'];
+    }
+  }
+
+  return $options;
+}
+
+/**
+ * Collects the settings forms of the defined discounts
+ *
+ * @param $form_state
+ *   The $form_state of the parent form.
+ * @param $settings
+ *   The array of values for the discounts.
+ * @param $key
+ *   If set, returns only the specified discount's form.
+ * @return
+ *   The settings form arrays for the specified discount.
+ */
+function uc_discount_get_discount_forms($form_state, $settings, $key = NULL) {
+  $discounts = module_invoke_all('discount_registry');
+
+  $forms = array();
+  foreach ($discounts as $id => $discount) {
+    if ((!isset($discount['context']) || $discount['context'] == $settings['context']) && function_exists($discount['form'])) {
+      if (isset($settings['discount'][$id])) {
+        $discount_settings = $settings['discount'][$id];
+      }
+      else {
+        $discount_settings = array();
+      }
+      $form = call_user_func($discount['form'], $form_state, $discount_settings);
+      if (is_array($form)) {
+        $forms[$id] = $form;
+      }
+    }
+    else {
+      $forms[$id] = array();
+    }
+  }
+  if (isset($key)) {
+    if (isset($forms[$key])) {
+      return $forms[$key];
+    }
+    else {
+      return FALSE;
+    }
+  }
+  else {
+    return $forms;
+  }
+}
+
+/**
+ * Calculates the discount line items from the configured conditional actions.
+ *
+ * @param $order
+ *   The order object.
+ * @return
+ *   The array of line items, each containing an id, a title, and an amount.
+ */
+function uc_discount_calculate_discounts($order) {
+  global $user;
+
+  if ($order->uid > 0) {
+    $account = user_load($order->uid);
+  }
+  else {
+    $account = $user;
+  }
+
+  if (is_array($order->line_items)) {
+    foreach ($order->line_items as $i => $line) {
+      if (drupal_substr($line['type'], 0, 9) == 'discount_') {
+        unset($order->line_items[$i]);
+      }
+    }
+  }
+
+  $arguments = array(
+    'order' => array(
+      '#entity' => 'uc_order',
+      '#title' => t('Order'),
+      '#data' => $order,
+    ),
+    'account' => array(
+      '#entity' => 'user',
+      '#title' => t('User'),
+      '#data' => $account,
+    ),
+  );
+
+  $id = 0;
+  $order->discounts = array();
+
+  //Calculate overall order discounts
+  // Pull the "calculate_discounts" trigger in such a way to get the results.
+  $predicates = ca_load_trigger_predicates('calculate_order_discounts');
+  foreach ($predicates as $predicate) {
+    if (ca_evaluate_conditions($predicate, $arguments)) {
+      $discounts = ca_perform_actions($predicate, $arguments);
+      foreach ((array) $discounts as $i => $discount) {
+        if ($predicate['#actions'][$i]['#name'] == 'uc_discount_action_get_order_discount' && $discount) {
+          // Allow successive discounts to inspect this discount by putting
+          // it in the order object.
+          $order->discounts[$id] = array(
+            'id' => $id,
+            'title' => check_plain($predicate['#actions'][$i]['#title']),
+            'amount' => $discount,
+            'weight' => variable_get('uc_li_discount_weight', 5) + $predicate['#actions'][$i]['#settings']['line_item_weight'] / 10,
+          );
+          $id++;
+        }
+      }
+    }
+  }
+
+  $product_predicates = ca_load_trigger_predicates('calculate_order_product_discounts');
+
+  foreach ($order->products as $product) {
+
+    //define the arguments that should be passed to the condition/action
+    $product_arguments = array(
+      'order' => array(
+        '#entity' => 'uc_order',
+        '#title' => t('Order'),
+        '#data' => $order,
+      ),
+      'node' => array(
+        '#entity' => 'user',
+        '#title' => t('User'),
+        '#data' => $product,
+      ),
+    );
+
+    foreach ($product_predicates as $predicate) {
+
+      if (ca_evaluate_conditions($predicate, $product_arguments)) {
+        $discounts = ca_perform_actions($predicate, $product_arguments);
+        foreach ((array) $discounts as $i => $discount) {
+          if ($predicate['#actions'][$i]['#name'] == 'uc_discount_action_get_order_discount' && $discount) {
+            // Allow successive discounts to inspect this discount by putting
+            // it in the order object.
+            $order->discounts[$id] = array(
+              'id' => $id,
+              'title' => check_plain($predicate['#actions'][$i]['#title']),
+              'amount' => $discount,
+              'weight' => $predicate['#actions'][$i]['#settings']['line_item_weight'],
+            );
+            $id++;
+          }
+        }
+      }
+    }
+  }
+
+  return $order->discounts;
+}
+
+/**
+ * AJAX callback for order preview.
+ *
+ * Calculate tax amounts for an order in the payment checkout pane.
+ */
+function uc_discount_javascript() {
+  drupal_set_header("Content-Type: text/javascript; charset=utf-8");
+  $order = $_POST['order'];
+  if ($order = unserialize(rawurldecode($order))) {
+    $discounts = uc_discount_calculate_discounts($order);
+    if (count($discounts)) {
+      print drupal_to_js((array)$discounts);
+    }
+    else {
+      print '{}';
+    }
+  }
+  else {
+    print '{}';
+  }
+  exit();
+}
+
+/**
+ * Form submit callback for discount CA predicates.
+ *
+ * Changes to discount conditions or actions invalidate cached prices.
+ */
+function uc_discount_clear_price_cache() {
+  cache_clear_all(NULL, 'cache_uc_price');
+}
+
+/**
+ * Indicate that the coupon entered causes a discount to be applied.
+ */
+function uc_discount_validate_coupon($order) {
+  $valid = FALSE;
+
+  // Log the entered coupon code if it granted a discount.
+  if ($order->data['coupon_code']) {
+    $account = user_load($order->uid);
+    $arguments = array(
+      'order' => array(
+        '#entity' => 'uc_order',
+        '#title' => t('Order'),
+        '#data' => $order,
+      ),
+      'account' => array(
+        '#entity' => 'user',
+        '#title' => t('User'),
+        '#data' => $account,
+      ),
+    );
+
+    $predicates = ca_load_trigger_predicates('calculate_order_discounts');
+    foreach ($predicates as $predicate) {
+      if (ca_evaluate_conditions($predicate, $arguments)) {
+        // serialize() and strpos() is faster than writing a recursive
+        // funciton to actually find the right condition. Don't know about
+        // actual performance.
+        $conditions = serialize($predicate['#conditions']);
+        if (strpos($conditions, 'uc_discount_condition_coupon_code') !== FALSE) {
+          $valid = TRUE;
+          break;
+        }
+      }
+    }
+  }
+
+  return $valid;
+}
+

@@ -1,0 +1,18 @@
+name = Imus Geographics Theme
+screenshot = images/screenshot.png
+core = 6.x
+engine = phptemplate
+
+stylesheets[all][] = ig.css
+
+regions[top] = 'Page Top'
+regions[header] = "Header"
+regions[navigation] = "Navigation"
+regions[endorsements] = "Endorsements"
+regions[left] = "Left sidebar"
+regions[right] = "Right sidebar"
+regions[content] = "Content"
+regions[shopping_cart] = "Shopping Cart"
+regions[blog_region] = "Blog"
+regions[content_trailer] = "Content Trailer"
+regions[footer] = "Footer"

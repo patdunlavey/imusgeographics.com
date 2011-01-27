@@ -1,0 +1,17 @@
+; $Id: facebook_stream.info,v 1.2.2.2 2010/05/31 20:01:52 prajwala Exp $
+name= Facebook Stream
+description = Allows users to import and export information from Facebook.
+dependencies[] = jquery_ui
+dependencies[] = jquery_update
+
+package = Facebook Stream
+php = 5.2
+core = 6.x
+
+
+; Information added by drupal.org packaging script on 2010-07-11
+version = "6.x-3.x-dev"
+core = "6.x"
+project = "facebook_stream"
+datestamp = "1278834185"
+

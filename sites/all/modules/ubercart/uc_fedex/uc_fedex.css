@@ -1,0 +1,9 @@
+/* $Id: uc_fedex.css,v 1.3 2009/11/14 18:15:14 tr Exp $ */
+
+.fedex-logo {
+  vertical-align: middle;
+}
+
+.pane-table .form-item {
+  display: inline;
+}

@@ -1,0 +1,32 @@
+<?php //$Id$
+
+/**
+ * @file
+ * Replaces the default HTML 'Add to Cart' button with a more attractive graphic.
+ * 
+ * See http://www.primalmedia.com/blog/replace-add-cart-button-image-ubercart
+ */
+
+/**
+ * Implementation of hook_form_alter().
+ */
+function uc_gfxbtn_form_alter(&$form, $form_state, $form_id) {
+//  dpm($form);
+  if(strpos($form_id,'uc_product_add_to_cart_form_') !== false ){
+  
+      $form['submit']['#type'] = 'hidden';
+  
+      if (isset($_POST['submit_x'])) {
+  
+        $form['submit'] = array(
+          '#type' => 'submit',
+          '#value' => 'submit',
+        );
+      }
+  
+  $form['submit_image'] = array(
+        '#value' => '<input width="97" height="20" name="submit" type="image" class="add_to_cart" title="'. t('Add to Shopping Cart') .'" src="/'. drupal_get_path('module', 'uc_gfxbtn') . '/addtocartbutton.png">',
+      );
+  }  
+}
+

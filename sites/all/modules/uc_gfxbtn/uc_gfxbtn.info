@@ -1,0 +1,7 @@
+;;$Id$
+
+name = Primal Media - Add to Cart Image
+description = "Replaces the default HTML 'Add to Cart' button with a graphic
+package = Ubercart - extra
+version = "6.x-dev"
+core = "6.x"

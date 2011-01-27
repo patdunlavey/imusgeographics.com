@@ -1,0 +1,9 @@
+; $Id:$
+name = "Custom Module for Imus Geographics"
+description = "customizations for Imus Geographics
+"
+package = "Custom"
+core = 6.x
+
+version = "6.x-dev"
+core = "6.x"

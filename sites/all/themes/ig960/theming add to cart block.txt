@@ -1,0 +1,6 @@
+http://www.ubercart.org/search/apachesolr_search/theme%20add%20to%20cart%20attributes
+
+http://www.ubercart.org/forum/theming_and_design/15850/add_cart_theme_override
+
+http://www.ubercart.org/forum/theming_and_design/18556/theming_add_cart_form_attributes_and_quantities
+http://www.ubercart.org/forum/theming_and_design/11528/customize_addtocart_form

@@ -1,0 +1,221 @@
+/* $Id: 960-debug.css,v 1.1.2.2 2010/04/25 05:07:35 dvessel Exp $ */
+
+/* reset backgrounds. */
+
+/*
+** basic debugging support.
+*/
+
+.container-12:hover,
+.container-12:hover a,
+.container-16:hover,
+.container-16:hover a,
+.container-24:hover,
+.container-24:hover a {
+  color: #666 !important;
+}
+
+body .container-12:hover,
+* html .container-12 {
+  background: #fff url(images/col-60px.png) repeat !important;
+}
+
+body .container-16:hover,
+* html .container-16 {
+  background: #fff url(images/col-40px.png) repeat !important;
+}
+
+body .container-24:hover,
+* html .container-24 {
+  background: #fff url(images/col-30px.png) repeat !important;
+}
+
+.container-12 .grid-1:hover,
+.container-12 .grid-2:hover,
+.container-12 .grid-3:hover,
+.container-12 .grid-4:hover,
+.container-12 .grid-5:hover,
+.container-12 .grid-6:hover,
+.container-12 .grid-7:hover,
+.container-12 .grid-8:hover,
+.container-12 .grid-9:hover,
+.container-12 .grid-10:hover,
+.container-12 .grid-11:hover,
+.container-12 .grid-12:hover {
+  background-color: transparent !important;
+  background-repeat: no-repeat !important;
+  background-image: url(images/ruler-12-rtl.png) !important; /* LTR */
+  background-position: 0 0 !important; /* LTR */
+  
+}
+
+.container-16 .grid-1:hover,
+.container-16 .grid-2:hover,
+.container-16 .grid-3:hover,
+.container-16 .grid-4:hover,
+.container-16 .grid-5:hover,
+.container-16 .grid-6:hover,
+.container-16 .grid-7:hover,
+.container-16 .grid-8:hover,
+.container-16 .grid-9:hover,
+.container-16 .grid-10:hover,
+.container-16 .grid-11:hover,
+.container-16 .grid-12:hover,
+.container-16 .grid-13:hover,
+.container-16 .grid-14:hover,
+.container-16 .grid-15:hover,
+.container-16 .grid-16:hover {
+  background-color: transparent !important;
+  background-repeat: no-repeat !important;
+  background-image: url(images/ruler-16.png) !important; /* LTR */
+  background-position: 0 0 !important; /* LTR */
+}
+
+.container-24 .grid-1:hover,
+.container-24 .grid-2:hover,
+.container-24 .grid-3:hover,
+.container-24 .grid-4:hover,
+.container-24 .grid-5:hover,
+.container-24 .grid-6:hover,
+.container-24 .grid-7:hover,
+.container-24 .grid-8:hover,
+.container-24 .grid-9:hover,
+.container-24 .grid-10:hover,
+.container-24 .grid-11:hover,
+.container-24 .grid-12:hover,
+.container-24 .grid-13:hover,
+.container-24 .grid-14:hover,
+.container-24 .grid-15:hover,
+.container-24 .grid-16:hover,
+.container-24 .grid-17:hover,
+.container-24 .grid-18:hover,
+.container-24 .grid-19:hover,
+.container-24 .grid-20:hover,
+.container-24 .grid-21:hover,
+.container-24 .grid-22:hover,
+.container-24 .grid-23:hover,
+.container-24 .grid-24:hover {
+  background-color: transparent !important;
+  background-repeat: no-repeat !important;
+  background-image: url(images/ruler-24.png) !important; /* LTR */
+  background-position: 0 0 !important; /* LTR */
+}
+
+/*
+** advanced debugging support for modern browsers.
+*/
+
+body .container-12:hover {
+  background: url(images/ruler-12.png) no-repeat 10px 0, url(images/col-60px.png) repeat !important; /* LTR */
+}
+
+body .container-16:hover {
+  background: url(images/ruler-16.png) no-repeat 10px 0, url(images/col-40px.png) repeat !important; /* LTR */
+}
+
+body .container-24:hover {
+  background: url(images/ruler-24.png) no-repeat 5px 0, url(images/col-30px.png) repeat !important; /* LTR */
+}
+
+*[class*="prefix-"],
+*[class*="suffix-"] {
+  position: relative;
+}
+
+*[class*="container-"]:hover *:not(input):not(select) {
+  background-color: transparent;
+  border-color: rgba(64,64,64,.5);
+}
+
+*[class*="container-"]:hover *[class*="grid-"] {
+  background-color: rgba(255,0,0,.15) !important;
+}
+
+*[class*="container-"]:hover *[class*="push-"],
+*[class*="container-"]:hover *[class*="pull-"],
+*[class*="container-"]:hover *[class*="prefix-"],
+*[class*="container-"]:hover *[class*="suffix-"] {
+  background-color: rgba(0,128,128,.15) !important;
+}
+
+*[class*="push-"]:hover:before,
+*[class*="pull-"]:hover:before,
+*[class*="prefix-"]:hover:before,
+*[class*="suffix-"]:hover:before,
+*[class*="container-"]:hover *[class*="push-"][class*="pull-"]:before {
+  position: absolute;
+  top: -1.5em;
+  color: rgba(0,128,128,.75);
+}
+
+*[class*="push-"]:hover:before {
+  content: '⇥ push'; /* LTR */
+}
+
+*[class*="pull-"]:hover:before {
+  content: '⇤ pull'; /* LTR */
+}
+
+html *[class*="container-"]:hover *[class*="push-"][class*="pull-"]:before {
+  content: '⇥ push + ⇤ pull = invalid!'; /* LTR */
+  color: rgba(255,255,255,1);
+  background-color: rgba(255,0,0,.5);
+}
+
+*[class*="prefix-"]:hover:before {
+  content: '⇥ prefix'; /* LTR */
+}
+
+*[class*="suffix-"]:hover:before {
+  content: '⇤ suffix'; /* LTR */
+}
+
+*[class*="prefix-"][class*="suffix-"]:hover:before {
+  content: '⇥ prefix, ⇤ suffix'; /* LTR */
+}
+
+*[class*="push-"][class*="prefix-"]:hover:before {
+  content: '⇥ push, ⇥ prefix'; /* LTR */
+}
+
+*[class*="pull-"][class*="prefix-"]:hover:before {
+  content: '⇤ pull, ⇥ prefix'; /* LTR */
+}
+
+*[class*="push-"][class*="suffix-"]:hover:before {
+  content: '⇥ push, ⇤ suffix'; /* LTR */
+}
+
+*[class*="pull-"][class*="suffix-"]:hover:before {
+  content: '⇤ pull, ⇤ suffix'; /* LTR */
+}
+
+*[class*="push-"][class*="prefix-"][class*="suffix-"]:hover:before {
+  content: '⇥ push, ⇥ prefix, ⇤ suffix'; /* LTR */
+}
+
+*[class*="pull-"][class*="prefix-"][class*="suffix-"]:hover:before {
+  content: '⇤ pull, ⇥ prefix, ⇤ suffix'; /* LTR */
+}
+
+
+
+*[class*="grid-"]:hover,
+*[class*="grid-"]:hover a {
+  color: rgba(64, 64, 64, .25) !important;
+}
+
+*[class*="grid-"] * *:hover,
+*[class*="grid-"] a:hover {
+  color: rgba(64, 64, 64, .75) !important;
+}
+
+*:hover[class*="grid-"] img,
+*:hover[class*="grid-"] input {
+  opacity: .5;
+}
+
+*:hover[class*="grid-"] img:hover,
+*:hover[class*="grid-"] input:hover {
+  opacity: .75;
+}

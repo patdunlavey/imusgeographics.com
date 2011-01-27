@@ -1,0 +1,1 @@
+[26-Jun-2010 12:56:01] PHP Parse error:  syntax error, unexpected T_STRING, expecting T_CASE or T_DEFAULT or '}' in /Applications/MAMP/localhost htdocs/imusgeographics/sites/all/modules/igcustom/igcustom.module on line 5

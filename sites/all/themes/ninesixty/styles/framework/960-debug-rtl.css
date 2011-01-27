@@ -1,0 +1,130 @@
+/* $Id: 960-debug-rtl.css,v 1.1.2.1 2010/04/25 05:07:35 dvessel Exp $ */
+
+/*
+** Background color for the following 3 ruleset differs from LTR styles.
+** Uses inherit instead of transparent.
+*/
+
+.container-12 .grid-1:hover,
+.container-12 .grid-2:hover,
+.container-12 .grid-3:hover,
+.container-12 .grid-4:hover,
+.container-12 .grid-5:hover,
+.container-12 .grid-6:hover,
+.container-12 .grid-7:hover,
+.container-12 .grid-8:hover,
+.container-12 .grid-9:hover,
+.container-12 .grid-10:hover,
+.container-12 .grid-11:hover,
+.container-12 .grid-12:hover {
+  background-image: url(images/ruler-12-rtl.png) !important;
+  background-position: 100% 0 !important;
+}
+
+.container-16 .grid-1:hover,
+.container-16 .grid-2:hover,
+.container-16 .grid-3:hover,
+.container-16 .grid-4:hover,
+.container-16 .grid-5:hover,
+.container-16 .grid-6:hover,
+.container-16 .grid-7:hover,
+.container-16 .grid-8:hover,
+.container-16 .grid-9:hover,
+.container-16 .grid-10:hover,
+.container-16 .grid-11:hover,
+.container-16 .grid-12:hover,
+.container-16 .grid-13:hover,
+.container-16 .grid-14:hover,
+.container-16 .grid-15:hover,
+.container-16 .grid-16:hover {
+  background-image: url(images/ruler-16-rtl.png) !important;
+  background-position: 100% 0 !important;
+}
+
+.container-24 .grid-1:hover,
+.container-24 .grid-2:hover,
+.container-24 .grid-3:hover,
+.container-24 .grid-4:hover,
+.container-24 .grid-5:hover,
+.container-24 .grid-6:hover,
+.container-24 .grid-7:hover,
+.container-24 .grid-8:hover,
+.container-24 .grid-9:hover,
+.container-24 .grid-10:hover,
+.container-24 .grid-11:hover,
+.container-24 .grid-12:hover,
+.container-24 .grid-13:hover,
+.container-24 .grid-14:hover,
+.container-24 .grid-15:hover,
+.container-24 .grid-16:hover,
+.container-24 .grid-17:hover,
+.container-24 .grid-18:hover,
+.container-24 .grid-19:hover,
+.container-24 .grid-20:hover,
+.container-24 .grid-21:hover,
+.container-24 .grid-22:hover,
+.container-24 .grid-23:hover,
+.container-24 .grid-24:hover {
+  background-image: url(images/ruler-24-rtl.png) !important;
+  background-position: 100% 0 !important;
+}
+
+body .container-12:hover {
+  background: url(images/ruler-12-rtl.png) no-repeat 10px 0, url(images/col-60px.png) repeat !important;
+}
+
+body .container-16:hover {
+  background: url(images/ruler-16-rtl.png) no-repeat 10px 0, url(images/col-40px.png) repeat !important;
+}
+
+body .container-24:hover {
+  background: url(images/ruler-24-rtl.png) no-repeat 5px 0, url(images/col-30px.png) repeat !important;
+}
+
+*[class*="push-"]:hover:before {
+  content: 'push ⇤';
+}
+
+*[class*="pull-"]:hover:before {
+  content: 'pull ⇥';
+}
+
+html *[class*="container-"]:hover *[class*="push-"][class*="pull-"]:before {
+  content: 'push ⇤ + pull ⇥ = invalid!';
+}
+
+*[class*="prefix-"]:hover:before {
+  content: 'prefix ⇤';
+}
+
+*[class*="suffix-"]:hover:before {
+  content: 'suffix ⇥';
+}
+
+*[class*="prefix-"][class*="suffix-"]:hover:before {
+  content: 'prefix ⇤, suffix ⇥';
+}
+
+*[class*="push-"][class*="prefix-"]:hover:before {
+  content: 'push ⇤, prefix ⇤';
+}
+
+*[class*="pull-"][class*="prefix-"]:hover:before {
+  content: 'pull ⇥, prefix ⇤';
+}
+
+*[class*="push-"][class*="suffix-"]:hover:before {
+  content: 'push ⇤, suffix ⇥';
+}
+
+*[class*="pull-"][class*="suffix-"]:hover:before {
+  content: 'pull ⇥, suffix ⇥';
+}
+
+*[class*="push-"][class*="prefix-"][class*="suffix-"]:hover:before {
+  content: 'push ⇤, prefix ⇤, suffix ⇥';
+}
+
+*[class*="pull-"][class*="prefix-"][class*="suffix-"]:hover:before {
+  content: 'pull ⇥, prefix ⇤, suffix ⇥';
+}

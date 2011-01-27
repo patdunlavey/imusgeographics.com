@@ -1,0 +1,961 @@
+<?php
+// $Id: page_title.module,v 1.18.2.39 2010/05/23 23:01:21 njt1982 Exp $
+
+/**
+ * @file
+ * Enhanced control over the page title (in the head tag).
+ *
+ * This module gives you control over the page title. It gives you the chance
+ * to provide patterns for how the title should be structured, and on node
+ * pages, gives you the chance to specify the page title rather than defaulting
+ * to the node title.
+ */
+
+
+/**
+ * Implementation of hook_help().
+ */
+function page_title_help($path, $arg) {
+  $output = NULL;
+  switch ($path) {
+    case 'admin/content/page_title':
+      $output  = '<p>'. t('Page Title provides control over the &lt;title> element on a page using token patterns and an optional textfield to override the title of the item (be it a node, term, user or other). The Token Scope column lets you know which tokens are available for this field (Global is always available). Please click on the <strong><em>more help&hellip;</em></strong> link below if you need further assistance.') .'</p>';
+      break;
+    case 'admin/help#page_title':
+      $output  = '<p>'. t('Drupal\'s default page title follows one of two patterns:') .'</p>';
+      $items = array(
+        t('<strong>Default Page</strong>: <samp><em>page title</em> | <em>site name</em></samp>'),
+        t('<strong>Default Frontpage</strong>: <samp><em>site name</em> | <em>site slogan</em></samp>'),
+      );
+      $output .= theme('item_list', $items, NULL, 'ol');
+      $output .= '<p>'. t('The <strong>Page Title</strong> module lets you change these defaults in two ways. First, you can adjust the patterns below using the placeholders given. This will change the way the default page titles are created. Second, on enabled forms (curently node, term & user editing forms) you have the option of specifying a title that is different to the title of the item. This field only appears if the <em>Show Field</em> box is checked for the item. If a value is provided it will be used to generate the <samp>[page-title]</samp> placeholder however if it is left blank the <samp>[page-title]</samp> token will inherit the item\'s own title.') .'</p>';
+      $output .= '<p>'. t('The <samp>[page-title]</samp> token will default to the value returned from <samp>drupal_get_title</samp> if there is no value specified or no available page title field.') .'</p>';
+      $output .= '<p>'. t('Certain types of page title pattern have access to special tokens which others do not, depending on their <em>scope</em>. All patterns have access to the <strong>Global</strong> scope. Content type patterns have access to the <strong>Node</strong> tokens, vocabulary patterns have access to the <strong>Taxonomy</strong> tokens and finally the user patterns have access to the <strong>User</strong> tokens.') .'</p>';
+      break;
+  }
+  return $output;
+}
+
+
+/**
+ * Implementation of hook_requirements().
+ */
+function page_title_requirements($phase) {
+  $requirements = array();
+  if ($phase == 'runtime') {
+    if (db_table_exists('page_title_old')) {
+      $requirements['upgrade_table'] = array(
+        'title' => t('Page Title upgrade table present'),
+        'value' => '',
+        'description' => t('The Page Title upgrade table (<code>page_title_old</code>) is present. This should be manually removed once the administrator can confirm the upgrade was successfull.'),
+        'severity' => REQUIREMENT_WARNING,
+      );
+    }
+  }
+
+  return $requirements;
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function page_title_perm() {
+  return array('set page title', 'administer page titles');
+}
+
+
+/**
+ * Implementation of hook_menu().
+ */
+function page_title_menu() {
+  $items = array();
+
+  $items['admin/content/page_title'] = array(
+    'title' => 'Page titles',
+    'description' => 'Enhanced control over the page titles (in the &lt;head&gt; tag).',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('page_title_admin_settings'),
+    'access callback' => 'user_access',
+    'access arguments' => array('administer page titles'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'page_title.admin.inc',
+  );
+
+  return $items;
+}
+
+
+/**
+ * Implementation of hook_theme().
+ */
+function page_title_theme() {
+  return array(
+    'page_title_admin_settings' => array(
+      'template' => 'page_title-admin-settings-form',
+      'arguments' => array('form' => NULL),
+    ),
+
+    'page_title_preprocess_page' => array(
+      'arguments' => array('vars' => NULL),
+    ),
+  );
+}
+
+
+/**
+ * Implementation of hook_node_type().
+ *
+ * Updates settings after a node type change.
+ */
+function page_title_node_type($op, $info) {
+  // Handle a content type rename
+  if ($op == 'update' && !empty($info->old_type) && $info->type != $info->old_type) {
+    // Load the old node type settings.
+    $temp = variable_get('page_title_type_'. $info->old_type, '');
+
+    // If the settings aren't empty, then save them into the new type
+    if (!empty($temp)) {
+      variable_set('page_title_type_'. $info->type, $temp);
+    }
+
+    // Delete the old setting
+    variable_del('page_title_type_'. $info->old_type);
+
+    // Essentially, do the same as above but with the _showfield suffix for the node type
+    $temp = variable_get('page_title_type_'. $info->old_type .'_showfield', 0);
+    if ($temp) {
+      variable_set('page_title_type_'. $info->type .'_showfield', $temp);
+    }
+    variable_del('page_title_type_'. $info->old_type .'_showfield');
+
+  }
+
+  // If deleted, remove the variables
+  if ($op == 'delete') {
+    variable_del('page_title_type_'. $info->type);
+    variable_del('page_title_type_'. $info->type .'_showfield');
+  }
+}
+
+
+/**
+ * Implementation of hook_form_alter().
+ */
+function page_title_form_alter(&$form, $form_state, $form_id) {
+  // If we dont have permission to set the title then we need to abort this alter now!
+  if (!user_access('set page title')) return;
+
+  // Check we're editing a node and also check that the node type's 'show field' is enabled
+  if ($form['#id'] == 'node-form') {
+    $key = 'page_title_type_'. $form['type']['#value'] .'_showfield';
+    if (variable_get($key, 0)) {
+      $page_title = isset($form['#node']->page_title) ? $form['#node']->page_title : NULL;
+
+      // If we have vertical tabs installed, we need to render the form element slightly differently
+      $show_vertical_tabs = FALSE;
+      if (module_exists('vertical_tabs')) {
+        if (arg(0) == 'admin') {
+          // If its an admin page, we must render it as a fieldset - the vertical tabs allows per-fieldset disabling. We have to render a fieldset to allow the option to disable it.
+          $show_vertical_tabs = TRUE;
+        }
+        else {
+          // This isn't an admin page, we should decide whether to render the page title fieldset depending on if the setting is set.
+          $show_vertical_tabs = ($vt_conf = vertical_tabs_get_config($form_id)) && ($vt_conf['page_title'] !== 0);
+        }
+      }
+
+      // If we have decided to show vertical tabs, render the page_title element into a fieldset, otherwise just a textfield with a weight putting it at the top.
+      if ($show_vertical_tabs) {
+        $form['page_title'] = array(
+          '#type' => 'fieldset',
+          '#title' => t('Page Title settings'),
+          '#collapsible' => TRUE,
+          '#collapsed' => empty($page_title),
+          '#group' => 'additional_settings',
+          '#weight' => 35,
+          '#attached' => array(
+            'js' => array(
+              'vertical-tabs' => drupal_get_path('module', 'page_title') . '/page_title.js',
+            ),
+          ),
+        );
+        $form['page_title']['page_title'] = array(
+          '#type' => 'textfield',
+          '#title' => t('Page title'),
+          '#description' => t('Provide a description of this node to appear in the &lt;title&gt; tag which search engines can use in search result listings (optional). It is generally accepted this field should be less than 70 characters.'),
+          '#default_value' => $page_title,
+          '#size' => 60,
+          '#maxlength' => 255,
+        );
+      }
+      else {
+        $form['page_title'] = array(
+          '#type' => 'textfield',
+          '#title' => t('Page title'),
+          '#description' => t('Provide a description of this node to appear in the &lt;title&gt; tag which search engines can use in search result listings (optional). It is generally accepted this field should be less than 70 characters.'),
+          '#default_value' => $page_title,
+          '#size' => 60,
+          '#maxlength' => 255,
+          '#weight' => -4,
+        );
+      }
+    }
+  }
+}
+
+
+/**
+ * Implementation of hook_form_FORM_ID_alter().
+ */
+function page_title_form_taxonomy_form_term_alter(&$form, &$form_state) {
+  // Check we're editing a taxonomy term and also check that the terms vocabulary's 'show field' is enabled
+  $key = 'page_title_vocab_'. $form['vid']['#value'] .'_showfield';
+  if (variable_get($key, 0)) {
+    $form['advanced']['page_title'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Page title'),
+      '#description' => t('Provide a description of this term to appear in the &lt;title&gt; tag which search engines can use in search result listings (optional). It is generally accepted this field should be less than 70 characters.'),
+      '#default_value' => page_title_load_title($form['tid']['#value'], 'term'),
+      '#size' => 60,
+      '#maxlength' => 255,
+      '#weight' => -20,
+    );
+  }
+}
+
+
+/**
+ * Implementation of hook_form_FORM_ID_alter().
+ */
+function page_title_form_forum_form_forum_alter(&$form, &$form_state) {
+  // Check we're editing a forum container or forum "forum" and also check that the terms vocabulary's 'show field' is enabled
+  $key = 'page_title_vocab_'. $form['vid']['#value'] .'_showfield';
+  if (variable_get($key, 0)) {
+    $form['page_title'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Page title'),
+      '#description' => t('Provide a description of this forum to appear in the &lt;title&gt; tag which search engines can use in search result listings (optional). It is generally accepted this field should be less than 70 characters.'),
+      '#default_value' => isset($form['tid']['#value']) ? page_title_load_title($form['tid']['#value'], 'term') : '',
+      '#size' => 60,
+      '#maxlength' => 255,
+      '#weight' => -20,
+    );
+  }
+}
+
+
+/**
+ * Implementation of hook_form_FORM_ID_alter().
+ */
+function page_title_form_forum_form_container_alter(&$form, &$form_state) {
+  // Check we're editing a forum container or forum "forum" and also check that the terms vocabulary's 'show field' is enabled
+  page_title_form_forum_form_forum_alter($form, $form_state);
+}
+
+
+/**
+ * Implementation of hook_form_FORM_ID_alter().
+ */
+function page_title_form_user_profile_form_alter(&$form, &$form_state) {
+  // Check we're editing a user profile and also check that the user settings's have 'show field' enabled
+  if (variable_get('page_title_user_showfield', 0)) {
+    $form['account']['page_title'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Page title'),
+      '#description' => t('Provide a description of this user to appear in the &lt;title&gt; tag which search engines can use in search result listings (optional). It is generally accepted this field should be less than 70 characters.'),
+      '#default_value' => page_title_load_title($form['_account']['#value']->uid, 'user'),
+      '#size' => 60,
+      '#maxlength' => 255,
+      '#weight' => 20,
+    );
+  }
+}
+
+
+/**
+ * Implementation of hook_form_FORM_ID_alter().
+ */
+function page_title_form_node_type_form_alter(&$form, &$form_state) {
+  // Alter the node type form - allows easy access to the per-content type page title settings
+  $form['page_title'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Page Title Settings'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#tree' => TRUE,
+  );
+
+  $form['page_title']['show_field'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Page Title Field'),
+    '#description' => t('If checked, the <em>Page Title</em> field will appear on the node edit form for those who have permission to set the title.'),
+    '#options' => array(
+      'show_field' => t('Show field'),
+    ),
+    '#default_value' => variable_get('page_title_type_'. $form['#node_type']->type .'_showfield', 0) ? array('show_field') : array(),
+  );
+
+  $form['page_title']['pattern'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Page Title Pattern'),
+    '#default_value' => variable_get('page_title_type_'. $form['#node_type']->type, ''),
+    '#description' => t('Enter the <em>Page Title</em> pattern you want to use for this node type. For more information, please use the !link settings page', array('!link' => l('Page Title', 'admin/content/page_title'))),
+  );
+
+  $form['#submit'][] = 'page_title_node_type_form_submit';
+}
+
+
+/**
+ * Submit handler for the node_type_form element added in the hook_form_alter() above.
+ */
+function page_title_node_type_form_submit($form, &$form_state) {
+  $show_field = $form_state['values']['page_title']['show_field']['show_field'] ? 1 : 0;
+  variable_set('page_title_type_'. $form_state['values']['type'] .'_showfield', $show_field);
+  variable_set('page_title_type_'. $form_state['values']['type'], $form_state['values']['page_title']['pattern']);
+
+  // For some reason the node module adds the fieldset as a separate entry in the variables table... we dont want this!
+  variable_del('page_title_'. $form_state['values']['type']);
+}
+
+
+/**
+ * Implementation of hook_nodeapi().
+ */
+function page_title_nodeapi(&$node, $op, $teaser = NULL, $page = NULL) {
+  switch ($op) {
+    case 'update':
+      if (user_access('set page title')) {
+        db_query("DELETE FROM {page_title} WHERE type = 'node' AND id = %d", $node->nid);
+      }
+      // fallthrough to insert intentional!
+    case 'insert':
+      if (isset($node->page_title) && drupal_strlen(trim($node->page_title)) > 0 && user_access('set page title')) {
+        db_query("INSERT INTO {page_title} VALUES ('node', %d, '%s')", $node->nid, $node->page_title);
+      }
+      break;
+
+    case 'delete':
+      db_query("DELETE FROM {page_title} WHERE type = 'node' AND id = %d", $node->nid);
+      break;
+
+    case 'load':
+      return array('page_title' => page_title_load_title($node->nid, 'node'));
+  }
+}
+
+
+/**
+ * Implementation of hook_taxonomy().
+ */
+function page_title_taxonomy($op, $type, $edit) {
+  if ($type == 'vocabulary') return;
+
+  switch ($op) {
+    case 'update':
+      if (user_access('set page title')) {
+        db_query("DELETE FROM {page_title} WHERE type = 'term' AND id = %d", $edit['tid']);
+      }
+      // Fallthrough to insert is intentional!
+    case 'insert':
+      if (isset($edit['page_title']) && drupal_strlen(trim($edit['page_title'])) > 0 && user_access('set page title')) {
+        db_query("INSERT INTO {page_title} VALUES('term', %d, '%s')", $edit['tid'], $edit['page_title']);
+      }
+      break;
+
+    case 'delete':
+      db_query("DELETE FROM {page_title} WHERE type = 'term' AND id = %d", $edit['tid']);
+      break;
+  }
+}
+
+
+/**
+ * Implementation of hook_user().
+ */
+function page_title_user($op, &$edit, &$account) {
+  switch ($op) {
+    case 'update':
+      if (user_access('set page title')) {
+        db_query("DELETE FROM {page_title} WHERE type = 'user' AND id = %d", $account->uid);
+      }
+      // Fallthrough to insert is intentional!
+    case 'insert':
+      if (isset($edit['page_title']) && drupal_strlen(trim($edit['page_title'])) > 0 && user_access('set page title')) {
+        db_query("INSERT INTO {page_title} VALUES('user', %d, '%s')", $account->uid, $edit['page_title']);
+      }
+      break;
+
+    case 'delete':
+      db_query("DELETE FROM {page_title} WHERE type = 'user' AND id = %d", $account->uid);
+      break;
+  }
+}
+
+
+/**
+ * Simple wrapper function to get the currently set title for a page
+ *
+ * @param $raw
+ *   Optional parameter. If TRUE, the result will not be parsed with filter_xss.
+ *
+ * @return
+ *   string the title for the current page
+ */
+function page_title_get_title($raw = FALSE) {
+  static $title;
+
+  if (empty($title)) {
+    // If we're looking at a node or a comment on a node, get the node object from the menu system.
+    if ((arg(0) == 'node' && is_numeric(arg(1)))  ||  (arg(0) == 'comment' && arg(1) == 'reply' && is_numeric(arg(2))) && module_exists('comment')) {
+      // If this is a comment page, the node ID is in position 2, whereas a node page is position 1
+      $position = arg(0) == 'comment' ? 2 : 1;
+      $node = menu_get_object('node', $position);
+
+      // If the node has a custom page title and the node type is configured to have a custom page title (ie, it's not a leftover from a previous setting), then use it.
+      if (!empty($node->page_title) && variable_get('page_title_type_'. $node->type .'_showfield', 0)) {
+        $title = $node->page_title;
+      }
+      // If we're on a comment reply page, set the page-title token to the parent node title. Makes more sense than "Reply to comment"...
+      elseif (arg(0) == 'comment') {
+        $title = $node->title;
+      }
+    }
+    // If we're looking at either a user profile page or a users blog page, get the user title
+    elseif ((arg(0) == 'user' || arg(0) == 'blog') && is_numeric(arg(1))) {
+      if (variable_get('page_title_user_showfield', 0) && ($user_title = page_title_load_title(arg(1), 'user'))) {
+        $title = $user_title;
+      }
+    }
+    // If we're looking at a taxonomy term page, get the term title
+    elseif (arg(0) == 'taxonomy' && arg(1) == 'term' && is_numeric(arg(2)) && module_exists('taxonomy')) {
+      $term = taxonomy_get_term(arg(2));
+      if (variable_get('page_title_vocab_'. $term->vid .'_showfield', 0) && ($term_title = page_title_load_title($term->tid, 'term'))) {
+        $title = $term_title;
+      }
+    }
+    // If we're looking at a forum page determin if is a container/forum or the forum root
+    elseif (arg(0) == 'forum' && module_exists('forum')) {
+      // If there is a number then its a container or forum
+      if (is_numeric(arg(1))) {
+        $term = taxonomy_get_term(arg(1));
+        if (variable_get('page_title_vocab_'. $term->vid .'_showfield', 0) && ($term_title = page_title_load_title($term->tid, 'term'))) {
+          $title = $term_title;
+        }
+      }
+    }
+
+    // If nothing above set a title, give the legacy function a chance to act
+    if (empty($title)) {
+      $title = page_title_set_title();
+    }
+
+    // If we still have no title, fall back to the title provided by Drupal Core
+    if (empty($title)) {
+      $title = drupal_get_title();
+    }
+
+    // Give other modules the oppertunity to use hook_page_title_alter().
+    drupal_alter('page_title', $title);
+  }
+
+  // Return the title in a safe form (any tags removed (such as emphasised or strong tags) and eny entiied encoded)
+  return $raw ? $title : filter_xss($title, array());
+}
+
+
+/**
+ * Gets the page title for a type & id.
+ *
+ * @param $id
+ *   int The objects id.
+ * @param $type
+ *   string What is the scope (usually 'node', 'term' or 'user').
+ *
+ * @return
+ *   string the page title for the given type & id.
+ */
+function page_title_load_title($id, $type) {
+  return db_result(db_query("SELECT page_title FROM {page_title} WHERE type = '%s' AND id = %d", $type, $id));
+}
+
+
+/**
+ * Wrapper for old function...
+ * NOTE: This has been depricated in favor of page_title_load_title().
+ */
+function page_title_node_get_title($nid) {
+  return page_title_load_title($nid, 'node');
+}
+
+
+/**
+ * Legacy page title setting function...
+ * NOTE: This has been deprecated in favour of hook_page_title_alter().
+ */
+function page_title_set_title($title = NULL) {
+  static $stored_title;
+
+  if (isset($title)) {
+    $stored_title = $title;
+  }
+  return $stored_title;
+}
+
+
+/**
+ * Determines what title should be sent to the page template.
+ *
+ * Call this function from the page hook of function _phptemplate_variables in
+ * template.php.
+ *
+ * @param $raw
+ *   Optional parameter to allow the function to return a raw (unfiltered) result. This should be used with caution...
+ *
+ * @return
+ *   string The page's title.
+ */
+function page_title_page_get_title($raw = FALSE) {
+  static $title = NULL;
+
+  if (is_null($title)) {
+    // If frontpage, then use the frontpage pattern and set the title.
+    if (drupal_is_front_page()) {
+      // Get the frontpage pattern
+      $page_title_pattern = variable_get('page_title_front', '[site-name] | [site-slogan]');
+
+      // If the frontpage pattern is empty, fallback to the default.
+      if (empty($page_title_pattern)) {
+        $page_title_pattern = variable_get('page_title_default', '[page-title] | [site-slogan]');
+      }
+
+      // Append the pattern for pages with a pager on them
+      $page_title_pattern .= isset($_REQUEST['page']) ? variable_get('page_title_pager_pattern', '') : '';
+
+      // Allow hook_page_title_pattern_alter() to modify the pattern. In this case we can use drupal_alter as we have no tokens to alter.
+      drupal_alter('page_title_pattern', $page_title_pattern);
+
+      // Apply the token patterns using the one-level replacer (frontpage is only "global" scope). Need to flush the token cache first.
+      token_get_values('global', NULL, TRUE);
+      $title = token_replace($page_title_pattern);
+    }
+    // Otherwise this is a non-frontpage page title.
+    else {
+      // Initialize some variables we need
+      $page_title_pattern = '';
+      $types = array('global' => NULL);
+
+      // Determine scope
+      // Node (either node or comment reply)
+      if ((arg(0) == 'node' && is_numeric(arg(1)))) {
+        $types['node'] = menu_get_object();
+
+        // If the node has any taxonomy, grab the first time and pass it over to be passed as a token.
+        // TODO: Handle multiple terms? Only pass specific terms per content type?
+        if (!empty($types['node']->taxonomy)) {
+          $types['taxonomy'] = current($types['node']->taxonomy);
+        }
+
+        $page_title_pattern = variable_get('page_title_type_'. $types['node']->type, '');
+      }
+      // Comment reply page
+      elseif ((arg(0) == 'comment' && arg(1) == 'reply' && is_numeric(arg(2)) && module_exists('comment')) ) {
+        // The node ID position is in arg 2...
+        $types['node'] = menu_get_object('node', 2);
+
+        // If the node has any taxonomy, grab the first time and pass it over to be passed as a token.
+        // TODO: Handle multiple terms? Only pass specific terms per content type?
+        if (!empty($types['node']->taxonomy)) {
+          $types['taxonomy'] = current($types['node']->taxonomy);
+        }
+
+        // Is this a root comment or a child comment (top level or nested)...
+        if (($pid = arg(3)) && $comment = _comment_load($pid)) {
+          // Reply to comment...
+          $types['comment'] = $comment;
+          $page_title_pattern = variable_get('page_title_comment_child_reply', '');
+        }
+        else {
+          // Reply to node...
+          $page_title_pattern = variable_get('page_title_comment_reply', '');
+        }
+      }
+      // Term
+      elseif (arg(0) == 'taxonomy' && arg(1) == 'term' && is_numeric(arg(2)) && module_exists('taxonomy')) {
+        $types['taxonomy'] = taxonomy_get_term(arg(2));
+        $page_title_pattern = variable_get('page_title_vocab_'. $types['taxonomy']->vid, '');
+      }
+      // Forum
+      elseif (arg(0) == 'forum' && module_exists('forum')) {
+        // If there is a numeric argument, then we're viewing a container or forum
+        if (is_numeric(arg(1))) {
+          $types['taxonomy'] = taxonomy_get_term(arg(1));
+          $forum_vid = variable_get('forum_nav_vocabulary', '');
+          $page_title_pattern = variable_get('page_title_vocab_'. $forum_vid, '');
+        }
+        // Otherwise its the root - lets grab the root pattern.
+        else {
+          $page_title_pattern = variable_get('page_title_forum_root_title', '');
+        }
+      }
+      // User
+      elseif (arg(0) == 'user' && is_numeric(arg(1))) {
+        $types['user'] = user_load(array('uid' => arg(1)));
+        $page_title_pattern = variable_get('page_title_user', '');
+      }
+      // Blog
+      elseif (arg(0) == 'blog' && is_numeric(arg(1))) {
+        $types['user'] = user_load(array('uid' => arg(1)));
+        $page_title_pattern = variable_get('page_title_blog', '');
+      }
+      // We've not matched any "normal" situations above - so lets see what the menu system reports
+      else {
+        $menu = menu_get_item();
+        switch ($menu['page_callback']) {
+          // If the page callback is a views page, then we can lookup the static title for a page
+          case 'views_page' :
+            // Get the args, name and display_id
+            $args = $menu['page_arguments'];
+            $name = array_shift($args);
+            $display_id = array_shift($args);
+
+            // This is a view with no args provided - lets use the base display title
+            if (empty($args)) {
+              $page_title_pattern = variable_get(_page_title_build_views_keys($name, $display_id), '');
+            }
+            // There are args...
+            else {
+              // Get the active page view
+              $view = views_get_page_view();
+
+              // Grab the argument handlers
+              $h = $view->handlers['argument'];
+
+              // Splice them for the current arg (TODO: IS THIS RIGHT?)
+              $h = array_shift(array_splice($h, count($args)-1, 1));
+
+              // Grab the page title
+              $page_title_pattern = isset($h->options['page_title']['page_title']) ? $h->options['page_title']['page_title'] : '';
+
+              // If a page title pattern was acquired, apply the %1, %2 type placeholder replacement.
+              if (!empty($page_title_pattern)) {
+                // Grab the pre-built substitutions
+                $subs = $view->view->build_info['substitutions'];
+
+                // Apply any subs to the pattern
+                $page_title_pattern = str_replace(array_keys($subs), $subs, $page_title_pattern);
+              }
+            }
+
+            break;
+        }
+      }
+
+
+      // If pattern is emtpy (either if the type is not overridable or simply not set) fallback to the default pattern)
+      if (empty($page_title_pattern)) {
+        $page_title_pattern = variable_get('page_title_default', '[page-title] | [site-name]');
+      }
+
+      // Append the pattern for pages with a pager on them
+      $page_title_pattern .= isset($_REQUEST['page']) ? variable_get('page_title_pager_pattern', '') : '';
+
+      // Allow hook_page_title_pattern_alter() to modify the pattern - we cant use drupal_alter as it only supports single arguments (or arrays). We need to pass 2 variables.
+      $data = array(&$page_title_pattern, &$types);
+      foreach (module_implements('page_title_pattern_alter') as $module) {
+        $function = $module .'_page_title_pattern_alter';
+        call_user_func_array($function, $data);
+      }
+
+      // Apply token patterns by resetting the token cache first and then using token_replace_multiple to insert token values
+      token_get_values('global', NULL, TRUE);
+      $title = token_replace_multiple($page_title_pattern, $types);
+    }
+  }
+
+  // Use filter_xss to remove any tags and to entity encode content.
+  return $raw ? $title : filter_xss($title, array());
+}
+
+
+/**
+ * Implementation of hook_token_values().
+ *
+ * @param
+ *   string The type of token being generated
+ *
+ * @return
+ *   array An array of Token ID and Token Value pairs
+ */
+function page_title_token_values($type) {
+  $values = array();
+
+  if ($type == 'global') {
+    $values['page-title'] = page_title_get_title();
+    $values['page-title-raw'] = page_title_get_title(TRUE);
+  }
+
+  return $values;
+}
+
+
+/**
+ * Implementation of hook_token_list().
+ *
+ * @param
+ *   string Which type of token list are we generating?
+ *
+ * @return
+ *   array Nested array of Token ID and Token Name pairs.
+ */
+function page_title_token_list($type = 'all') {
+  $tokens = array();
+
+  if ($type == 'global' || $type == 'all') {
+    $tokens['global']['page-title'] = t("The page title.");
+    $tokens['global']['page-title-raw'] = t("The page title. WARNING - raw user input");
+  }
+
+  return $tokens;
+}
+
+
+/**
+ * Implementation of hook_preprocess_page().
+ */
+function page_title_preprocess_page(&$vars) {
+  $vars['head_title'] = page_title_page_get_title();
+}
+
+
+/**
+ * Implementation of hook_content_extra_fields().
+ *
+ * This allows CCK to control the weight of the Page Title element as a "non-cck field"
+ */
+function page_title_content_extra_fields($type_name) {
+  $extra = array();
+
+  if (variable_get('page_title_type_'. $type_name .'_showfield', 0)) {
+    $extra['page_title'] = array(
+      'label' => t('Page Title'),
+      'description' => t('Page Title form.'),
+      'weight' => -4
+    );
+  }
+
+  return $extra;
+}
+
+function _page_title_build_views_keys($view_name, $display_id, $argument_id = NULL) {
+  return 'page_title-'. implode('-', array_filter(array($view_name, $display_id, $argument_id)));
+}
+
+
+/**
+ * Implement hook_preprocess_views_ui_edit_tab().
+ *
+ * This is used to insert the Page Title settings details for a Page View (we're not interested in block views, for example)
+ */
+function page_title_preprocess_views_ui_edit_tab(&$vars) {
+  // We're only interested in adding a section to page display's
+  $type = get_class($vars['display']->handler);
+  if ($type != 'views_plugin_display_page') return;
+
+  // Get the display and view
+  $display_id = $vars['display']->id;
+  $view = $vars['view'];
+
+  // Lookup the current title and strip any tags out.
+  $title = strip_tags($view->display[$display_id]->handler->get_option('page_title'));
+  if (empty($title)) {
+    $title = t('None');
+  }
+  else {
+    //$vars['display']->display_options['page_title'] = $vars['view']->display[$display_id]->display_options['page_title'] = $title;
+  }
+
+  // Create the page title settings category
+  $id = 'page_title';
+  $vars['categories'][$id] = array(
+    'title' => t('Page Title Settings'),
+    'data' => array(
+      $id => array(
+        'content' => t('Page Title: !link', array('!link' => $vars['display']->handler->option_link($title, $id, '', t('Page Title')))),
+        'links' => '',
+        'overridden' => TRUE,
+        'defaulted' => FALSE,
+        'changed' => !empty($vars['view']->changed_sections[$display_id .'-'. $id]),
+        'class' => views_ui_item_css($display_id .'-'. $id),
+      ),
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_form_views_uit_edit_display_form_alter() (From hook_form_FORM_ID_alter()).
+ *
+ * This allows us to inject our Page Title form.
+ */
+function page_title_form_views_ui_edit_display_form_alter(&$form, &$form_state) {
+  // If the section isn't page_title, then dont bother altering
+  if ($form_state['section'] != 'page_title') return;
+
+  // Set the section title
+  $form_state['title'] = t('Page: The <em>Page Title Pattern</em> setting');
+
+  // Get the settings key
+  $key = _page_title_build_views_keys($form_state['view']->name, $form_state['display_id']);
+
+  // Get the page tutle from the display handler
+  $default_page_title = $form_state['view']->display[$form_state['display_id']]->handler->get_option('page_title');
+
+  // If none returned, use the variables instead
+  if (empty($default_page_title)) {
+    $default_page_title = variable_get($key, '');
+  }
+
+  // Define the Page Title field
+  $form['page_title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Page Title'),
+    '#description' => t('Optionally use this field to define a Page Title Pattern (not the Page Title). You may use the Tokens listed below'),
+    '#weight' => -5,
+    '#default_value' => $default_page_title,
+  );
+
+  // Add the token help to a collapsed fieldset at the end of the configuration page.
+  $form['token_help'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Available Tokens List'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#weight' => -2,
+  );
+  $form['token_help']['content'] = array(
+    '#type' => 'markup',
+    '#value' => theme('token_help', 'global'),
+  );
+
+  // Attach a submit handler - we're using unshift to get ours in first so our data gets stored in the object cache
+  array_unshift($form['buttons']['submit']['#submit'], 'page_title_views_ui_edit_display_form_submit');
+}
+
+
+/**
+ * Simple submit handler for the above form.
+ * @SEE: page_title_form_views_ui_edit_display_form_alter()
+ */
+function page_title_views_ui_edit_display_form_submit($form, &$form_state) {
+  $form_state['view']->display[$form_state['display_id']]->handler->set_option('page_title', trim($form_state['values']['page_title']));
+}
+
+
+/**
+ * Form Alter handler for the views ui config form (used for filters and args)
+ */
+function page_title_form_views_ui_config_item_form_alter(&$form, &$form_state) {
+  // Don't bother altering non-argument forms
+  if ($form_state['type'] != 'argument') return;
+
+  // Check the display handler is a page - if not, dont bother altering.
+  $type = get_class($form_state['view']->display_handler);
+  if ($type != 'views_plugin_display_page') return;
+
+  // Now check the display is overriding the default - this is necessary as we cannot assign a page title to the default display.
+  if (!isset($form_state['view']->display_handler->options['arguments'])) return;
+
+  // Build a page title options fieldset wrapper
+  $temp_form['page_title'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Page Title'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#tree' => FALSE,
+  );
+
+  // Add the Page Title field
+  $temp_form['page_title']['page_title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Page Title Pattern'),
+    '#description' => t('Optionally enter a Page Title Pattern for this argument. This will override the main view Page Title Pattern. You can also use the tokens below.'),
+    '#default_value' => $form_state['handler']->options['page_title']['page_title'],
+  );
+
+  // Add the token help to a collapsed fieldset at the end of the configuration page.
+  $temp_form['page_title']['token_help'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Available Tokens List'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+  $temp_form['page_title']['token_help']['content'] = array(
+    '#type' => 'markup',
+    '#value' => theme('token_help', 'global'),
+  );
+
+  // Splice the temp form into the main form. We do this because there are no weights in the views form meaning Page Title can either be top or bottom (-1 or 1).
+  $offset = array_search('title', array_keys($form['options']));
+  $spliced_form = array_splice($form['options'], 0, $offset);
+  $form['options'] = array_merge($spliced_form, $temp_form, $form['options']);
+
+  // Add a submit handler to the forms buttons
+  $form['buttons']['submit']['#submit'][] = 'page_title_views_ui_config_item_form_submit';
+}
+
+/**
+ * Submit handler for the views ui config
+ */
+function page_title_views_ui_config_item_form_submit($form, &$form_state) {
+  // TODO: How to get argument submit handlers to modify the caced view.... Is it possible?!
+  dpm($form_state);
+  dpm($form_state['view']);
+
+  $form_state['view']->display[$form_state['display_id']]->display_options['arguments'][$form_state['id']]['page_title'] = trim($form_state['values']['page_title']);
+}
+
+
+/**
+ * Implementation of hook_form_FORM_ID_alter()
+ *
+ * This is simply used to embed a submit handler for the form
+ */
+function page_title_form_views_ui_edit_view_form_alter(&$form, &$form_state) {
+  // Need to use unshift to push our sumit handler in before the Views handler. Views unsets any deleted displays before we get a chance to find them.
+  array_unshift($form['buttons']['save']['#submit'], 'page_title_form_views_ui_edit_view_form_submit');
+}
+
+
+/**
+ * View Edit submit handler
+ */
+function page_title_form_views_ui_edit_view_form_submit(&$form, &$form_state) {
+  // For Each display...
+  foreach ($form_state['view']->display as $display_id => $display) {
+    // Test if this display is a page handler - no other types should have Page Titles..
+    $type = get_class($display->handler);
+    if ($type != 'views_plugin_display_page') continue;
+
+    // Build a variable key for the display-level page title
+    $key = _page_title_build_views_keys($form_state['view']->name, $display_id);
+
+    // Cleanup an page_title (if set)
+    $display->display_options['page_title'] = isset($display->display_options['page_title']) ? trim($display->display_options['page_title']) : NULL;
+
+    if (!empty($display->deleted) || empty($display->display_options['page_title'])) {
+      // If the display is deleted OR the page title has been set to blank, delete it from variables
+      variable_del($key);
+    }
+    else {
+      // Otherwise, store it
+      variable_set($key, $display->display_options['page_title']);
+    }
+
+    // TODO - Once the page title is in the view from the submit handler above, we can get this bit done...
+    // Now to store page titles for the arguments
+    foreach ($display->display_options['arguments'] as $arg_id => $arg) {
+      #dpm($arg_id);
+      #dpr($arg);
+    }
+  }
+}

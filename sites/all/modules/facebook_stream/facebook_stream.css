@@ -1,0 +1,110 @@
+/* $Id: facebook_stream.css,v 1.2 2009/06/10 14:29:36 prajwala Exp $ */
+.post_attachments{
+border: 1px solid red;
+}
+
+.hide{
+display:none;
+}
+
+.media_wrapper a img{
+  max-height:150px;
+  max-width:130px;
+  border:1px solid #656565;
+  margin:5px;
+}
+
+.time_comments_likes span{
+  padding-left: 2px;
+  padding-right: 2px;		     
+}
+
+.post_liked_friends{
+  list-style-type:none;
+  margin:0;
+  overflow:auto;
+  padding:0;
+  z-index:1;
+}
+.post_liked_friends li{
+  float:left;
+  height:64px;
+  margin:3px;
+  overflow:hidden;
+  width:134px;
+}
+.post_liked_friends li .square{
+  background-color:#FFFFFF;
+  background-position:2px 2px;
+  background-repeat:no-repeat;
+  border:1px solid #E0E0E0;
+  display:block;
+  float:left;
+  height:50px;
+  margin-right:5px;
+  padding:2px;
+  position:relative;
+  width:50px;
+  z-index:1;
+}
+.post_liked_friends li strong{
+  color:#222222;
+  font-size:11px;
+  font-weight:normal;
+  margin-top:2px;
+  width:65px;
+}
+
+.fb_post_comment{
+  background:#F1FAFB none repeat scroll 0 0;
+  border:1px solid #B2E6EB;
+  margin:0 0 5px;
+  padding:5px;
+}
+
+.fb_comment_user_picture {
+  background:#CCCCCC none repeat scroll 0 0;
+  float:left;
+  height:50px;
+  overflow:hidden;
+  width:50px;
+}
+
+.fb_comment_message {
+  float:right;
+  width:314px;
+}
+
+.fb_comment_user_message {
+  padding:0 0 0 5px;
+}
+
+.fb_comment_created {
+  color:#999999;
+  margin:10px 0 0;
+}
+
+.facebook_stream_msgs {
+  border:1px solid #E8E8E8;
+  margin:5px 0;
+}
+
+.fb_user_picture {
+  background:#CCCCCC none repeat scroll 0 0;
+  float:left;
+  height:50px;
+  margin:0 0 0 5px;
+  overflow:hidden;
+  width:50px;
+}
+
+.message {
+  padding:0 0 0 5px;
+}
+
+.fb_post_message { padding:0 0 0 5px; float:right; width:130px;}
+
+.post_liked_friends a, .attachments_info a, .fb_post_message  a {color:#0056ac; text-decoration:none;}
+
+.time_comments_likes {margin:5px 0;}
+

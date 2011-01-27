@@ -1,0 +1,58 @@
+<?php
+
+/*
+* Implementation of hook_form_alter
+* */
+function igcustom_form_alter(&$form, &$form_state, $form_id){
+    switch($form_id){
+        case 'blog_node_form':
+            /*
+             * Here you can alter a Blog node form.. its just an example.
+             * */
+        break;
+        case stristr($form_id, 'uc_product_add_to_cart_form'): // As said, the form id for this kind of form is dynamic.
+            /*
+             * Ubercart do some fancy stuff before this function has been invoked, there
+             * is no sense to edit the form here.
+             * Instead, we add a function callback to #after_build, that will be fired just before building the form.
+             * (this callback is not indended to be uset outside this module, so for convention I add a
+             * underscore in the begin of the name)
+             * */
+            $form['#after_build'][] = '_igcustom_uc_product_add_to_cart_form';
+        break;
+    }
+}
+
+function _igcustom_uc_product_add_to_cart_form($form, &$form_state){
+    /*
+     * Do whatever you want here, you ca edit/remove/add form elements...
+     * just REMEMBER to return the $form, or you'll get a WSOD
+     * */
+     $title = $form['node']['#value']->title;
+     if(is_array($form['attributes'])) {
+     foreach($form['attributes'] as $akey => $attribute) {
+       if(is_array($attribute['#options'])) {
+       foreach($attribute['#options'] as $okey=>$option)
+       $form['attributes'][$akey]['#options'][$okey] = $title." ".$option;
+     }
+   }
+   }
+    return $form;   
+}
+/**
+* Implementation of hook_form_alter().
+* there is a bug in IE6 and IE7 that causes display problems
+* when form fieldsets are collapsible
+*/
+function igcustom_form_uc_cart_checkout_form_alter(&$form, &$form_state) {
+//  dpm($_SERVER);
+  if ( $pos = strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') ) {
+    $IEVer = substr($_SERVER['HTTP_USER_AGENT'],$pos+5,1);
+//    dpm($IEVer);
+    if($IEVer < 8) {
+      foreach (element_children($form['panes']) as $pane_id) {
+        $form['panes'][$pane_id]['#collapsible'] = FALSE;
+      }
+    }
+  }
+}

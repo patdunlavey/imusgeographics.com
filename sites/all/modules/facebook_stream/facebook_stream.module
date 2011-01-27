@@ -1,0 +1,747 @@
+<?php
+// $Id: facebook_stream.module,v 1.6.2.4 2010/06/08 20:30:32 prajwala Exp $
+
+/**
+ *@file
+ * Using facebook stream api, display the facebook stream in a block
+ *
+ * This module provides folloowing functionality
+ * 1. Ask the users to give permission to get the stream
+ * 2. If the user give permissions it display the stream
+ * 3. Provides configurations to display number of feeds in the block at user/%user/fbstreamconnect
+ * 4. Provides configurations whether to display comments for the feed item or not.
+ * 5. Provides configurations to filter the feeds by facebook filter.
+ */
+
+function facebook_stream_init() {
+  global $_facebook_stream_sdk;
+  global $_fb;
+
+  if (variable_get('facebook_stream_php_sdk', 0) == 1 || variable_get('facebook_stream_php_sdk', 0) == 2) {
+    // check if fb module is enabled.
+    if (isset($_fb) && !empty($_fb)) {
+      $_facebook_stream_sdk = $_fb;
+    } 
+  } 
+  elseif (isset($_fb) && !empty($_fb)) {
+    drupal_set_message(t("Drupal for facebook module is already enabled, choose the drupal for facebook version"));
+  } 
+  elseif (variable_get('facebook_stream_php_sdk', 0) == 3) {
+    $_facebook_stream_sdk = facebook_client();
+  } 
+  elseif (function_exists('facebook_client')) {
+    drupal_set_message(t("fbconnect module is already enabled, choose the fbconnect modulr in the facebook stream settings page"));
+  }
+  else {
+    if (!require drupal_get_path('module', 'facebook_stream') .'/facebook-php-sdk/src/facebook.php') {
+      drupal_set_message(t("Add facebook-php-sdk folder in the facebook_stream module folder by downloading it from ") . l("http://github.com/facebook/php-sdk"));
+    }
+    $api = variable_get('facebook_stream_facebook_api_id', NULL);
+    $secret = variable_get('facebook_stream_facebook_secret_key', NULL);
+    if (!$api || !$secret) {
+      drupal_set_message(l("Click Here", 'admin/settings/facebook_stream') . t(" to configure facebook stream module"));
+    } 
+    else {
+      $_facebook_stream_sdk = new Facebook(array(
+        'appId'  => $api,
+        'secret' => $secret,
+        'cookie' => TRUE, // enable optional cookie support
+      ));
+    }
+  }
+  if (variable_get('facebook_stream_php_sdk', 0) == 0 || variable_get('facebook_stream_php_sdk', 0) == 1) {
+    $_facebook_stream_sdk->latest_php_sdk = TRUE;
+  }
+}
+
+
+function call_facebook_api($method, $args) {
+  global $_facebook_stream_sdk;
+  if ($_facebook_stream_sdk->latest_php_sdk) {
+    $args['method'] = $method;
+    return $_facebook_stream_sdk->api($args);
+  }
+  else {
+    return $_facebook_stream_sdk->api_client->call_method($method, $args);
+  }
+}
+
+function get_facebook_loggedin_user() {
+  global $_facebook_stream_sdk;
+  if ($_facebook_stream_sdk->latest_php_sdk == True) {
+    $fbuid = $_facebook_stream_sdk->getUser();
+  } 
+  else {
+    $fbuid = $_facebook_stream_sdk->get_loggedin_user();
+  }
+  return $fbuid;
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function facebook_stream_menu() {
+  $items['user/%user/fbstreamconnect'] = array(
+    'title' => t('Facebook Stream'),
+    "description" => t("Change Dashboard of users."),
+    "page callback" => "drupal_get_form",
+    'page arguments' => array('fb_stream_config_form'),
+    'access callback' => 'user_edit_access',
+    'access arguments' => array(1),
+    'type' => MENU_LOCAL_TASK,
+  );
+  
+  $items['fbstream/get/post/comments'] = array(
+    'title' => t('Facebook Stream post comments'),
+    "page callback" => "fb_stream_get_post_comments",
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['fbstream/post/update'] = array(
+    'title' => t('Facebook Stream update post'),
+    "page callback" => "fb_stream_post_update",
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['fbstream/post/comments'] = array(
+    'title' => t('Facebook Stream posting comments to Facebook'),
+    "page callback" => "fb_stream_post_comments",
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['fbstream/get/post/likes'] = array(
+    'title' => t('Facebook Stream post likes'),
+    "page callback" => "fb_stream_get_post_likes",
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['fbstream/post/likes'] = array(
+    'title' => t('Facebook Stream posting likes to Facebook'),
+    "page callback" => "fb_stream_post_likes",
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['fbstream/post/status'] = array(
+    'title' => t('Facebook Stream posting status'),
+    "page callback" => "fb_stream_post_status",
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['fbstream/get'] = array(
+    'title' => t('Facebook Stream post likes'),
+    "page callback" => "fb_stream_get",
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  //settings page 
+  $items['admin/settings/facebook_stream'] = array(
+    "title" => t("Facebook Stream"),
+    "description" => t("Configure the facebook stream to post comments, likes and status message."),
+    "page callback" => "drupal_get_form",
+    "page arguments" => array('facebook_stream_settings_form'),
+    "access arguments" => array('administer site configuration'),
+    'file' => 'stream.admin.inc',
+  );
+  $items['ahahform_callback/fbstream'] = array(
+    'title' => t('AHAH Form Callback'),
+    'page callback' => 'ahahform_callback_fbstream',
+    'type' => MENU_CALLBACK,
+    "access arguments" => array('administer site configuration'),
+  );
+
+  return $items; 
+}
+
+/**
+ * Implementation of hook_theme()
+ * registering themes
+ */
+function facebook_stream_theme() {
+  return array(
+    'posts_display' => array(
+      'arguments' => array('stream' => NULL),
+      'template' => 'posts_display', 
+      ),
+    'comments_display' => array(
+      'arguments' => array('comments' => NULL),
+      'template' => 'comments_display',
+      ),
+    'likes_display' => array(
+      'arguments' => array('friends' => NULL, 'user_likes' => NULL, 'post_id' => NULL),
+      'template' => 'likes_display',      
+      ),
+    'post_display' => array(
+      'arguments' => array('post' => NULL, 'user_info' => NULL),
+      'template' => 'post_display',
+      ),
+    );
+}
+
+
+/**
+ * Defination of stream configuration form
+ * 
+ * @ingroup forms
+ * @see fb_stream_config_form_validate
+ * @see fb_stream_config_form_submit
+ */
+function fb_stream_config_form() {
+  global $user;
+  $data = unserialize($user->data);
+  $form['count'] = array(
+    '#type' => 'textfield',
+    '#title' => t('No of Items to display'),
+    '#default_value' => $data['fbstream_user'] ? $data['fbstream_user'] : 5 ,
+    '#description' => t('NO of Feeds to display on the block.'),
+    '#required' => TRUE,
+    );
+  $form['submit'] = array('#type' => 'submit', '#value' => t('Save'));
+  return $form;
+}
+
+/**
+ * validation for the stream configuration form
+ *
+ * @see fb_stream_config_form
+ * @see fb_stream_config_form_submit
+ *
+ * @param $form
+ *  The form containing form values
+ * @param $form_state
+ *
+ * @return null
+ *  If there is any validation error the it set the error message
+ */
+function fb_stream_config_form_validate($form, &$form_state) {
+  if (!is_numeric($_POST['count'])) {
+    form_set_error('', t('Value must me numeric'));
+  }
+}
+
+
+/**
+ * Form submit of stream configurations
+ *
+ * This function stores the stream configurations
+ *
+ * @see fb_stream_config_form
+ * @see fb_stream_config_form_validate
+ * @param $form
+ *  The form containing form values
+ * @param $form_state
+ *
+ * @return null
+ *
+ */
+function fb_stream_config_form_submit($form, &$form_state) {
+  global $user;
+  if ($user) {
+    $array = array('fbstream_user' => $form_state['values']['count']);
+    $data = unserialize($user->data);
+    $result_array = array_merge($data, $array);
+    db_query("update {users} set data = '%s' where uid=%d", serialize($result_array), $user->uid);
+ }
+}
+
+function facebook_stream_login_render_button($attr = array()) {
+  global $_facebook_stream_sdk;
+  if ($_facebook_stream_sdk->latest_php_sdk) {
+    $defaulr_attr = array(
+      'text'       => t('Facebook Login'),
+      'onlogin'    => 'facebook_onlogin_ready();',
+      'background' => 'dark',
+    ); 
+  } 
+  else {
+    $defaulr_attr = array(
+      'text'       => t('Facebook Login'),
+      'onlogin'    => 'facebook_onlogin_ready();',
+      'background' => 'dark',
+      'v'          => 2,
+    ); 
+  }
+  $attr = array_merge($defaulr_attr, $attr);
+  //drupal_alter('fbconnect_login_button', $attr);
+  $text = $attr['text'];
+  unset($attr['text']);
+
+  return '<fb:login-button '. drupal_attributes($attr) .' onclick="FB_Connect.login_onclick()" perms="read_stream, publish_stream">'. $text .'</fb:login-button>';
+}
+
+/**
+ * Implementation of hook_block()
+ */
+function facebook_stream_block($op = 'list', $delta = 0, $edit = array()) {
+  global $_facebook_stream_sdk;
+  if (empty($_facebook_stream_sdk) || !isset($_facebook_stream_sdk)) {
+    return;
+  }
+  switch ($op) {
+  case 'list':
+    $blocks[0]['info'] = t('Facebook Stream');
+    return $blocks;
+  case 'view':
+    $block = array();
+    switch ($delta) {
+    case 0:
+      $block['subject'] = t('Facebook Stream');
+      // check whether user logged into facebook through our application
+      $fbuid = get_facebook_loggedin_user();
+      if (!$fbuid) {
+        $block['content'] = t('Your Facebook session has expired, try to reconnect') . facebook_stream_login_render_button();
+        return $block;
+        break;
+      }
+
+      $block['content'] = _get_facebbok_stream();
+      // dialog box to display the comments and likes
+      $block['content'] .= '<div id="post_dialog" class="hide"></div>';
+      return $block;
+    }
+  case 'configure':
+    $form = array();
+    if ($delta == 0) {
+      $form['fbstream_block_post_display_more'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Display full post information'),
+        '#description' => t('Display the full information of the facebook stream post'),
+        '#default_value' => variable_get('fbstream_block_post_display_more', 1),
+        );
+      
+      $form['fbstream_block_posts_update_time'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Facebook stream posts update time in minutes'),
+        '#description' => t('Facebook stream posts will updation time'),
+        '#default_value' => variable_get('fbstream_block_posts_update_time', 2),
+        );
+    }
+    return $form;
+  case 'save':
+    if ($delta == 0) {
+      variable_set('fbstream_block_post_display_more', $edit['fbstream_block_post_display_more']);
+      variable_set('fbstream_block_posts_update_time', $edit['fbstream_block_posts_update_time']);
+    }
+  }
+}
+
+
+/*
+*returns the permission of the string
+*/
+function get_perm($string, $uid) {
+  //$fb = facebook_client();
+  global $_facebook_stream_sdk;
+  $fb = $_facebook_stream_sdk;
+  try {
+    $perms = call_facebook_api('users.hasapppermission', array('ext_perm' => $string, 'uid' => $uid));
+  }
+  catch (FacebookRestClientException $e) {
+    drupal_set_message(t('Your Facebook session has expired, try to reconnect') . facebook_stream_login_render_button());
+    return 'error';
+  }
+  return $perms;
+}
+
+
+/**
+ * Get the facebook stream of the currently logged in user
+ */
+function _get_facebbok_stream() {
+  global $user, $_facebook_stream_sdk;
+  drupal_add_css(drupal_get_path('module', 'facebook_stream') .'/facebook_stream.css', 'theme');
+  drupal_add_js(drupal_get_path('module', 'facebook_stream') .'/facebook_stream.js');
+  jquery_ui_add(array('ui.dialog'));  
+  
+  // facebbok client
+  $fb = $_facebook_stream_sdk;
+  $fbuid  = get_facebook_loggedin_user();
+  $perms = get_perm('read_stream', $fbuid);
+
+  if ($perms == 'error')
+   return t('Your Facebook session has expired, try to reconnect') . facebook_stream_login_render_button();
+
+  // check whether user gave permission to our application to access the stream
+  if ($fbuid) {
+    
+    // get how many feed items to display
+    $data = unserialize($user->data);   
+    $count = $data['fbstream_user'] ? $data['fbstream_user'] : 5 ;
+    $stream = call_facebook_api('stream.get', array('limit' => $count));
+    
+    $confs = array(
+      'fbstream_dispaly' => variable_get('fbstream_block_post_display_more', 1),
+      'fbstream_update_time' => variable_get('fbstream_block_posts_update_time', 2),
+      'publish_perm' => $publish_perm,
+      );
+    drupal_add_js($confs, 'setting');
+    return theme('posts_display', $stream);
+  }
+  else {
+    // ask the user to give permissions for our application to access his stream
+    return 'Set the permissions for the Application  <input type="submit" value="Get Perm" class="form-submit" onclick="prompt_for_permissions(\'read_stream\');">';
+  }
+}
+
+/**
+ * Gets user information from the stream profiles array
+ * 
+ * @param $profiles
+ *  Profiles array came in the stream.get response
+ * @param $uid
+ *  The information need to get from profiles array
+ */
+function _get_user_info($profiles, $uid) {
+  foreach ($profiles as $profile) {
+    if ($profile['id'] == $uid) {
+      return $profile;
+    }
+  }
+}
+
+/**
+ * Places the attachements of a post in a html.
+ * @pram $post
+ *   Stream post contains the information of the post
+ * @return $output
+ *   The html content of the post attachments information
+ */
+function _post_attachments($post) {
+  // return empty string if attachment does not exist
+  if (!isset($post['attachment']['media']) && !is_array($post['attachment']['media'])) {
+    return '';
+  }
+  $output = '';
+  foreach ($post['attachment']['media'] as $attach) {
+    switch ($attach['type']) {
+    case 'video':
+      $output .= "<fb:flv src=$post[href] title='my movie' height='100' salign='r' img=$attach[src] scale='showall' />";
+      break;
+    case 'link':
+      $output .= "<a href=$attach[href]><img src=$attach[src] height='100' width='100' /></a>";
+      break;
+    }
+  }
+  $output .= "<div>". $post['attachment']['description'] ."</div>";
+  return $output;
+}
+
+
+/**
+ * Convert the time duration into readable way like 2hours, 3minute etc..
+ * 
+ * @param $seconds
+ *  timestamp which needs to convert into readable way
+ * @param $use
+ *  The y,M,w,d,h,m,s etc characters which needs to use
+ * @param $zeros
+ *  Count leading zeeros or not
+ */
+function time_duration($seconds, $use = NULL, $zeros = FALSE) {
+  // Define time periods
+  $periods = array(
+    'years'     => 31556926,
+    'Months'    => 2629743,
+    'weeks'     => 604800,
+    'days'      => 86400,
+    'hours'     => 3600,
+    'minutes'   => 60,
+    'seconds'   => 1
+  );
+  
+  // Break into periods
+  $seconds = (float) $seconds;
+  foreach ($periods as $period => $value) {
+    if ($use && strpos($use, $period[0]) === FALSE) {
+      continue;
+    }
+    $count = floor($seconds / $value);
+    if ($count == 0 && !$zeros) {
+      continue;
+    }
+    $array_key = strtolower($period);
+    $segments[$array_key] = $count;
+    $seconds = $seconds % $value;
+  }
+  
+  // Build the string
+  foreach ($segments as $key => $value) {
+    $segment_name = substr($key, 0, -1);
+    $segment = $value .' '. $segment_name;
+    if ($value != 1) {
+      $segment .= 's';
+    }
+    $array[] = $segment;
+  }
+  //   $str = implode(', ', $array);
+  return $array[0];
+}
+
+
+function str_parse_url($str) {
+  // regular expression for possible links formats 
+  $regexp = '/((http\:\/\/(\w{3}\.)?|https\:\/\/(\w{3}\.)?|www\.|ftp\.|ftps\.){1}\S+\.\S+)/i';
+  return preg_replace($regexp, '<a href="$1" target="_new">$1</a>', $str);
+}
+
+function fb_stream_get() {
+  //if (!$fbuid = fbconnect_get_fbuid()) {
+  global $_facebook_stream_sdk;
+  $fbuid = get_facebook_loggedin_user();
+  if (!$fbuid) {
+    echo t('Your Facebook session has expired, try to reconnect') . facebook_stream_login_render_button();
+    exit;
+  }
+  echo _get_facebbok_stream();
+  exit;
+}
+
+/**
+ * call back for the url fbstream/get/post/comments
+ * 
+ * Get the comments for the post and return the html of the comments
+ */
+function fb_stream_get_post_comments() {
+  $post_id = trim($_POST['post_id']);
+  //$fb = facebook_client(); 
+  global $_facebook_stream_sdk;
+  $fb = $_facebook_stream_sdk;
+  //$fbuid = fbconnect_get_fbuid();
+  $fbuid  = get_facebook_loggedin_user();
+  try {
+    $comments = call_facebook_api('stream.getComments', array('post_id' => $post_id));
+  } catch (Exception $e) {
+    echo 'Caught exception: ',  $e->getMessage(), "\n";
+  }
+  $output = theme('comments_display', $comments);
+  $perm = get_perm('publish_stream', $fbuid);
+
+  if ($perms == 'error')
+    return t('Your Facebook session has expired, try to reconnect') . facebook_stream_login_render_button();
+
+  // ask the user to give permissions for our application to access his stream
+  if (!$perm) {
+    $output .= '<div class = "post_comments_form hide">'. drupal_get_form('post_comment', $post_id) .'</div>'; 
+    $output .= ' <br><div class = \'get_perm\'> Set the permissions for the Application to Publish <input type = "submit" value = "Get Perm" class = "form-submit" onclick = "prompt_for_permissions(\'publish_stream\');"><div>';
+  }
+  else{
+    if ( variable_get('stream_post_comments', 0)) 
+      $output .= '<div class = "post_comments_form">' . drupal_get_form('post_comment', $post_id) . '</div>'; 
+  }
+  echo $output;
+  exit;
+}
+
+/*
+* Publish comments form
+*/
+function post_comment(&$form_status, $post_id) {
+  $form['post_id'] = array(
+    '#type' => 'hidden',
+    '#value' => $post_id,
+  );
+  $form['comment'] = array(
+    '#type' => 'textfield',
+    '#title' => t(''),
+    '#size' => 54,
+    '#description' => t('Write a comment')      
+  );
+  $form['submit'] = array(
+    '#type' => 'submit', 
+    '#value' => t('Save'),
+    '#attributes' => array('class' => 'fbstream_comment_submit'),
+  );
+  $form['#attributes'] = array('class' => 'fb_stream_comment_add_form');
+  return $form;
+}
+
+/**
+ * call back for the url fbstream/get/post/likes
+ * 
+ * Get the likes for the post and return the html of the friends who likes this post
+ */
+function fb_stream_get_post_likes() {
+  $post_id = trim($_POST['post_id']);
+  //$fb = facebook_client(); 
+  global $_facebook_stream_sdk;
+  $fb = $_facebook_stream_sdk;
+  $query = "SELECT likes FROM stream WHERE post_id ='". trim($post_id) ."'";
+  $likes = call_facebook_api('fql.query', array('query' => $query));
+  if (!$likes) {
+    echo "There is no likes information for this post "; 
+    exit;
+  } 
+  $likes = $likes[0]['likes'];
+  $friends = Array();
+  if (!empty($likes['sample'])) {
+    $friends = array_merge($friends, $likes['sample']);
+  }
+  if (!empty($likes['friends'])) {
+    $friends = array_merge($friends, $likes['friends']);
+  }
+  $user_likes = $likes['user_likes'];
+  echo theme('likes_display', $friends, $user_likes, $post_id);
+  exit;
+}
+/*
+* call back for the url fbstream/post/comments
+*/
+
+function fb_stream_post_comments() {
+  $post_id = trim($_POST['id']);
+  $comment = trim($_POST['comments']);
+  //$fb = facebook_client();	
+  global $_facebook_stream_sdk;
+  $fb = $_facebook_stream_sdk;
+  try {
+    call_facebook_api('stream.addComment', array('post_id' => $post_id, 'comment' => $comment, 'uid' => $fb->get_loggedin_user()));
+  }
+  catch (FacebookRestClientException $e) {
+    echo t('Comment not posted due to some error in application');
+    exit;
+  } 
+  $fbuid = get_facebook_loggedin_user();
+  $user_info = call_facebook_api('users.getInfo', array('uids' => $uid, 'fields' => 'name,pic_square,profile_url'));
+  $user_info = $user_info[0];
+  $time = time_duration(date('s')) .' ago';
+  $output = "<div class = 'fb_post_comment'>
+                <div class = 'fb_comment_user_picture'><img src = ". $user_info['pic_square'] ."/>
+                </div>
+                <div class = 'fb_comment_message'>
+                    <a href = ". $user_info['profile_url'] ." >". $user_info['name'] ." </a>
+	            <span class = 'fb_comment_user_message' >". $comment ."</span>
+                    <div class = 'fb_comment_created' >". $time ." </div>
+                </div>
+                <div style = 'clear: both;'/>
+             </div>";
+  echo $output;
+  exit;
+}
+
+/*
+*call back for the posting likes to facebook
+*/
+function fb_stream_post_likes() {
+  $post_id = trim($_POST['id']);
+  $value = trim($_POST['value']);
+  //$fb = facebook_client();	
+  global $_facebook_stream_sdk;
+  $fb = $_facebook_stream_sdk;
+  //$uid = $fb->api_client->users_getLoggedInUser();
+  $fbuid = get_facebook_loggedin_user();
+  if ($value == 'Like') {
+    call_facebook_api('stream.addLike', array('uid' => $uid, 'post_id' => $post_id));
+    exit ;    
+ }
+ else{
+   call_facebook_api('stream.removeLike', array('uid' => $uid, 'post_id' => $post_id));    
+   exit;
+ }
+}
+
+function fb_stream_post_update() {
+  $post_id = trim($_POST['post_id']);
+  //$fb = facebook_client(); 
+  global $_facebook_stream_sdk;
+  $fb = $_facebook_stream_sdk;
+  $query = "SELECT post_id, viewer_id, source_id, type, actor_id, message, attachment, app_data, comments, likes, privacy, updated_time, created_time, filter_key, permalink  FROM stream WHERE post_id = '". $post_id ."'";
+  $posts = call_facebook_api('fql.query', array('query' => $query));
+  $post = $posts[0];
+  $profile_query = "SELECT id, name, url, pic_square FROM profile where id='". $post['source_id'] ."'";
+  $user_info = call_facebook_api('fql.query', array('query' => $profile_query));
+  $user_info = $user_info[0];
+  $user_info['prfile_url'] = $user_info['url'];
+  $post['post_id'] = trim($post['post_id']);
+  echo theme('post_display', $post, $user_info);
+}
+//Callback: Posts staatus 
+function fb_stream_post_status() {
+  $post_value = trim($_POST['value']);
+  //$fb = facebook_client(); 
+  global $_facebook_stream_sdk;
+  $fb = $_facebook_stream_sdk;
+  try {
+    if ($post_value) {
+      call_facebook_api('stream.publish', array('message' => $post_value));
+    }
+    echo $post;
+  }
+  catch (FacebookRestClientException $e) {
+    echo 'error';
+    exit;
+  }
+}
+
+function facebook_stream_footer() {
+  global $_fb;
+  if (isset($_fb) && !empty($_fb)) {
+    return '';
+  }
+  $api = variable_get('facebook_stream_facebook_api_id', NULL);
+  if ($api) {
+    $output = '<div id="fb-root"></div>';
+    $output .= '<script src="http://connect.facebook.net/en_US/all.js"></script>';
+    $output .= '<script>';
+    $output .= "  FB.init({appId: '". $api ."', status: true,";
+    $output .= "	  cookie: true, xfbml: true});";
+    $output .= "FB.Event.subscribe('auth.login', function(response) {";
+    $output .= "    /*window.location.reload();*/ });";
+    $output .= "function facebook_onlogin_ready() { window.location.reload();}";
+    $output .= "</script>";
+    return $output;
+  }
+}
+
+function ahahform_callback_fbstream() {
+  // define a string variable to contain callback output
+  $output = "";
+  // pull the top level vid from the $_POST data
+  $id = $_POST['facebook_stream_php_sdk'];
+  // define the second tier select dropdown element
+  $form['facebook_stream_facebook_api_id'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Facebook API ID'),
+    '#default_value' => variable_get('facebook_stream_facebook_api_id', NULL),
+  );
+  $form['facebook_stream_facebook_secret_key'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Facebook Secret Key'),
+    '#default_value' => variable_get('facebook_stream_facebook_secret_key', NULL),
+  );
+  // rebuild form object and output new form elements
+  if ($id == 0) {
+    $output .= ahah_render($form, 'facebook_stream_facebook_api_id');
+  }
+  else {
+    unset($form['facebook_stream_facebook_api_id']);
+    unset($form['facebook_stream_facebook_secret_key']);
+  }
+  // render form output as JSON
+  print drupal_to_js(array('data' => $output, 'status' => TRUE));
+  
+  // exit to avoid rendering the theme layer
+  exit();
+  
+}
+
+function ahah_render($fields, $name) {
+  $form_state = array('submitted' => FALSE);
+  $form_build_id = $_POST['form_build_id'];
+  // Add the new element to the stored form. Without adding the element to the
+  // form, Drupal is not aware of this new elements existence and will not
+  // process it. We retreive the cached form, add the element, and resave.
+  $form = form_get_cache($form_build_id, $form_state);
+  $form[$name] = $fields;
+  form_set_cache($form_build_id, $form, $form_state);
+  $form += array(
+    '#post' => $_POST,
+    '#programmed' => FALSE,
+  );
+  // Rebuild the form.
+  $form = form_builder($_POST['form_id'], $form, $form_state);
+  
+  // Render the new output.
+  $new_form = $form[$name];
+  return drupal_render($new_form);
+}

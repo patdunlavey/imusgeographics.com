@@ -1,0 +1,66 @@
+; $Id: ninesixty.info,v 1.1.2.5 2010/04/25 05:07:35 dvessel Exp $
+
+name = 960 Grid System
+description = A blank base theme using the 960 Grid System. See the "README.txt" file within the theme folder for more information.
+screenshot = images/screenshot.png
+core = 6.x
+engine = phptemplate
+
+
+; Stylesheets
+
+stylesheets[all][] = styles/framework/reset.css
+stylesheets[all][] = styles/framework/text.css
+stylesheets[all][] = styles/framework/960.css
+stylesheets[all][] = styles/framework/960-12-col.css
+stylesheets[all][] = styles/framework/960-16-col.css
+stylesheets[all][] = styles/framework/960-24-col.css
+stylesheets[all][] = styles/framework/960-debug.css
+stylesheets[all][] = styles/style.css
+
+
+; Any styles set here will force them to load above all others.
+; Sub-themes can add more options through this same key.
+
+css floats[] = reset.css
+css floats[] = text.css
+css floats[] = 960.css
+css floats[] = 960-12-col.css
+css floats[] = 960-16-col.css
+css floats[] = 960-24-col.css
+css floats[] = 960-debug.css
+
+
+; Keyed options to allow switching through 'settings[960 columns]'.
+; Sub-themes can add more options through this same key.
+
+css grid options[12+16] = 960.css
+css grid options[12]    = 960-12-col.css
+css grid options[16]    = 960-16-col.css
+css grid options[24]    = 960-24-col.css
+
+
+; Debug styles. 'settings[960 debug]' switches it on and off.
+; Sub-themes can add more debug styles through this same key.
+
+css debug[] = 960-debug.css
+
+
+; "960 columns" setting allows the following. Change through a sub-theme.
+; - "12+16" combined styles. This is the default.
+; - "12" columns
+; - "16" columns
+; - "24" columns
+
+settings[960 columns] = 12+16
+
+
+; Enable/disable debug styles.
+settings[960 debug] = 1
+
+; Information added by drupal.org packaging script on 2010-04-25
+version = "6.x-1.x-dev"
+core = "6.x"
+project = "ninesixty"
+datestamp = "1272197574"
+
