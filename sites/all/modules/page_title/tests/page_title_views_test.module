@@ -1,0 +1,9 @@
+<?php
+// $Id: page_title_views_test.module,v 1.1.2.2 2010/08/25 12:54:05 njt1982 Exp $
+
+/**
+ * Implementation of hook_views_api().
+ */
+function page_title_views_test_views_api() {
+  return array('api' => 2.0);
+}
