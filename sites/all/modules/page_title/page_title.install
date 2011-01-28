@@ -1,5 +1,5 @@
 <?php
-// $Id: page_title.install,v 1.10.4.8 2010/05/11 19:44:41 njt1982 Exp $
+// $Id: page_title.install,v 1.10.4.11 2010/11/30 23:21:46 njt1982 Exp $
 
 /**
  * @file
@@ -11,6 +11,7 @@
  */
 function page_title_install() {
   drupal_install_schema('page_title');
+  drupal_set_message(t('Page Title has been installed. Please go to <strong>Admin > Site Configuration > Page title</strong> to configure the settings for your site, or !link', array('!link' => l(t('click here'), 'admin/settings/page-title'))));
 }
 
 
@@ -91,6 +92,8 @@ function page_title_uninstall() {
   variable_del('page_title_user_showfield');
   variable_del('page_title_pager_pattern');
   variable_del('page_title_forum_root_title');
+  variable_del('page_title_comment_reply');
+  variable_del('page_title_comment_child_reply');
 
   // Clear the node specific variables
   $types = node_get_types('names');

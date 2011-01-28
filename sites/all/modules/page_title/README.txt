@@ -48,33 +48,8 @@ INSTALLATION:
 
     Administer > Content management > Page titles
 
-4. The page title is ultimately set at the theme level. To let your PHPTemplate
-   based theme interact with this module, you need to add some code to the template.php
-   file that comes with your theme. If there is no template.php file, you can simply
-   use the one included with this download. Here is the code:
+   From the configuration page you can define "patterns" for sections of your
+   site as well as toggling the visibility of the Page Title field.
 
-function _phptemplate_variables($hook, $vars) {
-  $vars = array();
-  if ($hook == 'page') {
-
-    // These are the only important lines
-    if (module_exists('page_title')) {
-      $vars['head_title'] = page_title_page_get_title();
-    }
-
-  }
-  return $vars;
-}
-
-  As you can see from the code comment, there are only three important lines
-  of code:
-
-  if (module_exists('page_title')) {
-    $vars['head_title'] = page_title_page_get_title();
-  }
-
-  These lines need to be added to the 'page' hook of the _phptemplate_variables
-  function.
-
-  Alternately, you can call page_title_page_get_title() from page.tpl.php
-  directly at the place where the title tag is generated.
+4. Unlike Drupal 5, in Drupal 6 the Page Title module requires no modification
+   to the theme at all.
