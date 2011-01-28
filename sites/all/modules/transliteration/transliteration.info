@@ -4,9 +4,9 @@ description = Converts non-latin text to US-ASCII and sanitizes file names.
 core = 6.x
 
 
-; Information added by drupal.org packaging script on 2010-03-15
+; Information added by drupal.org packaging script on 2010-11-12
 version = "6.x-3.x-dev"
 core = "6.x"
 project = "transliteration"
-datestamp = "1268655598"
+datestamp = "1289564573"
 
