@@ -4,9 +4,9 @@ description = Updates Drupal to use the latest version of jQuery.
 package = User interface
 core = 6.x
 
-; Information added by drupal.org packaging script on 2010-07-11
+; Information added by drupal.org packaging script on 2010-09-09
 version = "6.x-2.x-dev"
 core = "6.x"
 project = "jquery_update"
-datestamp = "1278834677"
+datestamp = "1284034331"
 
