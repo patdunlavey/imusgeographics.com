@@ -1,4 +1,4 @@
-// $Id: CHANGELOG.txt,v 1.33.2.48.2.75 2010/03/12 23:05:57 sun Exp $
+// $Id: CHANGELOG.txt,v 1.33.2.48.2.78 2010/07/31 15:13:55 sun Exp $
 
 Admin Menu x.x-x.x, xxxx-xx-xx
 ------------------------------
@@ -6,6 +6,9 @@ Admin Menu x.x-x.x, xxxx-xx-xx
 
 Admin Menu 6.x-3.x, xxxx-xx-xx
 ------------------------------
+#755386 by smartinm, sun: Fixed breadcrumbs on administrative pages.
+#588936 by fenstrat: Fixed Toolbar shortcuts not visible.
+#860390 by Kevin Rogers: Fixed .info file parsing error on uncertain platform.
 #551484 by sun: Fixed stale hook_admin_menu_output_alter() docs.
 by sun: Added cvs_deploy support.
 

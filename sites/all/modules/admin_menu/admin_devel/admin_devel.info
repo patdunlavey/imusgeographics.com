@@ -4,9 +4,9 @@ description = Administration and debugging functionality for developers and site
 package = Administration
 core = 6.x
 
-; Information added by drupal.org packaging script on 2010-03-13
+; Information added by drupal.org packaging script on 2010-08-01
 version = "6.x-3.x-dev"
 core = "6.x"
 project = "admin_menu"
-datestamp = "1268438439"
+datestamp = "1280620899"
 

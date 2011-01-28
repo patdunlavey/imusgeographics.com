@@ -1,4 +1,4 @@
-/* $Id: admin_menu_toolbar.css,v 1.2.2.4 2009/11/12 03:12:40 sun Exp $ */
+/* $Id: admin_menu_toolbar.css,v 1.2.2.5 2010/07/28 16:12:50 sun Exp $ */
 
 /**
  * @file
@@ -85,6 +85,8 @@ html body.admin-menu {
 #admin-menu li.admin-menu-shortcuts ul {
   background-color: #666;
   padding: 5px 10px;
+  right: 10px;
+  width: auto;
 }
 #admin-menu li.admin-menu-shortcuts ul li {
   background: transparent none;
