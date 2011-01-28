@@ -1,5 +1,5 @@
 <?php
-// $Id: node.views.inc,v 1.93.2.12 2010/03/25 01:14:18 merlinofchaos Exp $
+// $Id: node.views.inc,v 1.93.2.19 2010/12/17 23:54:58 merlinofchaos Exp $
 /**
  * @file
  * Provide views data and handlers for node.module
@@ -161,11 +161,15 @@ function node_views_data() {
     'field' => array(
       'handler' => 'views_handler_field_boolean',
       'click sortable' => TRUE,
+      'output formats' => array(
+        'published-notpublished' => array(t('Published'), t('Not published')),
+      ),
     ),
     'filter' => array(
       'handler' => 'views_handler_filter_boolean_operator',
       'label' => t('Published'),
       'type' => 'yes-no',
+      'use equal' => TRUE, // Use status = 1 instead of status <> 0 in WHERE statment
     ),
     'sort' => array(
       'handler' => 'views_handler_sort',
@@ -203,8 +207,8 @@ function node_views_data() {
 
   // moderate
   $data['node']['moderate'] = array(
-    'title' => t('Moderated'), // The item it appears as on the UI,
-    'help' => t('Whether or not the node is moderated.'), // The help that appears on the UI,
+    'title' => t('In moderation'), // The item it appears as on the UI,
+    'help' => t('Whether or not the node is currently in the moderation queue.'), // The help that appears on the UI,
      // Information for displaying a title as a field
     'field' => array(
       'handler' => 'views_handler_field_boolean',
@@ -212,7 +216,7 @@ function node_views_data() {
     ),
     'filter' => array(
       'handler' => 'views_handler_filter_boolean_operator',
-      'label' => t('Moderated'),
+      'label' => t('In the moderation queue'),
       'type' => 'yes-no',
     ),
     'sort' => array(
@@ -489,6 +493,13 @@ function node_views_data() {
     'sort' => array(
       'handler' => 'views_handler_sort',
     ),
+    'relationship' => array(
+      'handler' => 'views_handler_relationship',
+      'base' => 'node',
+      'base field' => 'nid',
+      'title' => t('Node'),
+      'label' => t('Get the actual node from a node revision.'),
+    ),
   );
 
   // title
@@ -674,9 +685,6 @@ function node_views_handlers() {
       'views_handler_field_node_path' => array(
         'parent' => 'views_handler_field',
       ),
-      'views_handler_field_node_type' => array(
-        'parent' => 'views_handler_field_node',
-      ),
       'views_handler_field_node_link_edit' => array(
         'parent' => 'views_handler_field_node_link',
       ),
@@ -811,7 +819,9 @@ function template_preprocess_views_view_row_node(&$vars) {
   $vars['node'] = '';
   $vars['comments'] = '';
 
-  $nid = $vars['row']->{$vars['field_alias']};
+  if (!empty($vars['row']->{$vars['field_alias']})) {
+    $nid = $vars['row']->{$vars['field_alias']};
+  }
   if (!is_numeric($nid)) {
     return;
   }
@@ -852,6 +862,15 @@ function node_views_analyze($view) {
         // check for no access control
         $access = $display->handler->get_option('access');
         if (empty($access['type']) || $access['type'] == 'none') {
+          $result = db_query("SELECT r.name, p.perm FROM {role} r INNER JOIN {permission} p ON p.rid = r.rid WHERE r.name IN ('anonymous user', 'authenticated user')");
+          while ($role = db_fetch_object($result)) {
+            $role->perm = explode(', ', $role->perm);
+            $role->safe = in_array('access content', $role->perm);
+            $roles[$role->name] = $role;
+          }
+          if (!($roles['anonymous user']->safe && $roles['authenticated user']->safe)) {
+            $ret[] = views_ui_analysis(t('Some roles lack permission to access content, but display %display has no access control.', array('%display' => $display->display_title)), 'warning');
+          }
           $filters = $display->handler->get_option('filters');
           foreach ($filters as $filter) {
             if ($filter['table'] == 'node' && ($filter['field'] == 'status' || $filter['field'] == 'status_extra')) {

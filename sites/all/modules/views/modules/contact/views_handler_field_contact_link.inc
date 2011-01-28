@@ -1,5 +1,5 @@
 <?php
-// $Id: views_handler_field_contact_link.inc,v 1.1.2.3 2009/09/21 21:18:06 merlinofchaos Exp $
+// $Id: views_handler_field_contact_link.inc,v 1.1.2.6 2011/01/10 23:14:26 merlinofchaos Exp $
 /**
  * A field that links to the user contact page, if access is permitted.
  */
@@ -27,12 +27,25 @@ class views_handler_field_contact_link extends views_handler_field_user_link {
     $form['text']['#default_value'] = empty($this->options['text']) ? t('contact') : $this->options['text'];
   }
 
-  function render($values) {
+  // An example of field level access control.
+  // We must override the access method in the parent class, as that requires
+  // the 'access user profiles' permission, which the contact form does not.
+  function access() {
     global $user;
-    $uid = $values->{$this->aliases['uid']};
 
     // Only registered users can view other registered user's contact page.
-    if (empty($user->uid) || empty($uid)) {
+    if (empty($user->uid)) {
+      return FALSE;
+    }
+
+    return TRUE;
+  }
+
+  function render_link($data, $values) {
+    global $user;
+    $uid = $this->get_value($values, 'uid');
+
+    if (empty($uid)) {
       return;
     }
 
@@ -47,12 +60,19 @@ class views_handler_field_contact_link extends views_handler_field_user_link {
       return;
     }
 
+    $this->options['alter']['path'] = 'user/'. $account->uid .'/contact';
+    $this->options['alter']['attributes'] = array('title' => t('Contact %user', array('%user' => $account->name)));
+
+
     if ($this->options['link_display'] == 'icon') {
-      return l(theme('image', 'misc/forum-new.png'), 'user/'. $account->uid .'/contact', array('html' => TRUE, 'attributes' => array('title' => t('Contact %user', array('%user' => $account->name)))));
+      $text = theme('image', 'misc/forum-new.png');
+      $this->options['alter']['html'] = TRUE;
     }
     else {
-      return l($this->options['text'], 'user/'. $account->uid .'/contact', array('attributes' => array('title' => t('Contact %user', array('%user' => $account->name)))));
+      $text = $this->options['text'];
     }
+
+    return $text;
   }
 }
 
