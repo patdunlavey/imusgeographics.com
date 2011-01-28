@@ -1,5 +1,5 @@
 <?php
-// $Id: destinations.ftp.inc,v 1.1.2.5 2009/10/17 18:47:19 ronan Exp $
+// $Id: destinations.ftp.inc,v 1.1.2.7 2011/01/28 05:09:57 ronan Exp $
 
 
 /**
@@ -19,7 +19,7 @@ class backup_migrate_destination_ftp extends backup_migrate_destination_remote {
   /**
    * Save to the ftp destination.
    */
-  function save_file($file, $settings) {
+  function _save_file($file, $settings) {
     $ftp = $this->ftp_object();
     if (drupal_ftp_file_to_ftp($file->filepath(), $file->filename(), '.', $ftp)) {
       return $file;
@@ -43,12 +43,12 @@ class backup_migrate_destination_ftp extends backup_migrate_destination_remote {
   /**
    * Delete from the ftp destination.
    */
-  function delete_file($file_id) {
+  function _delete_file($file_id) {
     $this->ftp_object();
     drupal_ftp_delete_file($file_id, $this->ftp);
   }
 
-  function list_files() {
+  function _list_files() {
     backup_migrate_include('files');
     $files = array();
     $this->ftp_object();
@@ -220,7 +220,7 @@ function drupal_ftp_file_to_ftp($file, $ftp_filename, $ftp_directory, &$ftp) {
     $complete_filename = $ftp_directory .'/'. $ftp_filename;
     $put_file = @ftp_put($ftp->__conn, $complete_filename, $source, FTP_BINARY);
     if (!$put_file) {
-      _backup_migrate_message('FTP Error: Couldn\'t write to @complete_filename when trying to save file on the ftp server.', array('@complete_filename', $complete_filename), 'error');
+      _backup_migrate_message('FTP Error: Couldn\'t write to @complete_filename when trying to save file on the ftp server.', array('@complete_filename' => $complete_filename), 'error');
       return FALSE;
     }
 

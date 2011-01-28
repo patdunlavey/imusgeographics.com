@@ -1,5 +1,5 @@
 <?php
-// $Id: filters.inc,v 1.1.2.9 2010/06/11 03:11:58 ronan Exp $
+// $Id: filters.inc,v 1.1.2.10 2010/09/13 02:51:27 ronan Exp $
 
 
 /**
@@ -72,7 +72,25 @@ function backup_migrate_filters_invoke_all() {
   $filters = backup_migrate_get_filters($op);
   foreach ($filters as $filter) {
     if (method_exists($filter, $op)) {
-      $out = array_merge_recursive($out, (array)call_user_func_array(array($filter, $op), &$args));
+      /* call_user_func_array() ignores the function signature, so we cannot
+       * use it to pass references. (Call-time pass-by-reference is deprecated
+       * in PHP5.3.) Work around it, since we have unknown function signatures.
+       */
+      switch (count($args)) {
+        case 1:
+          $ret = $filter->$op($args[0]);
+          break;
+
+        case 2:
+          $ret = $filter->$op($args[0], $args[1]);
+          break;
+
+        default:
+          // This assumes that no functions with more than 2 arguments expect a
+          // reference as argument. If so, add another 'case block'.
+          $ret = call_user_func_array(array($filter, $op), $args);
+      }
+      $out = array_merge_recursive($out, (array) $ret);
     }
   }
   return $out;

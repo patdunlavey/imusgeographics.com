@@ -1,4 +1,4 @@
-// $Id: README.txt,v 1.1.2.1.2.1.2.3 2009/12/09 22:07:42 ronan Exp $
+// $Id: README.txt,v 1.1.2.1.2.1.2.5 2010/12/28 06:08:57 ronan Exp $
 
 -------------------------------------------------------------------------------
 Backup and Migrate 2 for Drupal 6.x
@@ -30,6 +30,9 @@ INSTALLATION:
 
 OPTIONAL:
 * Enable token.module to allow token replacement in backup file names.
+* To Backup to Amazon S3:
+    - Download the S3 library from http://undesigned.org.za/2007/10/22/amazon-s3-php-class
+      and place the file 'S3.php' in the includes directory in this module.
 
 LIGHTTPD USERS:
 Add the following code to your lighttp.conf to secure your backup directories:

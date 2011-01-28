@@ -1,5 +1,5 @@
 <?php
-// $Id: files.inc,v 1.1.2.1.2.17 2009/10/17 18:47:19 ronan Exp $
+// $Id: files.inc,v 1.1.2.1.2.18 2010/12/09 04:17:35 ronan Exp $
 
 
 /**
@@ -333,6 +333,7 @@ class backup_file {
 
     // Start buffering and throw away the results so that errors don't get appended to the file.
     ob_start('_backup_migrate_file_dispose_buffer');
+    backup_migrate_cleanup();
     module_invoke_all('exit');
     exit();
   }

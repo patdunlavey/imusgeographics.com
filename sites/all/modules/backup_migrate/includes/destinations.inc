@@ -1,5 +1,5 @@
 <?php
-// $Id: destinations.inc,v 1.1.2.1.2.26 2010/03/24 04:02:58 ronan Exp $
+// $Id: destinations.inc,v 1.1.2.1.2.30 2011/01/28 06:03:16 ronan Exp $
 
 
 /**
@@ -251,8 +251,15 @@ function _backup_migrate_destination_get_file_links($destination_id, $file_id) {
  * List the backup files in the given destination.
  */
 function backup_migrate_ui_destination_display_files($destination_id = NULL) {
-  $out = $sort = array();
+  $rows = $sort = array();
   if ($destination = backup_migrate_get_destination($destination_id)) {
+    // Refresh the file listing cache if requested.
+    if (isset($_GET['refresh'])) {
+      $destination->file_cache_clear();
+      drupal_goto($_GET['q']);
+    }
+
+
     drupal_set_title(t('%title Files', array('%title' => $destination->get_name())));
     $headers = array(
       array('data' => 'Filename', 'field' => 'filename'),
@@ -274,7 +281,7 @@ function backup_migrate_ui_destination_display_files($destination_id = NULL) {
       // Show only files that can be restored from.
       if ($file->is_recognized_type()) {
         $sort[] = $info[$sort_key];
-        $out[] = array(
+        $rows[] = array(
           check_plain($info['filename']),
           format_date($info['filetime'], 'small'),
           format_interval(time() - $info['filetime'], 1),
@@ -284,14 +291,18 @@ function backup_migrate_ui_destination_display_files($destination_id = NULL) {
       }
     }
 
-    array_multisort($sort, $sort_dir, $out);
+    array_multisort($sort, $sort_dir, $rows);
 
-    if ($out) {
-      return theme("table", $headers, $out);
+    if ($files) {
+      $out = theme("table", $headers, $rows);
     }
     else {
-      return t('There are no backup files to display.');
+      $out = t('There are no backup files to display.');
     }
+    if ($destination->cache_files && $destination->fetch_time) {
+      $out .= '<div class="description">'. t('This listing was fetched !time ago. !refresh', array('!time' => format_interval(time() - $destination->fetch_time, 1), '!refresh' => l(t('fetch now'), $_GET['q'], array('query' => 'refresh=true')))) .'</div>';
+    }
+    return $out;
   }
   drupal_goto("admin/content/backup_migrate/destination");
 }
@@ -314,7 +325,11 @@ function backup_migrate_ui_destination_restore_file($destination_id = NULL, $fil
   if (backup_migrate_destination_file_exists($destination_id, $file_id)) {
     return drupal_get_form('backup_migrate_ui_destination_restore_file_confirm', $destination_id, $file_id);
   }
-  drupal_goto(user_access('access backup files') ? "admin/content/backup_migrate/destination/list/files/". $destination_id : "admin/content/backup_migrate");
+  _backup_migrate_message('Cannot restore from the the file: %file_id because it does not exist.', array('%file_id' => $file_id), 'error');
+  if ($destination_id && user_access('access backup files')) {
+    drupal_goto('admin/content/backup_migrate/destination/list/files/' . $destination_id);
+  }
+  drupal_goto('admin/content/backup_migrate');
 }
 
 /**
@@ -376,7 +391,11 @@ function backup_migrate_ui_destination_delete_file($destination_id = NULL, $file
   if (backup_migrate_destination_file_exists($destination_id, $file_id)) {
     return drupal_get_form('backup_migrate_ui_destination_delete_file_confirm', $destination_id, $file_id);
   }
-  drupal_goto("admin/content/backup_migrate");
+  _backup_migrate_message('Cannot delete the file: %file_id because it does not exist.', array('%file_id' => $file_id), 'error');
+  if ($destination_id && user_access('access backup files')) {
+    drupal_goto('admin/content/backup_migrate/destination/list/files/' . $destination_id);
+  }
+  drupal_goto('admin/content/backup_migrate');
 }
 
 /**
@@ -468,6 +487,9 @@ class backup_migrate_destination extends backup_migrate_item {
   var $default_values = array('settings' => array());
   var $singular = 'destination';
   var $plural = 'destinations';
+  var $cache_files = FALSE;
+  var $fetch_time = NULL;
+  var $cache_expire = 86400; // 24 hours
 
   var $destination_type = "";
   var $supported_ops = array();
@@ -552,6 +574,15 @@ class backup_migrate_destination extends backup_migrate_item {
    */
   function save_file($file, $settings) {
     // This must be overriden.
+    $this->file_cache_clear();
+    return $this->_save_file($file, $settings);
+  }
+
+  /**
+   * Save the given file to the destination.
+   */
+  function _save_file($file, $settings) {
+    // This must be overriden.
     return $file;
   }
 
@@ -576,13 +607,68 @@ class backup_migrate_destination extends backup_migrate_item {
    * List all the available files in the given destination with their destination specific id.
    */
   function list_files() {
+    $out = NULL;
+    if ($this->cache_files) {
+      $out = $this->file_cache_get();
+    }
+    if ($out === NULL) {
+      $out = $this->_list_files();
+      if ($this->cache_files) {
+        $this->file_cache_set($out);
+      }
+    }
+    return $out;
+  }
+
+  /**
+   * List all the available files in the given destination with their destination specific id.
+   */
+  function _list_files() {
     return array();
+  }
+
+  /**
+   * Cache the file list.
+   */
+  function file_cache_set($files) {
+    cache_set('backup_migrate_file_list:'. $this->get_id(), $files, 'cache', time() + $this->cache_expire);
+  }
+
+  /**
+   * Retrieve the file list.
+   */
+  function file_cache_get() {
+    backup_migrate_include('files');
+    $cache = cache_get('backup_migrate_file_list:'. $this->get_id());
+    if (!empty($cache->data) && $cache->created > (time() - $this->cache_expire)) {
+      $this->fetch_time = $cache->created;
+      return $cache->data;
+    }
+    $this->fetch_time = 0;
+    return NULL;
+  }
+
+  /**
+   * Retrieve the file list.
+   */
+  function file_cache_clear() {
+    if ($this->cache_files) {
+      $this->file_cache_set(NULL);
+    }
   }
 
   /**
    * Delete the file with the given destination specific id.
    */
   function delete_file($file_id) {
+    $this->file_cache_clear();
+    $this->_delete_file($file_id);
+  }
+
+  /**
+   * Delete the file with the given destination specific id.
+   */
+  function _delete_file($file_id) {
     // This must be overriden.
   }
 
