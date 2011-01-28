@@ -94,7 +94,7 @@ function ig960_uc_cart_block_content($help_text, $items, $item_count, $item_text
   $output .= theme('uc_cart_block_items', $items);
 
 // THIS IS MY NEW FUNCTION TO GET THE TOTAL DISCOUNTS
-  $discount_info = uc_discounts_cart_block_discounts(uc_cart_get_contents());
+  $discount_info = ig_custom_uc_discounts_cart_block_discounts(uc_cart_get_contents());
 if ($discount_info['total']) {
   //$output .= $discount_info['body'];
   $output .= "<div class=\"cart-block-discounts-total\"><label>Total discounts:</label><span class=\"uc_price\">" . uc_currency_format($discount_info['total']) . "</span></div>";
