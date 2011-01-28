@@ -1,5 +1,5 @@
 <?php
-// $Id: uc_fedex.module,v 1.41 2010/05/30 07:44:54 tr Exp $
+// $Id: uc_fedex.module,v 1.42 2011/01/25 04:07:56 tr Exp $
 
 /**
  * @file
@@ -10,7 +10,7 @@
  * client.
  *
  * @author Tim Rohaly.    <http://drupal.org/user/202830>
- * @version $Id: uc_fedex.module,v 1.41 2010/05/30 07:44:54 tr Exp $
+ * @version $Id: uc_fedex.module,v 1.42 2011/01/25 04:07:56 tr Exp $
  */
 
 
@@ -773,15 +773,16 @@ function _uc_fedex_package_products($products) {
   // while staying below PACKAGE_WEIGHT_LIMIT_LBS.  This number
   // depends on the package weight markup set in the FedEx module
   // administration menu.
+  $products_max_weight = PACKAGE_WEIGHT_LIMIT_LBS;
   $zero_markup = uc_fedex_weight_markup(0);
   if ($zero_markup == 0) {
     // Weight markup is a multiplier, because 0 * multiplier = 0
     // This handles percentage markup too
-    $products_max_weight = PACKAGE_WEIGHT_LIMIT_LBS / uc_fedex_weight_markup(1);
+    $products_max_weight = $products_max_weight / uc_fedex_weight_markup(1);
   }
   else {
     // Weight markup is an additive factor , because 0 + factor = factor != 0
-    $products_max_weight = PACKAGE_WEIGHT_LIMIT_LBS - $zero_markup;
+    $products_max_weight = $products_max_weight - $zero_markup;
   }
 
   // Convert $products_max_weight (which is defined in LB units) into store

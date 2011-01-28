@@ -231,7 +231,7 @@ customers to enter their phone number at checkout.  You may set this
 field as required at admin/store/settings/checkout/edit/fields
 
 Labels that are generated in PDF format and printed with a laser printer
-cannot be scaled or resized. You must ensure that you print the document
+must not be scaled or resized. You must ensure that you print the document
 at "actual size" from within your PDF viewer application instead of
 "scaled to fit page".
 
