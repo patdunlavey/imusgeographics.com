@@ -56,3 +56,67 @@ function igcustom_form_uc_cart_checkout_form_alter(&$form, &$form_state) {
     }
   }
 }
+
+function ig_custom_uc_discounts_cart_block_discounts($items)
+{
+        global $user;
+
+        //Create phony order object to call to get_discounts_for_order
+        $order = new stdClass();
+        $order->uid = $user->uid;
+        $order->products = $items;
+
+        $errors = array();
+        $warnings = array();
+        $messages = array();
+        //echo "Calculating discounts";
+        $discounts = get_discounts_for_order($order, $errors, $warnings, $messages);
+
+        //If there are no discounts, do not alter cart
+        if (count($discounts) == 0)
+                return array();
+
+        //Calculate subtotal with discounts
+        $subtotal = 0;
+        foreach ($items as $item)
+        {
+                $subtotal += $item->price * $item->qty;
+//                $subtotal += get_discounts_taxed_price($item->price, $item) * $item->qty;
+        }
+        $total_discount_amount = 0;
+        foreach ($discounts as $discount)
+                $total_discount_amount += $discount->amount;
+        $subtotal_including_discounts = $subtotal - $total_discount_amount;
+
+        //Add total discount message
+        $messages[] = "<strong>" . t("Total discount") . ":</strong>&nbsp;"
+                . uc_currency_format($total_discount_amount);
+
+/*
+        //Add new subtotal message
+        $messages[] = "<strong>" . t("Subtotal including discounts") . ":</strong>&nbsp;"
+                . uc_currency_format($subtotal_including_discounts);
+*/
+
+        //Start row index at item count + 2 (1 for subtotal row in cart form, 1 more for our first row)
+        $i = count($items) + 2;
+
+        //Create table to hold discount messages
+        $body = "<table class='cart-block-discounts'>";
+
+        foreach ($messages as $message)
+        {
+                $evenOddClass = ( ($i % 2) == 0 ) ? "even" : "odd";
+                $body .= sprintf("<tr class='%s'><td class='%s'>", $evenOddClass, "uc-cart-block-discounts-cell")
+                        . $message . "</td></tr>";
+                $i += 1;
+        }
+        //Close table
+        $body .= "</table>";
+
+        $result = array();
+        $result['total'] = $total_discount_amount;
+        $result['details'] = $body;
+
+        return $result;
+}
