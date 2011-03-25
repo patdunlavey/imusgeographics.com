@@ -1,0 +1,253 @@
+<?php
+// $Id:
+
+function uc_export_orders_menu() {
+  // Admin
+  $items['admin/store/orders/export'] = array(
+		'title'						 => 'Export to Raven Order Processing',
+    'description'      => t('Export all orders as a CSV file that can be used by Raven Maps order processing'),
+		'page callback'		 => 'uc_export_orders_page',
+    'access arguments' => array('administer store'),
+    'type'  =>  MENU_NORMAL_ITEM,
+  );
+  return $items;
+}
+
+function uc_export_orders_page() {
+  global $user;
+  $export_history = variable_get('order_export_history', array());
+  // if we have an argument, then we're exporting
+  if(arg(4) || is_numeric(arg(4))) {
+    if(is_int(arg(4))) {
+      $start_time = arg(4);
+    }
+    else
+    {
+      if (arg(4) == 'latest') {
+        $update_export_history = TRUE;
+        if (is_int($export_history[0]['time'])) {
+          $start_time = $export_history[0]['time'];
+        }
+        else
+        {
+          $start_time = 0;
+        }
+      }
+      else
+      { // default to export from beginning if argument doesn't validate
+        $start_time = 0;
+      }
+    }
+    if(arg(5) && is_int(arg(5))) {
+      $end_time = arg(5);
+    }
+    else
+    { // default to export to end if no ending time, or ending time doesn't validate
+      $end_time = time();
+    }
+    // do the export, and incidentally, get a count of orders exported
+    $export_info = uc_export_orders_dump($start_time, $end_time);
+    if($update_export_history) {
+      // update orders_export_history
+      $export_history = array_slice($export_history, 0, 9);
+      array_unshift($export_history, array('user'=>$user->uid, 'time' => $export_info['time'] ,'min_order_time'=>$export_info['min_order_time'], 'min_order_num'=>$export_info['min_order_num'], 'max_order_time'=>$export_info['max_order_time'], 'max_order_num'=>$export_info['max_order_num'], 'count'=>$export_info['count']));
+      variable_set('order_export_history', $export_history);
+      drupal_goto('/admin/store/orders/export');
+    }
+
+  } // end of case where we're exporting the data
+  else
+  {
+    // we're not exporting, create page with links for doing latest orders export, or previous exports
+    $table_header = array(t("Exported by"), t("Began with"), t("Ended with"), t("Count"), "");
+    $table_rows = array();
+    foreach($export_history as $export_record) {
+      $rowuser = user_load($export_record['user']);
+      $rowusername = $user->name;
+      $rowstarttime = "<b>#".$export_record['min_order_num']."</b>: ".date('D, M jS Y, g:i a',$export_record['min_order_time']+uc_export_orders_site_time_offset());
+      $rowendtime = "<b>#".$export_record['max_order_num']."</b>: ".date('D, M jS Y, g:i a',$export_record['max_order_time']+uc_export_orders_site_time_offset());
+      $rowlink = l('re-export','admin/store/orders/export/'.$export_record['min_order_time']."/".$export_record['max_order_time']);
+      $table_rows[] = array($rowusername,$rowstarttime,$rowendtime,$export_record['count'],$rowlink);
+    }
+    // set up for getting a count of pending orders to export
+    if (is_int($export_history[0]['time'])) {
+      $new_start_time = $export_history[0]['time'];
+    }
+    else
+    {
+      $new_start_time = 0;
+    }
+    $pending_order_export_count = db_result(db_query("SELECT COUNT(*) FROM {uc_orders} uc_o WHERE uc_o.modified > %d and uc_o.order_status = 'completed' ", $new_start_time));
+    $content = '';
+    if($pending_order_export_count > 0) {
+      $content .='<h3>Number of new orders not yet exported: '.$pending_order_export_count.'</h3>';
+      $content .= '<br><b>'.l('Export Now','admin/store/orders/export/latest').'</b>';
+    }
+    else
+    {
+      $content .= '<h3>There are no new orders needing to be exported</h3>';
+    }
+    if(count($export_history)) {
+      $content .= theme_table($table_header, $table_rows);
+    }
+    print (theme('page',$content));
+  }
+}
+
+function uc_export_orders_dump($start_time, $end_time = NULL) {
+  if(!$end_time) {
+    $end_time = time();
+  }
+  global $user;
+  $completed = 'completed';
+  $result = db_query(
+  "SELECT
+  '8544' AS `CUSTNUM`, 
+  LEFT(uc_ol.title,12) AS `SHIPVIA`, 
+  uc_o.modified AS `ORDER_DATE`, 
+  uc_o.order_id AS `ODR_NUM`, 
+  '' AS `CONTINUED`,
+  '' AS `PRODUCT01`, 
+  '' AS `QUANTITY01`, 
+  '' AS `PRODUCT02`, 
+  '' AS `QUANTITY02`, 
+  '' AS `PRODUCT03`, 
+  '' AS `QUANTITY03`, 
+  '' AS `PRODUCT04`, 
+  '' AS `QUANTITY04`, 
+  '' AS `PRODUCT05`, 
+  '' AS `QUANTITY05`, 
+  delivery_last_name AS `SLASTNAME`, 
+  delivery_first_name AS `SFIRSTNAME`, 
+  delivery_company AS `SCOMPANY0`, 
+  delivery_street1 AS `SADDRESS10`, 
+  delivery_street2 AS `SADDRESS20`, 
+  delivery_city AS `SCITY`, 
+  uc_z_ship.zone_code AS `SSTATE`, 
+  delivery_postal_code AS `SZIPCODE`, 
+  primary_email AS `SEMAIL`, 
+  uc_c_ship.country_iso_code_3 AS `SCOUNTRY`,
+  '' AS ORDNOTE1,
+  '' AS ORDNOTE2,
+  '' AS ORDNOTE3,
+  '' AS ORDNOTE4,
+  '' AS ORDNOTE5
+    
+  FROM {uc_orders} uc_o 
+  INNER JOIN {uc_zones} uc_z_ship ON (uc_o.delivery_zone = uc_z_ship.zone_id)
+  INNER JOIN {uc_countries} uc_c_ship ON (uc_c_ship.country_id = uc_o.delivery_country)
+  LEFT JOIN {uc_order_line_items} uc_ol ON (uc_o.order_id = uc_ol.order_id AND uc_ol.type = 'shipping')
+  WHERE uc_o.modified >= %d and uc_o.modified <= %d and uc_o.order_status = 'completed' ", 
+  $start_time, $end_time);
+
+  $raworders = array();
+  $metadata = array(
+    'min_order_num'  => 99999999999999999999,
+    'max_order_num'  => 0,
+    'min_order_time' => 99999999999999999999,
+    'max_order_time' => 0,
+    'count' => NULL,
+    'time' => time(),
+  );
+  while ($order = db_fetch_array($result)) {
+    $metadata['min_order_num'] = min($metadata['min_order_num'], $order['ODR_NUM']);
+    $metadata['max_order_num'] = max($metadata['max_order_num'], $order['ODR_NUM']);
+    $metadata['min_order_time'] = min($metadata['min_order_time'], $order['ORDER_DATE']);
+    $metadata['max_order_time'] = max($metadata['max_order_time'], $order['ORDER_DATE']);
+    $products = db_query("SELECT * FROM {uc_order_products} WHERE order_id = %d", $order['ODR_NUM']);
+    $comments = db_query("SELECT message FROM {uc_order_comments} WHERE order_id = %d", $order['ODR_NUM']);
+    $commentsarray = array();
+    while($comment = db_fetch_array($comments)) {
+      if(strlen($comment['message']) > 4) {
+        $commentsarray[] = $comment['message'];
+      }
+    }
+    $commentsstring = implode(" * ",$commentsarray);
+    // need to split the order notes into five fields, each with a maximum of 240 characters
+    $commentsstring = preg_replace('/\s+/',' ',$commentsstring);
+    $ordnotes = str_split(substr(str_replace('"',"'", $commentsstring),0,1190),238);
+    //    echo "<pre>";print_r($ordnotes);echo"</pre>";
+    foreach($ordnotes as $key => $note) {
+      $ordnotefield = 'ORDNOTE'.($key + 1);
+      $order[$ordnotefield] = $note;
+    }
+
+    $order['SHIPVIA'] = uc_export_orders_get_shipvia($order['SHIPVIA']);
+    $order['ORDER_DATE'] = date("m/d/y",$order['ORDER_DATE']);
+    $productcount = 1;
+    $continued = '';
+    while ($product = db_fetch_array($products)) {
+      $order['CONTINUED'] = $continued;
+      $productnum = 'PRODUCT0'.$productcount;
+      $productqty = 'QUANTITY0'.$productcount;
+      $order[$productnum] = substr($product['model'],0,20);
+      $order[$productqty] = $product['qty'];
+      if($productcount >= 5) {
+        $raworders[] = $order;
+        $order['PRODUCT01'] = $order['PRODUCT02'] = $order['PRODUCT03'] = $order['PRODUCT04'] = $order['PRODUCT05'] = '';
+        $order['QUANTITY01'] = $order['QUANTITY02'] = $order['QUANTITY03'] = $order['QUANTITY04'] = $order['QUANTITY05'] = '';
+        $continued = 'X';
+        $productcount = 1;
+      }
+      else {
+        $productcount++;
+      }
+
+    }
+    $raworders[] = $order;
+  }
+  $metadata['count'] = count($raworders)-1;
+  //  print "<pre>";print_r($raworders);print "</pre>";
+
+  $headers = array('Content-type' => 'text/octect-stream', 'Content-Disposition' => 'attachment;filename=data.csv');
+
+  header('Content-Type: text/x-csv');
+  header('Expires: '. gmdate('D, d M Y H:i:s') .' GMT');
+  header('Content-Disposition: inline; filename="'.$_SERVER['SERVER_NAME'].' order export '.date('Y-m-d\TH-i-s').'.csv"');
+  header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+  header('Pragma: public');
+
+  $source = 'CUSTNUM, SHIPVIA, ORDER_DATE, ODR_NUM, CONTINUED, PRODUCT01, QUANTITY01, PRODUCT02, QUANTITY02, PRODUCT03, QUANTITY03, PRODUCT04, QUANTITY04, PRODUCT05, QUANTITY05, SLASTNAME, SFIRSTNAME, SCOMPANY0, SADDRESS10, SADDRESS20, SCITY, SSTATE, SZIPCODE, SEMAIL, SCOUNTRY, ORDNOTE1, ORDNOTE2, ORDNOTE3, ORDNOTE4, ORDNOTE5  ';
+  $source .= "\n";
+  foreach ($raworders as $row) {
+    foreach ($row as $field) {
+      $source .= uc_export_orders_csv_field($field).',';
+    }
+    $source .= "\n";
+  }
+  $source .= "\n";
+  //file_transfer($source, $headers);
+  print $source;
+  return $metadata;
+}
+
+function uc_export_orders_get_shipvia($raw) {
+  $shipvia_mapping = array(
+    'Standard shi' => 'PM',
+    'UPS 1 Day (1' => '3',
+    'UPS 2 Day (2' => 'BLU',
+    'UPS 3 Day (3' => 'RED',
+    'US Priority ' => 'IM'
+    );
+    $shipvia = $shipvia_mapping[$raw];
+    if(strlen($shipvia) < 1 ) {
+      $shipvia = 'PM';
+    }
+    return $shipvia;
+}
+
+function uc_export_orders_csv_field($string) {
+  if(preg_match("/,|\n/", $string)) {
+    $string = '"'.$string.'"';
+  }
+  return $string;
+}
+
+function uc_export_orders_site_time() {
+  $offset = variable_get('date_default_timezone', date('Z')) - date('Z');
+  return time()+$offset;
+}
+
+function uc_export_orders_site_time_offset() {
+  return variable_get('date_default_timezone', date('Z')) - date('Z');
+}

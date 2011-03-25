@@ -1,0 +1,10 @@
+; $Id: 
+name = Ubercart Export Orders to CSV
+description = Export all order data to a CSV file for easy import into Raven order processing system
+dependencies[] = uc_order
+dependencies[] = uc_product
+package = Ubercart - contrib
+core = 6.x
+
+version = "6.x-1.1"
+
