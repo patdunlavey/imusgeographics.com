@@ -66,7 +66,7 @@ function uc_export_orders_page() {
       $rowusername = $user->name;
       $rowstarttime = "<b>#".$export_record['min_order_num']."</b>: ".date('D, M jS Y, g:i a',$export_record['min_order_time']+uc_export_orders_site_time_offset());
       $rowendtime = "<b>#".$export_record['max_order_num']."</b>: ".date('D, M jS Y, g:i a',$export_record['max_order_time']+uc_export_orders_site_time_offset());
-      $rowlink = l('re-export','admin/store/orders/export/'.$export_record['min_order_time']."/".$export_record['max_order_time']);
+      $rowlink = l('re-export','admin/store/orders/export/'.$export_record['time']."/".$export_record['max_order_time']);
       $table_rows[] = array($rowusername,$rowstarttime,$rowendtime,$export_record['count'],$rowlink);
     }
     // set up for getting a count of pending orders to export
@@ -154,6 +154,7 @@ function uc_export_orders_dump($start_time, $end_time = NULL) {
     $metadata['max_order_num'] = max($metadata['max_order_num'], $order['ODR_NUM']);
     $metadata['min_order_time'] = min($metadata['min_order_time'], $order['ORDER_DATE']);
     $metadata['max_order_time'] = max($metadata['max_order_time'], $order['ORDER_DATE']);
+    $metadata['count'] += 1;
     $products = db_query("SELECT * FROM {uc_order_products} WHERE order_id = %d", $order['ODR_NUM']);
     $comments = db_query("SELECT message FROM {uc_order_comments} WHERE order_id = %d", $order['ODR_NUM']);
     $commentsarray = array();
@@ -196,7 +197,6 @@ function uc_export_orders_dump($start_time, $end_time = NULL) {
     }
     $raworders[] = $order;
   }
-  $metadata['count'] = count($raworders)-1;
   //  print "<pre>";print_r($raworders);print "</pre>";
 
   $headers = array('Content-type' => 'text/octect-stream', 'Content-Disposition' => 'attachment;filename=data.csv');
