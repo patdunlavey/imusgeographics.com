@@ -17,40 +17,32 @@ function uc_export_orders_page() {
   global $user;
   $export_history = variable_get('order_export_history', array());
   // if we have an argument, then we're exporting
-  if(arg(4) || is_numeric(arg(4))) {
-    if(is_int(arg(4))) {
-      $start_time = arg(4);
+  $arg = arg(4);
+  if($arg || is_numeric($arg)) {
+    if(is_numeric($arg)) {
+      $order_ids = $export_history[$arg-1]['order_ids'];
+      if(!is_array($order_ids)) {
+        $new_export = TRUE;
+      }
     }
     else
     {
-      if (arg(4) == 'latest') {
-        $update_export_history = TRUE;
-        if (is_int($export_history[0]['time'])) {
-          $start_time = $export_history[0]['time'];
-        }
-        else
-        {
-          $start_time = 0;
-        }
+      if ($arg == 'latest') {
+        $new_export = TRUE;
       }
-      else
-      { // default to export from beginning if argument doesn't validate
-        $start_time = 0;
-      }
-    }
-    if(arg(5) && is_int(arg(5))) {
-      $end_time = arg(5);
-    }
-    else
-    { // default to export to end if no ending time, or ending time doesn't validate
-      $end_time = time();
     }
     // do the export, and incidentally, get a count of orders exported
-    $export_info = uc_export_orders_dump($start_time, $end_time);
-    if($update_export_history) {
+    if($new_export) {
+      $export_info = uc_export_orders_dump();
+    }
+    else
+    {
+      $export_info = uc_export_orders_dump($order_ids);
+    }
+    if($new_export) {
       // update orders_export_history
       $export_history = array_slice($export_history, 0, 9);
-      array_unshift($export_history, array('user'=>$user->uid, 'time' => $export_info['time'] ,'min_order_time'=>$export_info['min_order_time'], 'min_order_num'=>$export_info['min_order_num'], 'max_order_time'=>$export_info['max_order_time'], 'max_order_num'=>$export_info['max_order_num'], 'count'=>$export_info['count']));
+      array_unshift($export_history, array('user'=>$user->uid, 'time' => $export_info['time'] ,'min_order_time'=>$export_info['min_order_time'], 'min_order_num'=>$export_info['min_order_num'], 'max_order_time'=>$export_info['max_order_time'], 'max_order_num'=>$export_info['max_order_num'], 'count'=>$export_info['count'], 'order_ids'=>$export_info['order_ids']));
       variable_set('order_export_history', $export_history);
       drupal_goto('/admin/store/orders/export');
     }
@@ -61,12 +53,12 @@ function uc_export_orders_page() {
     // we're not exporting, create page with links for doing latest orders export, or previous exports
     $table_header = array(t("Exported by"), t("Began with"), t("Ended with"), t("Count"), "");
     $table_rows = array();
-    foreach($export_history as $export_record) {
+    foreach($export_history as $key=>$export_record) {
       $rowuser = user_load($export_record['user']);
       $rowusername = $user->name;
       $rowstarttime = "<b>#".$export_record['min_order_num']."</b>: ".date('D, M jS Y, g:i a',$export_record['min_order_time']+uc_export_orders_site_time_offset());
       $rowendtime = "<b>#".$export_record['max_order_num']."</b>: ".date('D, M jS Y, g:i a',$export_record['max_order_time']+uc_export_orders_site_time_offset());
-      $rowlink = l('re-export','admin/store/orders/export/'.$export_record['time']."/".$export_record['max_order_time']);
+      $rowlink = l('re-export','admin/store/orders/export/'.($key+1));
       $table_rows[] = array($rowusername,$rowstarttime,$rowendtime,$export_record['count'],$rowlink);
     }
     // set up for getting a count of pending orders to export
@@ -77,11 +69,11 @@ function uc_export_orders_page() {
     {
       $new_start_time = 0;
     }
-    $pending_order_export_count = db_result(db_query("SELECT COUNT(*) FROM {uc_orders} uc_o WHERE uc_o.modified > %d and uc_o.order_status = 'completed' ", $new_start_time));
+    $pending_order_export_count = db_result(db_query("SELECT COUNT(*) FROM {uc_orders} uc_o WHERE uc_o.order_status = 'payment_received' ", $new_start_time));
     $content = '';
     if($pending_order_export_count > 0) {
-      $content .='<h3>Number of new orders not yet exported: '.$pending_order_export_count.'</h3>';
-      $content .= '<br><b>'.l('Export Now','admin/store/orders/export/latest').'</b>';
+      $content .='<h3>Number of new orders not yet exported: '.$pending_order_export_count.'&nbsp;&nbsp;&nbsp;';
+      $content .= l('Export Now','admin/store/orders/export/latest').' </h3>';
     }
     else
     {
@@ -94,12 +86,19 @@ function uc_export_orders_page() {
   }
 }
 
-function uc_export_orders_dump($start_time, $end_time = NULL) {
+function uc_export_orders_dump($order_ids = NULL) {
+  global $user;
   if(!$end_time) {
     $end_time = time();
   }
   global $user;
-  $completed = 'completed';
+  if(!is_array($order_ids)) {
+    $whereclause = " uc_o.order_status = 'payment_received'";
+  }
+  else
+  {
+    $whereclause =  " uc_o.order_id IN (".implode(',',$order_ids).")";
+  }
   $result = db_query(
   "SELECT
   '8544' AS `CUSTNUM`, 
@@ -137,8 +136,7 @@ function uc_export_orders_dump($start_time, $end_time = NULL) {
   INNER JOIN {uc_zones} uc_z_ship ON (uc_o.delivery_zone = uc_z_ship.zone_id)
   INNER JOIN {uc_countries} uc_c_ship ON (uc_c_ship.country_id = uc_o.delivery_country)
   LEFT JOIN {uc_order_line_items} uc_ol ON (uc_o.order_id = uc_ol.order_id AND uc_ol.type = 'shipping')
-  WHERE uc_o.modified >= %d and uc_o.modified <= %d and uc_o.order_status = 'completed' ", 
-  $start_time, $end_time);
+  WHERE ".$whereclause);
 
   $raworders = array();
   $metadata = array(
@@ -148,10 +146,16 @@ function uc_export_orders_dump($start_time, $end_time = NULL) {
     'max_order_time' => 0,
     'count' => NULL,
     'time' => time(),
+    'order_ids' => array(),
   );
   while ($order = db_fetch_array($result)) {
+    if(!is_array($order_ids)) {
+      db_query("UPDATE {uc_orders} uc_o SET uc_o.order_status = 'completed' WHERE uc_o.order_id = %d", $order['ODR_NUM']);
+      db_query("INSERT INTO {uc_order_comments} (order_id,uid,order_status,notified,message,created) VALUES (%d,%d,'completed',0,'%s',%d)", $order['ODR_NUM'], $user->uid, t('Automatically marked as completed by order export module'),time());
+    }
     $metadata['min_order_num'] = min($metadata['min_order_num'], $order['ODR_NUM']);
     $metadata['max_order_num'] = max($metadata['max_order_num'], $order['ODR_NUM']);
+    $metadata['order_ids'][] = $order['ODR_NUM'];
     $metadata['min_order_time'] = min($metadata['min_order_time'], $order['ORDER_DATE']);
     $metadata['max_order_time'] = max($metadata['max_order_time'], $order['ORDER_DATE']);
     $metadata['count'] += 1;
