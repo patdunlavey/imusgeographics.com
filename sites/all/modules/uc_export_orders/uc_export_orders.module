@@ -42,8 +42,10 @@ function uc_export_orders_page() {
     if($new_export) {
       // update orders_export_history
       $export_history = array_slice($export_history, 0, 9);
-      array_unshift($export_history, array('user'=>$user->uid, 'time' => $export_info['time'] ,'min_order_time'=>$export_info['min_order_time'], 'min_order_num'=>$export_info['min_order_num'], 'max_order_time'=>$export_info['max_order_time'], 'max_order_num'=>$export_info['max_order_num'], 'count'=>$export_info['count'], 'order_ids'=>$export_info['order_ids']));
-      variable_set('order_export_history', $export_history);
+      if($export_info['count'] > 0) {
+        array_unshift($export_history, array('user'=>$user->uid, 'time' => $export_info['time'] ,'min_order_time'=>$export_info['min_order_time'], 'min_order_num'=>$export_info['min_order_num'], 'max_order_time'=>$export_info['max_order_time'], 'max_order_num'=>$export_info['max_order_num'], 'count'=>$export_info['count'], 'order_ids'=>$export_info['order_ids']));
+        variable_set('order_export_history', $export_history);
+      }
       drupal_goto('/admin/store/orders/export');
     }
 
@@ -144,7 +146,7 @@ function uc_export_orders_dump($order_ids = NULL) {
     'max_order_num'  => 0,
     'min_order_time' => 99999999999999999999,
     'max_order_time' => 0,
-    'count' => NULL,
+    'count' => 0,
     'time' => time(),
     'order_ids' => array(),
   );
@@ -202,26 +204,28 @@ function uc_export_orders_dump($order_ids = NULL) {
     $raworders[] = $order;
   }
   //  print "<pre>";print_r($raworders);print "</pre>";
+  if($metadata['count'] > 0) {
 
-  $headers = array('Content-type' => 'text/octect-stream', 'Content-Disposition' => 'attachment;filename=data.csv');
+    $headers = array('Content-type' => 'text/octect-stream', 'Content-Disposition' => 'attachment;filename=data.csv');
 
-  header('Content-Type: text/x-csv');
-  header('Expires: '. gmdate('D, d M Y H:i:s') .' GMT');
-  header('Content-Disposition: inline; filename="'.$_SERVER['SERVER_NAME'].' order export '.date('Y-m-d\TH-i-s').'.csv"');
-  header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-  header('Pragma: public');
+    header('Content-Type: text/x-csv');
+    header('Expires: '. gmdate('D, d M Y H:i:s') .' GMT');
+    header('Content-Disposition: inline; filename="'.$_SERVER['SERVER_NAME'].' order export '.date('Y-m-d\TH-i-s').'.csv"');
+    header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+    header('Pragma: public');
 
-  $source = 'CUSTNUM, SHIPVIA, ORDER_DATE, ODR_NUM, CONTINUED, PRODUCT01, QUANTITY01, PRODUCT02, QUANTITY02, PRODUCT03, QUANTITY03, PRODUCT04, QUANTITY04, PRODUCT05, QUANTITY05, SLASTNAME, SFIRSTNAME, SCOMPANY0, SADDRESS10, SADDRESS20, SCITY, SSTATE, SZIPCODE, SEMAIL, SCOUNTRY, ORDNOTE1, ORDNOTE2, ORDNOTE3, ORDNOTE4, ORDNOTE5  ';
-  $source .= "\n";
-  foreach ($raworders as $row) {
-    foreach ($row as $field) {
-      $source .= uc_export_orders_csv_field($field).',';
+    $source = 'CUSTNUM, SHIPVIA, ORDER_DATE, ODR_NUM, CONTINUED, PRODUCT01, QUANTITY01, PRODUCT02, QUANTITY02, PRODUCT03, QUANTITY03, PRODUCT04, QUANTITY04, PRODUCT05, QUANTITY05, SLASTNAME, SFIRSTNAME, SCOMPANY0, SADDRESS10, SADDRESS20, SCITY, SSTATE, SZIPCODE, SEMAIL, SCOUNTRY, ORDNOTE1, ORDNOTE2, ORDNOTE3, ORDNOTE4, ORDNOTE5  ';
+    $source .= "\n";
+    foreach ($raworders as $row) {
+      foreach ($row as $field) {
+        $source .= uc_export_orders_csv_field($field).',';
+      }
+      $source .= "\n";
     }
     $source .= "\n";
+    //file_transfer($source, $headers);
+    print $source;
   }
-  $source .= "\n";
-  //file_transfer($source, $headers);
-  print $source;
   return $metadata;
 }
 
