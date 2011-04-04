@@ -215,14 +215,12 @@ function uc_export_orders_dump($order_ids = NULL) {
     header('Pragma: public');
 
     $source = 'CUSTNUM, SHIPVIA, ORDER_DATE, ODR_NUM, CONTINUED, PRODUCT01, QUANTITY01, PRODUCT02, QUANTITY02, PRODUCT03, QUANTITY03, PRODUCT04, QUANTITY04, PRODUCT05, QUANTITY05, SLASTNAME, SFIRSTNAME, SCOMPANY0, SADDRESS10, SADDRESS20, SCITY, SSTATE, SZIPCODE, SEMAIL, SCOUNTRY, ORDNOTE1, ORDNOTE2, ORDNOTE3, ORDNOTE4, ORDNOTE5  ';
-    $source .= "\n";
     foreach ($raworders as $row) {
+      $source .= "\n";
       foreach ($row as $field) {
         $source .= uc_export_orders_csv_field($field).',';
       }
-      $source .= "\n";
     }
-    $source .= "\n";
     //file_transfer($source, $headers);
     print $source;
   }
