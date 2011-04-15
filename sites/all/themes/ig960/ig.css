@@ -62,23 +62,26 @@ border-top:none;
 }
 
 a, a:visited, a:link {
-color:#4B9C3A;
+color:#07671f;
 text-decoration:none;
 }
 #header a, #header a:visited, #header a:link {
-	color: #a1b89b;
+	color: #ffffff;
 	font-size:110%;
-	text-shadow: #000000 1px 1px 0px;
 }
 
 td#td_imusgeologo {
 	width:220px;
 }
 td#td_navlinks {
-	width:740px;
+/*	width:740px;*/
 }
 #main #header ul, #navigation-menu ul {
 	padding-left:10px;
+}
+#main #header tr#primary-navlinks > td {
+    background: url("images/shopmaps.gif") no-repeat scroll 50px 6px black;
+    padding-left: 105px;
 }
 a:hover {
 text-decoration:underline;
@@ -97,7 +100,7 @@ text-align:right;
 
 #secondary-links {
 	text-align:right;
-	font-size:80%;
+	font-size:60%;
 	margin-top:8px;
 }
 #secondary-links table{
@@ -123,7 +126,7 @@ display:inline;
 }
 
 #header>table {
-	width:800px;
+	width:100%;
 }
 
 
@@ -192,11 +195,11 @@ padding:0 40px 10px;
 width:800px;
 }
 #header {
-background:url("images/header-background.jpg") repeat scroll 0 0 #525252;
+/*background:url("images/header-background.jpg") repeat scroll 0 0 #525252;*/
 /* border-bottom:2px solid #000000; */
 margin-bottom:0;
-padding:20px 40px 10px;
-width:800px;
+padding:20px 00px 10px;
+width:880px;
 }
 
 #header #imusgeologo {
@@ -337,7 +340,6 @@ display:inline;
 }
 
 div.add-to-cart {
-	height:56px;
 	width:252px;
 	position:relative;
 }
@@ -346,19 +348,42 @@ div.add-to-cart .attributes {
 }
 
 div.add-to-cart #edit-qty-wrapper {
-	position:absolute;
-	bottom:0px;
-	margin:0;
-	width:140px;
+    bottom: 0;
+    float: left;
+    margin: 5px 0 0 0;
+    width: 120px;
 }
-
 div.add-to-cart input.form-submit {
-	position:absolute;
-bottom:0px
-;	right:0px;
+bottom:0px;
+right:0px;
 	margin:0;
 	width:80px;
 }
+#header ul.primary-links > li > a {
+    background: url("images/btn_header.png") no-repeat scroll 0 0 black;
+    height: 26px;
+    text-align: center;
+    width: 108px;
+    display:block;
+    padding-top:10px;
+    margin-left:0;
+    font-size:12px;
+}
+	
+#header ul.primary-links > li {
+    float: left;
+    padding:0;
+}
+#header ul.primary-links > li > a:hover {
+/*    background-position: 0 -36px;*/
+    text-decoration:none;
+    color:red;
+  cursor:pointer;
+}
+#header ul.primary-links > li > a.active {
+    background-position: 0 -36px;
+}
+
 #product-cart-stuff input.form-submit {
     background: url("images/btn_view_cart_red.gif") no-repeat scroll 0 0 #EEEEEE;
     border: medium none;
@@ -367,13 +392,26 @@ bottom:0px
     font-weight: bold;
     height: 24px;
     width: 100px;
-	text-align:center;
-	padding-bottom:4px;
+  text-align:center;
+  padding-bottom:4px;
+  margin-top:10px;
 }
 #product-cart-stuff input.form-submit:hover {
     background-position: 0 -24px;
-	cursor:pointer;
+  cursor:pointer;
 }
+
+#product-cart-stuff .freeshipping {
+  font-size:110%;
+}
+#product-cart-stuff .highlight {
+  color:red;
+}
+#product-cart-stuff .emphasis {
+  font-weight:bold;
+  text-transform:uppercase;
+}
+
 
 .cart-block-icon-full {
     background: url("images/cart_full.png") no-repeat scroll 0px 14px transparent;
@@ -431,7 +469,7 @@ padding:3px;
 #edit-qty-wrapper label {
 display:inline;
 font-weight:normal;
-font-size:.7em;
+font-size:10px;
 }
 
 #main p {
@@ -608,7 +646,7 @@ font-weight:500;
 text-align:right;
 }
 form a, form a:visited, form a:link {
-	color:#4B9C3A;
+	color:#07671f;
 }
 
 form tr.even, form tr.odd {
@@ -639,8 +677,8 @@ img.imagecache-product {
 	overflow:hidden;
 }
 div#endorsements {
-	margin: 10px 0 0 0;
-	padding: 10px 0 0 0;
+	margin: 0px 0 0 0;
+	padding: 0px 0 0 0;
 	width:490px;
 }
 #block-views-Endorsements-endorsements_block .endorsement_author {
@@ -723,13 +761,16 @@ position:absolute;
 	margin: 12px 0 6px 6px;
 }
 #page-cart-links.map, div#buynow {
-    background: none repeat scroll 0 0 #FFFFE4;
+/*  background: none repeat scroll 0 0 #FFFFE4;
     border: 1px solid #000000;
+*/
     clear: both;
     float: none;
     margin: 0 0 20px 0;
     padding: 6px;
     width: auto;
+    text-align:center;
+    font-size:11px;
 }
 .cart-block-title-bar {
 cursor:pointer;
@@ -790,7 +831,7 @@ tbody {
 }
 
 #buynow .small {
-font-size:0.7em;
+font-size:0.8em;
 margin-top:4px;
 padding:4px;
 }

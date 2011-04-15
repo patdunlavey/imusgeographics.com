@@ -10,6 +10,7 @@
   <?php print $head; ?>
   <?php print $styles; ?>
   <?php print $scripts; ?>
+<?php //  <script type="text/javascript" src="http://webplayer.yahooapis.com/player.js"></script>?>
 </head>
 
 <body>
@@ -51,6 +52,7 @@
     <table id="navlinks">
     <?php if (isset($primary_links)) : ?>
       <tr id="primary-navlinks"><td <?php if(isset($secondary_links) & isset($header)): ?> colspan="2"<?php endif; ?> >
+      
       <?php print theme('links', $primary_links, array('class' => 'links primary-links')) ?>
       </td></tr>
     <?php endif; ?>

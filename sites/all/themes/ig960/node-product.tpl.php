@@ -81,10 +81,9 @@
       <?php if ($node->content['add_to_cart']['#value']): ?>
         <div id="product-cart-stuff">
         <div id="buynow">
-          <div id="freeshipping" class="clearfix"><span class="freeshipping">Free Shipping</span><span class="standard-domestic">(Standard / Domestic)</span> </div>
-          <div class="small">Select a product option (folded, flat, laminated or 10-pack), enter a quantity, and click "Add to Cart"</div>
+          <?php //<div id="freeshipping" class="clearfix"><span class="freeshipping">Free Shipping</span><span class="standard-domestic">(Standard / Domestic)</span> </div> ?>
+          <div class="highlight">Select laminated, flat, folded or 10-pack, enter quantity, and click "Add to Cart"</div>
         <?php print $node->content['add_to_cart']['#value']; ?>
-        <div class="save-alert">Save 40% per folded map<br>when you buy in 10-packs</div>
       </div>
       <?php if ($shopping_cart): ?>
         <div id="page-cart-links" class="clearfix map">
@@ -104,13 +103,13 @@
 
     <!-- right-content --></div>
     <div id="left-content">
+    
     <?php if ($node->content['image']['#value']): ?>
       <div id="product-images">
       <?php print $node->content['image']['#value']; ?>
       <div class="small center">click to view detailed images (not to scale)</div>
       </div>
     <?php endif; ?>
-    
     <?php if ($node->content['body']['#value']): ?>
       <?php print $node->content['body']['#value']; ?>
     <?php endif; ?>
