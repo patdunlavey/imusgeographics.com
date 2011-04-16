@@ -13,11 +13,13 @@
     comment inside the CC or it will close prematurely. */
 
 body {
-	background-color:#000000;
+	background:#ffffff url("images/header-black.gif") repeat-x 0 10px;
+	
 	color:#333333;
 	font-family: Verdana, sans-serif;
  	font-size: 10pt;
 	font-stretch:condensed;
+	padding-top:10px;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -142,6 +144,11 @@ margin-left:0;
 padding-left:25px;
 }
 
+#main ul.geo_minute_links {
+    list-style-image: none;
+    margin-left: 0;
+    padding-left: 0px;
+}
 
 #block-views-blog_posts-block_blog {
 	/*
@@ -152,7 +159,8 @@ padding-left:25px;
 }
 
 .item-list ul li {
-list-style:disc outside url("images/ig-bullet-dash-w-on-b.gif");
+/*list-style:disc outside url("images/ig-bullet-dash-w-on-b.gif");*/
+	list-style:none;
 margin:0;
 padding:0;
 }
@@ -200,6 +208,7 @@ width:800px;
 margin-bottom:0;
 padding:20px 00px 10px;
 width:880px;
+background-color:#000000;
 }
 
 #header #imusgeologo {
@@ -375,13 +384,13 @@ right:0px;
     padding:0;
 }
 #header ul.primary-links > li > a:hover {
-/*    background-position: 0 -36px;*/
-    text-decoration:none;
-    color:red;
+    background-position: 0 -36px;
+/*    text-decoration:none;
+    color:red;*/
   cursor:pointer;
 }
 #header ul.primary-links > li > a.active {
-    background-position: 0 -36px;
+    background-position: 0 -72px;
 }
 
 #product-cart-stuff input.form-submit {
