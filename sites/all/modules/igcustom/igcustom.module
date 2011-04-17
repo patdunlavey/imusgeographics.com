@@ -1,39 +1,39 @@
 <?php
 
 /*
-* Implementation of hook_form_alter
-* */
+ * Implementation of hook_form_alter
+ * */
 function igcustom_form_alter(&$form, &$form_state, $form_id){
-    switch($form_id){
-        case 'blog_node_form':
-            /*
-             * Here you can alter a Blog node form.. its just an example.
-             * */
-        break;
-        case stristr($form_id, 'uc_product_add_to_cart_form'): // As said, the form id for this kind of form is dynamic.
-            /*
-             * Ubercart do some fancy stuff before this function has been invoked, there
-             * is no sense to edit the form here.
-             * Instead, we add a function callback to #after_build, that will be fired just before building the form.
-             * (this callback is not indended to be uset outside this module, so for convention I add a
-             * underscore in the begin of the name)
-             * */
-            $form['#after_build'][] = '_igcustom_uc_product_add_to_cart_form';
-        break;
-    }
+  switch($form_id){
+    case 'blog_node_form':
+      /*
+       * Here you can alter a Blog node form.. its just an example.
+       * */
+      break;
+    case stristr($form_id, 'uc_product_add_to_cart_form'): // As said, the form id for this kind of form is dynamic.
+      /*
+      * Ubercart do some fancy stuff before this function has been invoked, there
+      * is no sense to edit the form here.
+      * Instead, we add a function callback to #after_build, that will be fired just before building the form.
+      * (this callback is not indended to be uset outside this module, so for convention I add a
+      * underscore in the begin of the name)
+      * */
+      $form['#after_build'][] = '_igcustom_uc_product_add_to_cart_form';
+      break;
+  }
 }
 
 function _igcustom_uc_product_add_to_cart_form($form, &$form_state){
-    /*
-     * Do whatever you want here, you ca edit/remove/add form elements...
-     * just REMEMBER to return the $form, or you'll get a WSOD
-     * */
+  /*
+   * Do whatever you want here, you ca edit/remove/add form elements...
+   * just REMEMBER to return the $form, or you'll get a WSOD
+   * */
   $form['freeshippingnote'] = array (
   '#type' => 'markup',
   '#value' => '<div class="highlight freeshipping">Prices include<br><span class="emphasis">Free Shppping</span> (Standard/Domestic)</div>',
   '#weight' => 1,
   );
-  
+
   $form['save40percentnote'] = array (
   '#type' => 'markup',
   '#value' => '<div class="small">Save 40% per folded map when purchased in 10-packs</div>',
@@ -41,94 +41,98 @@ function _igcustom_uc_product_add_to_cart_form($form, &$form_state){
   );
   $form['submit']['#weight'] = 10;
   $title = $form['node']['#value']->title;
-     if(is_array($form['attributes'])) {
-     foreach($form['attributes'] as $akey => $attribute) {
-       if(is_array($attribute['#options'])) {
-       foreach($attribute['#options'] as $okey=>$option)
-       $form['attributes'][$akey]['#options'][$okey] = $title." ".$option;
-     }
-   }
-   }
-   return $form;   
-}
-/**
-* Implementation of hook_form_alter().
-* there is a bug in IE6 and IE7 that causes display problems
-* when form fieldsets are collapsible
-*/
-function igcustom_form_uc_cart_checkout_form_alter(&$form, &$form_state) {
-//  dpm($_SERVER);
-  if ( $pos = strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') ) {
-    $IEVer = substr($_SERVER['HTTP_USER_AGENT'],$pos+5,1);
-//    dpm($IEVer);
-    if($IEVer < 8) {
-      foreach (element_children($form['panes']) as $pane_id) {
-        $form['panes'][$pane_id]['#collapsible'] = FALSE;
+  if(is_array($form['attributes'])) {
+    foreach($form['attributes'] as $akey => $attribute) {
+      if(is_array($attribute['#options'])) {
+        foreach($attribute['#options'] as $okey=>$option)
+        $form['attributes'][$akey]['#options'][$okey] = $title." ".$option;
       }
     }
   }
+  return $form;
 }
+/**
+ * Implementation of hook_form_alter().
+ * there is a bug in IE6 and IE7 that causes display problems
+ * when form fieldsets are collapsible
+ */
+function igcustom_form_uc_cart_checkout_form_alter(&$form, &$form_state) {
+  //  dpm($_SERVER);
+  //  if ( $pos = strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') ) {
+  //    $IEVer = substr($_SERVER['HTTP_USER_AGENT'],$pos+5,1);
+  ////    dpm($IEVer);
+  //    if($IEVer < 8) {
+  //      foreach (element_children($form['panes']) as $pane_id) {
+  //        $form['panes'][$pane_id]['#collapsible'] = FALSE;
+  //      }
+  //    }
+  //  }
+  foreach (element_children($form['panes']) as $pane_id) {
+    $form['panes'][$pane_id]['#collapsible'] = FALSE;
+  }
 
-function ig_custom_uc_discounts_cart_block_discounts($items)
-{
-        global $user;
+  }
 
-        //Create phony order object to call to get_discounts_for_order
-        $order = new stdClass();
-        $order->uid = $user->uid;
-        $order->products = $items;
+  function ig_custom_uc_discounts_cart_block_discounts($items)
+  {
+    global $user;
 
-        $errors = array();
-        $warnings = array();
-        $messages = array();
-        //echo "Calculating discounts";
-        $discounts = get_discounts_for_order($order, $errors, $warnings, $messages);
+    //Create phony order object to call to get_discounts_for_order
+    $order = new stdClass();
+    $order->uid = $user->uid;
+    $order->products = $items;
 
-        //If there are no discounts, do not alter cart
-        if (count($discounts) == 0)
-                return array();
+    $errors = array();
+    $warnings = array();
+    $messages = array();
+    //echo "Calculating discounts";
+    $discounts = get_discounts_for_order($order, $errors, $warnings, $messages);
 
-        //Calculate subtotal with discounts
-        $subtotal = 0;
-        foreach ($items as $item)
-        {
-                $subtotal += $item->price * $item->qty;
-//                $subtotal += get_discounts_taxed_price($item->price, $item) * $item->qty;
-        }
-        $total_discount_amount = 0;
-        foreach ($discounts as $discount)
-                $total_discount_amount += $discount->amount;
-        $subtotal_including_discounts = $subtotal - $total_discount_amount;
+    //If there are no discounts, do not alter cart
+    if (count($discounts) == 0)
+    return array();
 
-        //Add total discount message
-        $messages[] = "<strong>" . t("Total discount") . ":</strong>&nbsp;"
-                . uc_currency_format($total_discount_amount);
+    //Calculate subtotal with discounts
+    $subtotal = 0;
+    foreach ($items as $item)
+    {
+      $subtotal += $item->price * $item->qty;
+      //                $subtotal += get_discounts_taxed_price($item->price, $item) * $item->qty;
+    }
+    $total_discount_amount = 0;
+    foreach ($discounts as $discount)
+    $total_discount_amount += $discount->amount;
+    $subtotal_including_discounts = $subtotal - $total_discount_amount;
 
-/*
-        //Add new subtotal message
-        $messages[] = "<strong>" . t("Subtotal including discounts") . ":</strong>&nbsp;"
-                . uc_currency_format($subtotal_including_discounts);
-*/
+    //Add total discount message
+    $messages[] = "<strong>" . t("Total discount") . ":</strong>&nbsp;"
+    . uc_currency_format($total_discount_amount);
 
-        //Start row index at item count + 2 (1 for subtotal row in cart form, 1 more for our first row)
-        $i = count($items) + 2;
+    /*
+     //Add new subtotal message
+     $messages[] = "<strong>" . t("Subtotal including discounts") . ":</strong>&nbsp;"
+     . uc_currency_format($subtotal_including_discounts);
+     */
 
-        //Create table to hold discount messages
-        $body = "<table class='cart-block-discounts'>";
+    //Start row index at item count + 2 (1 for subtotal row in cart form, 1 more for our first row)
+    $i = count($items) + 2;
 
-        foreach ($messages as $message)
-        {
-                $evenOddClass = ( ($i % 2) == 0 ) ? "even" : "odd";
-                $body .= sprintf("<tr class='%s'><td class='%s'>", $evenOddClass, "uc-cart-block-discounts-cell")
-                        . $message . "</td></tr>";
-                $i += 1;
-        }
-        //Close table
-        $body .= "</table>";
+    //Create table to hold discount messages
+    $body = "<table class='cart-block-discounts'>";
 
-        $result = array();
-        $result['total'] = $total_discount_amount;
-        $result['details'] = $body;
+    foreach ($messages as $message)
+    {
+      $evenOddClass = ( ($i % 2) == 0 ) ? "even" : "odd";
+      $body .= sprintf("<tr class='%s'><td class='%s'>", $evenOddClass, "uc-cart-block-discounts-cell")
+      . $message . "</td></tr>";
+      $i += 1;
+    }
+    //Close table
+    $body .= "</table>";
 
-        return $result;
-}
+    $result = array();
+    $result['total'] = $total_discount_amount;
+    $result['details'] = $body;
+
+    return $result;
+  }
