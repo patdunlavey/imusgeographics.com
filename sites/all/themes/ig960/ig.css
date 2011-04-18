@@ -360,7 +360,8 @@ div.add-to-cart #edit-qty-wrapper {
     bottom: 0;
     float: left;
     margin: 5px 0 0 0;
-    width: 120px;
+    width: 100px;
+    text-align:left;
 }
 div.add-to-cart input.form-submit {
 bottom:0px;
@@ -420,8 +421,21 @@ right:0px;
   font-weight:bold;
   text-transform:uppercase;
 }
-
-
+#product-cart-stuff div.freeshipping {
+	clear:both;
+	padding-top:10px;
+}
+#product-cart-stuff #edit-qty-wrapper {
+	float:left;
+	}
+#save40blurb {
+	text-align:left;
+	float:left;
+	width:150px;
+	}
+	#buynow > div {
+	padding-bottom:15px;
+	}
 .cart-block-icon-full {
     background: url("images/cart_full.png") no-repeat scroll 0px 14px transparent;
 }
@@ -842,7 +856,6 @@ tbody {
 #buynow .small {
 font-size:0.8em;
 margin-top:4px;
-padding:4px;
 }
 
 .field-field-product-features {
