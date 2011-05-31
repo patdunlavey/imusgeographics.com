@@ -1,5 +1,4 @@
 <?php
-// $Id: panels_ipe.pipelines.inc,v 1.1.2.1 2010/07/06 23:59:00 merlinofchaos Exp $
 
 /**
  * @file
