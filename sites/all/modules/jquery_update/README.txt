@@ -1,4 +1,3 @@
-// $Id: README.txt,v 1.2.4.1 2009/03/21 19:43:51 mfer Exp $
 
 CONTENTS OF THIS FILE
 ---------------------
