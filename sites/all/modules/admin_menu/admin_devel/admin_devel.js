@@ -1,4 +1,3 @@
-/* $Id: admin_devel.js,v 1.1.2.1 2010/03/12 02:17:22 sun Exp $ */
 (function($) {
 
 /**

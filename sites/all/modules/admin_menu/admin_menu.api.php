@@ -1,5 +1,4 @@
 <?php
-// $Id: admin_menu.api.php,v 1.1.2.4 2010/03/12 23:05:57 sun Exp $
 
 /**
  * @file

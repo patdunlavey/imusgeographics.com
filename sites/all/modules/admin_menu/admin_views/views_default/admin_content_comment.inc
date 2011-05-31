@@ -1,5 +1,4 @@
 <?php
-// $Id: admin_content_comment.inc,v 1.1.2.3 2010/03/11 01:10:55 sun Exp $
 
 $view = new view;
 $view->name = 'admin_content_comment';

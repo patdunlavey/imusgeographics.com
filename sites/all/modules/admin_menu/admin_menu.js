@@ -1,4 +1,3 @@
-/* $Id: admin_menu.js,v 1.7.2.7.2.18 2010/02/20 23:44:04 sun Exp $ */
 (function($) {
 
 Drupal.admin = Drupal.admin || {};

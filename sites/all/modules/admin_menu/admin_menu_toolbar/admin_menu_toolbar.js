@@ -1,4 +1,3 @@
-/* $Id: admin_menu_toolbar.js,v 1.1.2.3 2009/09/26 06:25:47 davereid Exp $ */
 (function($) {
 
 Drupal.admin = Drupal.admin || {};
