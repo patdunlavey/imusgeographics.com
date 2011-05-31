@@ -1,5 +1,4 @@
 <?php
-// $Id: page_title.page_title.inc,v 1.1.2.2 2010/08/25 12:54:05 njt1982 Exp $
 
 /**
  * @file
@@ -32,4 +31,37 @@ function page_title_page_title_pattern_alter(&$pattern, &$data = array()) {
     // Get the frontpage pattern
     $pattern = variable_get('page_title_front', '[site-name] | [site-slogan]');
   }
+}
+
+
+/**
+ * Implementation of hook_page_title_settings().
+ */
+function page_title_page_title_settings() {
+  return array(
+    'page_title_default' => array(
+      'label' => 'Default',
+      'scopes' => array('global'),
+      'required' => TRUE,
+      'show field' => FALSE,
+      'description' => 'This pattern will be used as a <em>fallback</em> (ie, when no other pattern is defined)',
+      'weight' => -50,
+      'default' => '[page-title] | [site-name]',
+    ),
+    'page_title_front' => array(
+      'label' => 'Fronpage',
+      'scopes' => array('global'),
+      'show field' => FALSE,
+      'description' => 'This pattern will be used for the site frontpage',
+      'weight' => -49,
+      'default' => '[site-name] | [site-slogan]',
+    ),
+    'page_title_pager_pattern' => array(
+      'label' => 'Pager Suffix',
+      'scopes' => array('global'),
+      'show field' => FALSE,
+      'description' => 'This pattern will be appended to a page title for any given page with a pager on it',
+      'weight' => -48,
+    ),
+  );
 }

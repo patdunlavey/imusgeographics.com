@@ -1,5 +1,4 @@
 <?php
-// $Id: page_title.test,v 1.1.2.2 2010/10/31 13:03:36 njt1982 Exp $
 
 /**
  * @file
@@ -61,8 +60,8 @@ class PageTitleTestCase extends DrupalWebTestCase {
       'page_title_type_page' => 'PAGE NODE: [page-title]',
       'page_title_type_page_showfield' => 1,
       'page_title_type_forum' => 'Forum - [cat] - [page-title]',
-      'page_title_pager_pattern' => ' - page [page-number]',
-      'page_title_vocab_1' => 'FORUM: [catpath]',
+      'page_title_pager_pattern' => ' - page [current-page-number]',
+      'page_title_vocab_1' => 'FORUM: [cat]',
       'page_title_vocab_2' => 'TERM: [page-title]',
       'page_title_vocab_1_showfield' => 1,
       'page_title_vocab_2_showfield' => 1,
@@ -169,7 +168,7 @@ class PageTitleTestCase extends DrupalWebTestCase {
     $this->drupalGet('taxonomy/term/1', array('query' => 'page=1'));
     $title = '<title>'. $settings['page_title_vocab_2'] . $settings['page_title_pager_pattern'] .'</title>';
     $this->pass(check_plain($title));
-    $title = str_replace(array('[page-title]', '[page-number]'), array($term['name'], 2), $title);
+    $title = str_replace(array('[page-title]', '[current-page-number]'), array($term['name'], 2), $title);
     $this->pass(check_plain($title));
     $this->assertRaw($title, t('Correct page node type with pagenation suffix title in the head.'), 'Page Title');
 

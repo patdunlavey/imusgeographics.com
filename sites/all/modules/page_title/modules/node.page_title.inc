@@ -1,5 +1,4 @@
 <?php
-// $Id: node.page_title.inc,v 1.1.2.2 2010/08/25 12:54:05 njt1982 Exp $
 
 /**
  * @file
@@ -11,14 +10,17 @@
  * Implementation of hook_page_title_alter().
  */
 function node_page_title_alter(&$title) {
-  if (arg(0) == 'node' && is_numeric(arg(1))) {
-    // Get the node
-    $node = menu_get_object('node');
+  $menu_item = menu_get_item();
 
-    // If the node has a custom page title and the node type is configured to have a custom page title (ie, it's not a leftover from a previous setting), then use it.
-    if (!empty($node->page_title) && variable_get('page_title_type_'. $node->type .'_showfield', 0)) {
-      $title = $node->page_title;
-    }
+  // Test if this is a node page.
+  if ( !strncmp($menu_item['path'],'node/%',6) &&
+       ($node = menu_get_object()) &&
+       !empty($node->page_title) &&
+       variable_get('page_title_type_'. $node->type .'_showfield', 0)) {
+    // If the node has a custom page title and the node type is configured
+    // to have a custom page title (ie, it's not a leftover from a previous
+    // setting), then use it.
+    $title = $node->page_title;
   }
 }
 
@@ -27,15 +29,41 @@ function node_page_title_alter(&$title) {
  * Implementation of hook_page_title_pattern_alter().
  */
 function node_page_title_pattern_alter(&$pattern, &$types) {
-  if ((arg(0) == 'node' && is_numeric(arg(1)))) {
-    $types['node'] = menu_get_object();
+  $menu_item = menu_get_item();
 
-    // If the node has any taxonomy, grab the first time and pass it over to be passed as a token.
+  // Test if this is a node page.
+  if ( !strncmp($menu_item['path'],'node/%',6) &&
+       $node = menu_get_object() ) {
+    $types['node'] = $node;
+
+    // If the node has any taxonomy, grab the first term for user in tokens.
     // TODO: Handle multiple terms? Only pass specific terms per content type?
     if (!empty($types['node']->taxonomy)) {
       $types['taxonomy'] = current($types['node']->taxonomy);
     }
 
-    $pattern = variable_get('page_title_type_'. $types['node']->type, '');
+    $pattern = variable_get('page_title_type_'. $node->type, '');
   }
+}
+
+
+/**
+ * Implementation of hook_page_title_settings().
+ */
+function node_page_title_settings() {
+  $settings = array();
+
+  $types = node_get_types();
+  foreach ($types as $type) {
+    $settings['page_title_type_'. $type->type] = array(
+      'label' => 'Content Type - %type',
+      'label arguments' => array('%type' => $type->name),
+      'scopes' => array('global', 'node', 'taxonomy'),
+      'show field' => TRUE,
+      'description' => 'This pattern will be used for all %type node-type pages',
+      'description arguments' => array('%type' => $type->name),
+    );
+  }
+
+  return $settings;
 }

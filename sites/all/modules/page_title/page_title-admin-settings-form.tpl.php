@@ -1,5 +1,4 @@
 <?php
-// $Id: page_title-admin-settings-form.tpl.php,v 1.1.2.6 2010/02/09 13:35:22 njt1982 Exp $
 
 /**
  * @file

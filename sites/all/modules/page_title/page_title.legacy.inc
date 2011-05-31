@@ -1,5 +1,4 @@
 <?php
-// $Id: page_title.legacy.inc,v 1.1.2.2 2010/11/30 23:15:56 njt1982 Exp $
 
 /**
  * @file

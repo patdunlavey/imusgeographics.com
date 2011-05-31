@@ -5,9 +5,9 @@ package = Development
 dependencies[] = page_title
 dependencies[] = views
 
-; Information added by drupal.org packaging script on 2010-12-01
+; Information added by drupal.org packaging script on 2011-02-25
 version = "6.x-2.x-dev"
 core = "6.x"
 project = "page_title"
-datestamp = "1291162766"
+datestamp = "1298619873"
 

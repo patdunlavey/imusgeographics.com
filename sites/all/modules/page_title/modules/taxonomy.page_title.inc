@@ -1,5 +1,4 @@
 <?php
-// $Id: taxonomy.page_title.inc,v 1.1.2.2 2010/08/25 12:54:05 njt1982 Exp $
 
 /**
  * @file
@@ -11,12 +10,13 @@
  * Implementation of hook_page_title_alter().
  */
 function taxonomy_page_title_alter(&$title) {
+  $menu_item = menu_get_item();
   // If we're looking at a taxonomy term page, get the term title
-  if (arg(0) == 'taxonomy' && arg(1) == 'term' && is_numeric(arg(2))) {
-    $term = taxonomy_get_term(arg(2));
-    if (variable_get('page_title_vocab_'. $term->vid .'_showfield', 0) && ($term_title = page_title_load_title($term->tid, 'term'))) {
-      $title = $term_title;
-    }
+  if ( !strncmp($menu_item['path'], 'taxonomy/term/%', 15) &&
+       ($term = taxonomy_get_term($menu_item['page_arguments'][0])) &&
+       variable_get('page_title_vocab_'. $term->vid .'_showfield', 0) &&
+       ($term_title = page_title_load_title($term->tid, 'term')) ) {
+    $title = $term_title;
   }
 }
 
@@ -25,9 +25,34 @@ function taxonomy_page_title_alter(&$title) {
  * Implementation of hook_page_title_pattern_alter().
  */
 function taxonomy_page_title_pattern_alter(&$pattern, &$types) {
+  $menu_item = menu_get_item();
+
   // Taxonomy Term Page
-  if (arg(0) == 'taxonomy' && arg(1) == 'term' && is_numeric(arg(2)) && module_exists('taxonomy')) {
-    $types['taxonomy'] = taxonomy_get_term(arg(2));
+  if ( !strncmp($menu_item['path'], 'taxonomy/term/%', 15) &&
+       ($term = taxonomy_get_term($menu_item['page_arguments'][0])) ) {
+    $types['taxonomy'] = $term; 
     $pattern = variable_get('page_title_vocab_'. $types['taxonomy']->vid, '');
   }
+}
+
+
+/**
+ * Implementation of hook_page_title_settings().
+ */
+function taxonomy_page_title_settings() {
+  $settings = array();
+
+  $vocabs = taxonomy_get_vocabularies();
+  foreach ($vocabs as $vocab) {
+    $settings['page_title_vocab_'. $vocab->vid] = array(
+      'label' => 'Vocabulary - %vocab_name',
+      'label arguments' => array('%vocab_name' => $vocab->name),
+      'scopes' => array('global', 'taxonomy'),
+      'show field' => TRUE,
+      'description' => 'This pattern will be used for all %vocab_name term pages',
+      'description arguments' => array('%vocab_name' => $vocab->name),
+    );
+  }
+
+  return $settings;
 }

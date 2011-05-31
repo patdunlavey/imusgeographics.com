@@ -1,5 +1,4 @@
 <?php
-// $Id: page_title_plugin_display_page_with_page_title.inc,v 1.1.2.2 2010/08/25 12:54:05 njt1982 Exp $
 
 /**
  * @file

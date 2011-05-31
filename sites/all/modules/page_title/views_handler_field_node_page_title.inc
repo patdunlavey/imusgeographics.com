@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_field_node_page_title.inc,v 1.1.2.1 2010/08/18 10:46:49 njt1982 Exp $
 /**
  * @file
  * Contains the Views field handler for the Page Title field.

@@ -1,5 +1,4 @@
 <?php
-// $Id: user.page_title.inc,v 1.1.2.2 2010/08/25 12:54:05 njt1982 Exp $
 
 /**
  * @file
@@ -11,11 +10,11 @@
  * Implementation of hook_page_title_alter().
  */
 function user_page_title_alter(&$title) {
-  // If we're looking at either a user profile page or a users blog page, get the user title
-  if ((arg(0) == 'user' || arg(0) == 'blog') && is_numeric(arg(1))) {
-    if (variable_get('page_title_user_showfield', 0) && ($user_title = page_title_load_title(arg(1), 'user'))) {
-      $title = $user_title;
-    }
+  // If we're looking at either a user profile page, get the user title
+  if ( ($user = menu_get_object('user')) &&
+       variable_get('page_title_user_showfield', 0) &&
+       ($user_title = page_title_load_title($user->uid, 'user')) ) {
+    $title = $user_title;
   }
 }
 
@@ -24,14 +23,24 @@ function user_page_title_alter(&$title) {
  * Implementation of hook_page_title_pattern_alter().
  */
 function user_page_title_pattern_alter(&$pattern, &$types) {
-  // User
-  if (arg(0) == 'user' && is_numeric(arg(1))) {
-    $types['user'] = user_load(array('uid' => arg(1)));
+  // User Page Pattern
+  if ($user = menu_get_object('user')) {
+    $types['user'] = $user;
     $pattern = variable_get('page_title_user', '');
   }
-  // Blog
-  elseif (arg(0) == 'blog' && is_numeric(arg(1))) {
-    $types['user'] = user_load(array('uid' => arg(1)));
-    $pattern = variable_get('page_title_blog', '');
-  }
+}
+
+
+/**
+ * Implementation of hook_page_title_settings().
+ */
+function user_page_title_settings() {
+  return array(
+    'page_title_user' => array(
+      'label' => 'User Profile',
+      'scopes' => array('global', 'user'),
+      'show field' => TRUE,
+      'description' => 'This pattern will be used for a user profile page (eg <code>/user/1</code>)',
+    ),
+  );
 }

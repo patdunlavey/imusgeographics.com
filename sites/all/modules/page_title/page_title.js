@@ -1,4 +1,3 @@
-// $Id: page_title.js,v 1.2.6.4 2010/08/24 23:08:51 njt1982 Exp $
 
 Drupal.verticalTabs = Drupal.verticalTabs || {};
 
