@@ -1,7 +1,7 @@
-// $Id: CHANGELOG.txt,v 1.11.2.5 2010/03/15 06:41:30 smk Exp $
 
 Transliteration 6.x-3.x, xxxx-xx-xx
 -----------------------------------
+#1033832 by joachim: hook_uninstall doesn't clean up variables.
 by smk-ka: More accurate detection of file names requiring retroactive
   transliteration. Removed support for MS SQL due to missing regexp support.
 by smk-ka: Added admin UI for settings and retroactive file name

@@ -1,5 +1,4 @@
 <?php
-// $Id: transliteration.admin.inc,v 1.1.2.7 2010/07/16 13:36:16 smk Exp $
 
 /**
  * @file

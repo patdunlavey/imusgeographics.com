@@ -1,4 +1,4 @@
-﻿/* $Id: README.txt,v 1.9.2.3 2010/03/15 06:37:58 smk Exp $ */
+﻿/* $Id$ */
 
 -- SUMMARY --
 
