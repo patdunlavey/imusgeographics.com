@@ -371,6 +371,9 @@ function vertical_tabs_add_vertical_tabs(&$form, $config = array()) {
           }
         }
       }
+
+      // Ensure the CSS files actually exist.
+      $css = array_filter($css, 'file_exists');
     }
 
     // User sort orders by the "weight" key.

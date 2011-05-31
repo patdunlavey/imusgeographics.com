@@ -1,4 +1,3 @@
-// $Id: menu.js,v 1.1.2.2 2011/01/26 18:23:33 davereid Exp $
 
 Drupal.verticalTabs = Drupal.verticalTabs || {};
 

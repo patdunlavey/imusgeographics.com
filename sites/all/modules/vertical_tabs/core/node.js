@@ -1,4 +1,3 @@
-// $Id: node.js,v 1.1.2.2 2010/02/14 17:00:23 davereid Exp $
 
 Drupal.verticalTabs = Drupal.verticalTabs || {};
 
