@@ -1,5 +1,4 @@
 <?php
-// $Id: destinations.file.inc,v 1.1.2.1.2.14 2010/12/09 06:22:24 ronan Exp $
 
 
 /**
@@ -61,6 +60,17 @@ class backup_migrate_destination_files extends backup_migrate_destination {
       backup_migrate_include('files');
       return new backup_file(array('filepath' => $filepath));
     }
+  }
+
+  /**
+   * Get the file object for the given file.
+   */
+  function get_file($file_id) {
+    $files = $this->list_files();
+    if (isset($files[$file_id])) {
+      isset($files[$file_id]);
+    }
+    return NULL;
   }
 
   /**
@@ -135,7 +145,7 @@ class backup_migrate_destination_files extends backup_migrate_destination {
     }
     return $form;
   }
- 
+
   /**
    * Validate the form for the settings for the files destination.
    */
@@ -260,7 +270,7 @@ class backup_migrate_destination_files extends backup_migrate_destination {
   function test_file_readable_remotely($path, $contents) {
     $url = $GLOBALS['base_url'] .'/'. file_directory_path() .'/'. str_replace('\\', '/', $path);
     $result = drupal_http_request($url);
-    if (strpos($result->data, $contents) !== FALSE) {
+    if (!empty($result->data) && strpos($result->data, $contents) !== FALSE) {
       return TRUE;
     }
     return FALSE;

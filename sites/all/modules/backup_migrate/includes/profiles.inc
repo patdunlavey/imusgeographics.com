@@ -1,5 +1,4 @@
 <?php
-// $Id: profiles.inc,v 1.1.2.1.2.25 2010/09/13 02:36:49 ronan Exp $
 
 
 /**

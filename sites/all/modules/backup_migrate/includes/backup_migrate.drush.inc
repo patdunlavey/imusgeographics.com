@@ -1,5 +1,4 @@
 <?php
-// $Id: backup_migrate.drush.inc,v 1.1.2.5 2010/11/16 15:36:06 ronan Exp $
 
 
 /**

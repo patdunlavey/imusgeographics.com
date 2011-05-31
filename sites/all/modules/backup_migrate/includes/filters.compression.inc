@@ -1,5 +1,4 @@
 <?php
-// $Id: filters.compression.inc,v 1.1.2.5 2010/03/24 04:02:58 ronan Exp $
 
 
 /**

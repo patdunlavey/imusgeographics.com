@@ -1,5 +1,4 @@
 <?php
-// $Id: destinations.s3.inc,v 1.1.2.8 2011/01/28 05:09:57 ronan Exp $
 
 
 /**

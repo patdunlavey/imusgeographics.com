@@ -1,5 +1,4 @@
 <?php
-// $Id: destinations.ftp.inc,v 1.1.2.7 2011/01/28 05:09:57 ronan Exp $
 
 
 /**
