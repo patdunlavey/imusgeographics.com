@@ -1,4 +1,3 @@
-// $Id: thickbox_auto.js,v 1.6.2.2 2008/09/23 08:04:46 frjo Exp $
 
 /**
  * ATTENTION: this script has to be loaded _before_ thickbox.js

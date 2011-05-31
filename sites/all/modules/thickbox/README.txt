@@ -47,4 +47,3 @@ Contributions:
 
 Last updated:
 ------------
-$Id: README.txt,v 1.8.2.4 2010/04/30 19:48:56 frjo Exp $

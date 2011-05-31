@@ -1,4 +1,3 @@
-// $Id: thickbox.js,v 1.8.2.20 2010/04/30 19:48:56 frjo Exp $
 
 /*
  * Thickbox 3.1 - One Box To Rule Them All.

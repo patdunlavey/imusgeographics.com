@@ -1,5 +1,4 @@
 <?php
-// $Id: thickbox.admin.inc,v 1.1.2.12 2010/05/24 05:12:25 frjo Exp $
 
 /**
  * @file
