@@ -1,5 +1,4 @@
 <?php
-// $Id: views_test_plugin_access_test_static.inc,v 1.1.2.1 2011/01/04 20:29:56 merlinofchaos Exp $
 
 class views_test_plugin_access_test_static extends views_plugin_access {
   function option_definition() {

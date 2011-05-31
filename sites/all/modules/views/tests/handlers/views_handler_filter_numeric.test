@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_filter_numeric.test,v 1.1.4.2 2010/11/06 14:39:00 dereine Exp $
 module_load_include('test', 'views', 'tests/views_query');
 
 class viewsHandlerFilterNumericTest extends ViewsSqlTest {

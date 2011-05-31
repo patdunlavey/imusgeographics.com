@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_field_locale_group.inc,v 1.1.2.1 2011/01/10 23:14:26 merlinofchaos Exp $
 
 /**
  * Field handler to translate a group into its readable form.

@@ -1,5 +1,4 @@
 <?php
-// $Id: views.install,v 1.46.2.17 2011/01/01 22:54:12 merlinofchaos Exp $
 /**
  * @file views.install
  * Contains install and update functions for Views.

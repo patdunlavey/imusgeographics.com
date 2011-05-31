@@ -1,5 +1,4 @@
 <?php
-// $Id: views_plugin_exposed_form.inc,v 1.1.2.13 2010/12/01 00:02:06 merlinofchaos Exp $
 
 /**
  * The base plugin to handle exposed filter forms.
@@ -34,7 +33,7 @@ class views_plugin_exposed_form extends views_plugin {
     $options['submit_button'] = array('default' => 'Apply', 'translatable' => TRUE);
     $options['reset_button'] = array('default' => FALSE, 'bool' => TRUE);
     $options['reset_button_label'] = array('default' => 'Reset', 'translatable' => TRUE);
-    $options['exposed_sorts_label'] = array('default' => 'Sort By', 'translatable' => TRUE);
+    $options['exposed_sorts_label'] = array('default' => 'Sort by', 'translatable' => TRUE);
     $options['sort_asc_label'] = array('default' => 'Asc', 'translatable' => TRUE);
     $options['sort_desc_label'] = array('default' => 'Desc', 'translatable' => TRUE);
     return $options;
@@ -156,7 +155,7 @@ class views_plugin_exposed_form extends views_plugin {
     }
   }
 
-  function pre_render() { }
+  function pre_render(&$values) { }
 
   function post_render(&$output) { }
 
@@ -183,7 +182,7 @@ class views_plugin_exposed_form extends views_plugin {
       $form['sort_by'] = array(
         '#type' => 'select',
         '#options' => $exposed_sorts,
-        '#title' => t($this->options['exposed_sorts_label']),
+        '#title' => $this->options['exposed_sorts_label'],
       );
       $sort_order = array(
         'ASC' => $this->options['sort_asc_label'],

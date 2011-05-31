@@ -1,5 +1,4 @@
 <?php
-// $Id: views_plugin_style_rss.inc,v 1.2.2.1 2010/10/12 22:20:57 merlinofchaos Exp $
 /**
  * @file
  * Contains the RSS style plugin.

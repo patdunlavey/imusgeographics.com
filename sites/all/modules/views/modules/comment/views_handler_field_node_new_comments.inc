@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_field_node_new_comments.inc,v 1.6.2.4 2011/01/10 23:53:30 merlinofchaos Exp $
 
 /**
  * Field handler to display the number of new comments

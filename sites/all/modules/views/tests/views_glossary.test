@@ -1,5 +1,4 @@
 <?php
-// $Id: views_glossary.test,v 1.1.2.3 2010/04/16 22:11:07 dereine Exp $
 /**
  * @file
  *   Test glossary view ( summary of arguments )

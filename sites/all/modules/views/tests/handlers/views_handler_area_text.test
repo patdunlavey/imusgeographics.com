@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_area_text.test,v 1.1.4.2 2010/12/24 08:00:12 dereine Exp $
 module_load_include('test', 'views', 'tests/views_query');
 
 class ViewsHandlerAreaTextTest extends ViewsSqlTest {

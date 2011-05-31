@@ -1,5 +1,4 @@
 <?php
-// $Id: node.views.inc,v 1.93.2.19 2010/12/17 23:54:58 merlinofchaos Exp $
 /**
  * @file
  * Provide views data and handlers for node.module
@@ -90,6 +89,7 @@ function node_views_data() {
       'group' => t('Node'), // The group it appears in on the UI. Could be left out.
       'handler' => 'views_handler_field_node',
       'click sortable' => TRUE,
+      'link_to_node default' => TRUE,
      ),
     'sort' => array(
       'handler' => 'views_handler_sort',
@@ -404,6 +404,18 @@ function node_views_data() {
     ),
   );
 
+  $data['node']['uid_revision'] = array(
+    'title' => t('User has a revision'),
+    'help' => t('All nodes where a certain user has a revision'),
+    'real field' => 'nid',
+    'filter' => array(
+      'handler' => 'views_handler_filter_node_uid_revision',
+    ),
+    'argument' => array(
+      'handler' => 'views_handler_argument_node_uid_revision',
+    ),
+  );
+
   // ----------------------------------------------------------------------
   // Node revisions table
 
@@ -539,8 +551,8 @@ function node_views_data() {
   // revision timestamp
   // changed field
   $data['node_revisions']['timestamp'] = array(
-    'title' => t('Created date'), // The item it appears as on the UI,
-    'help' => t('The date the node revision was created.'), // The help that appears on the UI,
+    'title' => t('Updated date'), // The item it appears as on the UI,
+    'help' => t('The date the node was last updated.'), // The help that appears on the UI,
     'field' => array(
       'handler' => 'views_handler_field_date',
       'click sortable' => TRUE,
@@ -743,6 +755,9 @@ function node_views_handlers() {
         'file' => 'views_handler_argument_dates_various.inc',
         'parent' => 'views_handler_argument_date',
       ),
+      'views_handler_argument_node_uid_revision' => array(
+        'parent' => 'views_handler_argument_comment_user_uid',
+      ),
 
       // filters
       'views_handler_filter_node_type' => array(
@@ -756,6 +771,9 @@ function node_views_handlers() {
       ),
       'views_handler_filter_node_access' => array(
         'parent' => 'views_handler_filter',
+      ),
+      'views_handler_filter_node_uid_revision' => array(
+        'parent' => 'views_handler_filter_user_name',
       ),
     ),
   );

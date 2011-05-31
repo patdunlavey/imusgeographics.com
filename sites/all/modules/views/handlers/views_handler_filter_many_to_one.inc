@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_filter_many_to_one.inc,v 1.1.2.4 2010/10/12 22:14:59 merlinofchaos Exp $
 
 /**
  * Complex filter to handle filtering for many to one relationships,

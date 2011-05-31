@@ -1,5 +1,4 @@
 <?php
-// $Id: taxonomy.views.inc,v 1.50.2.18 2011/01/20 22:06:57 merlinofchaos Exp $
 /**
  * @file
  *
@@ -388,7 +387,7 @@ function taxonomy_views_data() {
 function taxonomy_views_data_alter(&$data) {
   $data['node']['term_node_tid'] = array(
     'group' => t('Taxonomy'),
-    'title' => t('Related terms'),
+    'title' => t('Terms on node'),
     'help' => t('Relate nodes to taxonomy terms, specifiying which vocabulary or vocabularies to use. This relationship will cause duplicated records if there are multiple terms.'),
     'relationship' => array(
       'handler' => 'views_handler_relationship_node_term_data',

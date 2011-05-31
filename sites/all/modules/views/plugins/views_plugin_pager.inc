@@ -1,5 +1,4 @@
 <?php
-// $Id: views_plugin_pager.inc,v 1.1.2.7 2010/11/15 23:45:31 merlinofchaos Exp $
 
 /**
  * The base plugin to handle pager.

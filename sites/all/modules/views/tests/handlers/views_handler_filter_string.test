@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_filter_string.test,v 1.1.4.2 2010/12/27 23:04:41 dereine Exp $
 module_load_include('test', 'views', 'tests/views_query');
 
 class viewsHandlerFilterStringTest extends ViewsSqlTest {

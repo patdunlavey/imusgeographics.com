@@ -1,5 +1,4 @@
 <?php
-// $Id: views_groupby.test,v 1.1.2.5 2011/01/04 21:24:31 merlinofchaos Exp $
 
 module_load_include('test', 'views', 'tests/views_query');
 
@@ -252,6 +251,7 @@ class ViewsQueryGroupByTest extends ViewsSqlTest {
     $view->set_display('default');
     $output = $view->execute_display();
 
+    $view->init_query();
     $cache_info = $view->query->get_cache_info();
 
     $this->assertTrue(strpos($cache_info['final_query'], 'GROUP BY'), t('Make sure that GROUP BY is in the query'));

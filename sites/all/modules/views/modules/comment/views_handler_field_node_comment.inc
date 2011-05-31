@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_field_node_comment.inc,v 1.1.2.1 2011/01/10 23:14:26 merlinofchaos Exp $
 
 /**
  * Display node comment status

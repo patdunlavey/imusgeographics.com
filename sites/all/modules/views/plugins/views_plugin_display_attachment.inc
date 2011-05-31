@@ -1,5 +1,4 @@
 <?php
-// $Id: views_plugin_display_attachment.inc,v 1.3.2.6 2010/11/18 21:22:55 merlinofchaos Exp $
 /**
  * @file
  * Contains the attachment display plugin.

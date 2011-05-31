@@ -1,5 +1,4 @@
 <?php
-// $Id: plugins.inc,v 1.152.2.15 2011/01/18 20:53:40 merlinofchaos Exp $
 /**
  * @file plugins.inc
  * Built in plugins for Views output handling.
@@ -449,13 +448,18 @@ function views_discover_plugins() {
  */
 class views_plugin extends views_object {
   /**
-   * Init will be called after construct, when the plugin is attached to a
-   * view and a display.
+   * The top object of a view.
+   * 
+   * @var view
    */
-  function init(&$view, &$display) {
-    $this->view = &$view;
-    $this->display = &$display;
-  }
+  var $view = NULL;
+  
+  /**
+   * The current used display plugin.
+   *
+   * @var views_plugin_display
+   */
+  var $display = NULL;
 
   /**
    * Provide a form to edit options for this plugin.

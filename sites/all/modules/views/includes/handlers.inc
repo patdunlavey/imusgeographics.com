@@ -1,5 +1,4 @@
 <?php
-// $Id: handlers.inc,v 1.109.2.24 2011/01/18 23:00:16 merlinofchaos Exp $
 /**
  * @file handlers.inc
  * Defines the various handler objects to help build and display views.
@@ -250,6 +249,20 @@ function views_get_table_join($table, $base_table) {
  */
 class views_handler extends views_object {
   /**
+   * The top object of a view.
+   *
+   * @var view
+   */
+  var $view = NULL;
+
+  /**
+   * Where the $query object will reside:
+   *
+   * @var views_plugin_query
+   */
+  var $query = NULL;
+
+  /**
    * init the handler with necessary data.
    * @param $view
    *   The $view object this handler is attached to.
@@ -355,6 +368,44 @@ class views_handler extends views_object {
     }
 
     return $field;
+  }
+
+  /**
+   * Get the value that's supposed to be rendered.
+   *
+   * @param $values
+   *   An object containing all retrieved values.
+   * @param $field
+   *   Optional name of the field where the value is stored.
+   */
+  function get_value($values, $field = NULL) {
+    $alias = isset($field) ? $this->aliases[$field] : $this->field_alias;
+    if (isset($values->{$alias})) {
+      return $values->{$alias};
+    }
+  }
+
+  /**
+   * Sanitize the value for output.
+   *
+   * @param $value
+   *   The value being rendered.
+   * @param $type
+   *   The type of sanitization needed. If not provided, check_plain() is used.
+   */
+  function sanitize_value($value, $type = NULL) {
+    switch ($type) {
+      case 'xss':
+        $value = filter_xss($value);
+        break;
+      case 'url':
+        $value = check_url($value);
+        break;
+      default:
+        $value = check_plain($value);
+        break;
+    }
+    return $value;
   }
 
   /**
@@ -608,7 +659,10 @@ class views_handler extends views_object {
    */
   function ensure_my_table() {
     if (!isset($this->table_alias)) {
-      if (!method_exists($this->query, 'ensure_table')) { vpr_trace(); exit; }
+      if (!method_exists($this->query, 'ensure_table')) {
+        vpr(t('Ensure my table called but query has no ensure_table method.'));
+        return;
+      }
       $this->table_alias = $this->query->ensure_table($this->table, $this->relationship);
     }
     return $this->table_alias;
@@ -1361,6 +1415,12 @@ function views_views_handlers() {
       'views_handler_field_math' => array(
         'parent' => 'views_handler_field_numeric',
       ),
+      'views_handler_field_serialized' => array(
+        'parent' => 'views_handler_field',
+      ),
+      'views_handler_field_time_interval' => array(
+        'parent' => 'views_handler_field',
+      ),
       'views_handler_field_broken' => array(
         'parent' => 'views_handler_field',
       ),
@@ -1668,34 +1728,66 @@ function views_views_api() {
   );
 }
 
-function aggregator_views_api() { return views_views_api(); }
+if (!function_exists('aggregator_views_api')) {
+  function aggregator_views_api() { return views_views_api(); }
+}
 
-function book_views_api() { return views_views_api(); }
+if (!function_exists('book_views_api')) {
+  function book_views_api() { return views_views_api(); }
+}
 
-function comment_views_api() { return views_views_api(); }
+if (!function_exists('comment_views_api')) {
+  function comment_views_api() { return views_views_api(); }
+}
 
-function locale_views_api() { return views_views_api(); }
+if (!function_exists('locale_views_api')) {
+  function locale_views_api() { return views_views_api(); }
+}
 
-function filter_views_api() { return views_views_api(); }
+if (!function_exists('filter_views_api')) {
+  function filter_views_api() { return views_views_api(); }
+}
 
-function node_views_api() { return views_views_api(); }
+if (!function_exists('node_views_api')) {
+  function node_views_api() { return views_views_api(); }
+}
 
-function poll_views_api() { return views_views_api(); }
+if (!function_exists('poll_views_api')) {
+  function poll_views_api() { return views_views_api(); }
+}
 
-function profile_views_api() { return views_views_api(); }
+if (!function_exists('profile_views_api')) {
+  function profile_views_api() { return views_views_api(); }
+}
 
-function search_views_api() { return views_views_api(); }
+if (!function_exists('search_views_api')) {
+  function search_views_api() { return views_views_api(); }
+}
 
-function statistics_views_api() { return views_views_api(); }
+if (!function_exists('statistics_views_api')) {
+  function statistics_views_api() { return views_views_api(); }
+}
 
-function system_views_api() { return views_views_api(); }
+if (!function_exists('system_views_api')) {
+  function system_views_api() { return views_views_api(); }
+}
 
-function taxonomy_views_api() { return views_views_api(); }
+if (!function_exists('taxonomy_views_api')) {
+  function taxonomy_views_api() { return views_views_api(); }
+}
 
-function translation_views_api() { return views_views_api(); }
+if (!function_exists('translation_views_api')) {
+  function translation_views_api() { return views_views_api(); }
+}
 
-function upload_views_api() { return views_views_api(); }
+if (!function_exists('upload_views_api')) {
+  function upload_views_api() { return views_views_api(); }
+}
 
-function user_views_api() { return views_views_api(); }
+if (!function_exists('user_views_api')) {
+  function user_views_api() { return views_views_api(); }
+}
 
-function contact_views_api() { return views_views_api(); }
+if (!function_exists('contact_views_api')) {
+  function contact_views_api() { return views_views_api(); }
+}

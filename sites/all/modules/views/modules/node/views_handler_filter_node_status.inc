@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_filter_node_status.inc,v 1.1.2.2 2010/11/18 00:43:22 merlinofchaos Exp $
 /**
  * Filter by published status
  */

@@ -1,4 +1,3 @@
-// $Id: ajax_view.js,v 1.17.2.9 2010/11/18 20:34:05 merlinofchaos Exp $
 
 /**
  * @file ajaxView.js

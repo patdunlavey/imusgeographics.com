@@ -1,5 +1,4 @@
 <?php
-// $Id: cache.inc,v 1.24.2.6 2010/10/12 22:10:11 merlinofchaos Exp $
 /**
  * @file cache.inc
  *
@@ -10,8 +9,8 @@
 /**
  * Load views files on behalf of modules.
  */
-function _views_include_handlers() {
-  views_module_include('views.inc');
+function _views_include_handlers($reset) {
+  views_module_include('views.inc', $reset);
 }
 
 /**

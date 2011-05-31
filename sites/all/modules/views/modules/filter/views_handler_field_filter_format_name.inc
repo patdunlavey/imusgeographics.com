@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_field_filter_format_name.inc,v 1.1.2.2 2011/01/10 23:14:26 merlinofchaos Exp $
 /**
  * Field handler to output the name of an input format.
  */
@@ -14,13 +13,9 @@ class views_handler_field_filter_format_name extends views_handler_field {
     $this->ensure_my_table();
     $this->add_additional_fields();
   }
-
-  function get_value($values) {
-    return $values->{$this->aliases['name']};
-  }
-
+  
   function render($values) {
-    $format_name = $this->get_value($values);
+    $format_name = $this->get_value($values, 'name');
     if (!$format_name) {
       // Default or invalid input format.
       // filter_formats() will reliably return the default format even if the

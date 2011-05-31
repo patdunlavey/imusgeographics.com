@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_filter_equality.test,v 1.1.4.2 2010/12/26 22:43:27 dereine Exp $
 module_load_include('test', 'views', 'tests/views_query');
 
 class viewsHandlerFilterEqualityTest extends ViewsSqlTest {

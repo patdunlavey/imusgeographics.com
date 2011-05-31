@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_field_boolean.inc,v 1.2.2.3 2011/01/10 23:14:26 merlinofchaos Exp $
 
 /**
  * A handler to provide proper displays for booleans.

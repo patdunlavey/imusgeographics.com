@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_field_file.inc,v 1.3.2.2 2011/01/10 23:14:27 merlinofchaos Exp $
 /**
  * Field handler to provide simple renderer that allows linking to a file.
  */

@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_field_url.inc,v 1.1.2.2 2011/01/10 23:14:26 merlinofchaos Exp $
 
 /**
  * Field handler to provide simple renderer that turns a URL into a clickable link.
@@ -33,7 +32,7 @@ class views_handler_field_url extends views_handler_field {
       return l($this->sanitize_value($value), $value, array('html' => TRUE));
     }
     else {
-      return $this->sanitize_value($value);
+      return $this->sanitize_value($value, 'url');
     }
   }
 }

@@ -1,5 +1,4 @@
 <?php
-// $Id: views-view-list.tpl.php,v 1.3.2.1 2010/12/04 00:15:14 merlinofchaos Exp $
 /**
  * @file views-view-list.tpl.php
  * Default simple view template to display a list of rows.

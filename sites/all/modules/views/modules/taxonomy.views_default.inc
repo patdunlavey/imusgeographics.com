@@ -1,5 +1,4 @@
 <?php
-// $Id: taxonomy.views_default.inc,v 1.3.2.2 2010/10/12 23:20:32 merlinofchaos Exp $
 /**
  * @file
  * Contains default views on behalf of the statistics module.
@@ -14,6 +13,7 @@ function taxonomy_views_default_views() {
   $view->description = 'A view to emulate Drupal core\'s handling of taxonomy/term; it also emulates Views 1\'s handling by having two possible feeds.';
   $view->tag = 'default';
   $view->base_table = 'node';
+  $view->human_name = 'Taxonomy term';
   $view->api_version = 2;
   $view->disabled = TRUE; /* Edit this to true to make a default view disabled initially */
   $handler = $view->new_display('default', 'Defaults', 'default');

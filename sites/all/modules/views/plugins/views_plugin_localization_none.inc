@@ -1,5 +1,4 @@
 <?php
-// $Id: views_plugin_localization_none.inc,v 1.1.2.1 2010/12/01 00:02:06 merlinofchaos Exp $
 
 /**
  * @file

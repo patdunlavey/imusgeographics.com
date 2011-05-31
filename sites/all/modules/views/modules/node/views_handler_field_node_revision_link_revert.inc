@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_field_node_revision_link_revert.inc,v 1.1.2.2 2011/01/10 23:14:26 merlinofchaos Exp $
 /**
  * Field handler to present a link to revert a node to a revision
  */

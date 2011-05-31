@@ -1,5 +1,4 @@
 <?php
-// $Id: views_plugin_argument_validate_node.inc,v 1.1.2.4 2011/01/18 21:52:25 merlinofchaos Exp $
 /**
  * @file
  * Contains the 'node' argument validator plugin.
@@ -56,7 +55,7 @@ class views_plugin_argument_validate_node extends views_plugin_argument_validate
     );
   }
 
-  function options_submit(&$form, &$form_state, &$options) {
+  function options_submit(&$form, &$form_state, &$options = array()) {
     // filter trash out of the options so we don't store giant unnecessary arrays
     $options['types'] = array_filter($options['types']);
   }

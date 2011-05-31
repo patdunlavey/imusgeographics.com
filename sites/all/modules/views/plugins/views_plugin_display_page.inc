@@ -1,5 +1,4 @@
 <?php
-// $Id: views_plugin_display_page.inc,v 1.5.2.14 2011/01/04 20:29:56 merlinofchaos Exp $
 /**
  * @file
  * Contains the page display plugin.

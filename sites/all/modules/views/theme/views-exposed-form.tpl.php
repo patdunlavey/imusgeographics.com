@@ -1,5 +1,4 @@
 <?php
-// $Id: views-exposed-form.tpl.php,v 1.4.2.5 2010/08/13 21:45:28 merlinofchaos Exp $
 /**
  * @file views-exposed-form.tpl.php
  *

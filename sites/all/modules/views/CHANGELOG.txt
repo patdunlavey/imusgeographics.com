@@ -236,6 +236,34 @@ Views 6.x-3.0-dev
     o #981872 by infojunkie: Option to hide attachments in summary views.
     o #839810 by marcp: Get UID from URL argument default plugin should accept uids from Views pages.
     o #1012584 by dereine: Allow filtering on term descriptions.
+    o #1035168 by Ao: Fix strict warning in unread node filter.
+    o #1044916 by dagmar: Fix improper use of set_current_page member variable.
+    o #988680 by mikeytown2: Fix Views memory leak with attachments.
+    o #1012596 by dereine: More inline documentation of class variables.
+    o #873872 by dagmar: Allow limiting of exposed operators as well as exposed filter values.
+    o #1016814 by eaton: string argument should support name_field.
+    o #1007376 by dereine: Jump menu was not correctly supporting offsets.
+    o #1018160 by zhangtaihao: unpack_translatable could infinitely recurse when options are arrays but not declared as such.
+    o #1019826 by penguin25: Respect contact page access overrides when displaying contact link.
+    o #776830: Attachments and other displays lost "Items to display" controls.
+    o #534452 by dereine: Remove non-functional "optional" setting on string filters.
+    o #747782 by dereine: Improve jump menu grouping.
+    o #1026014 by dereine and alex_b: Use more always should not ask for the count query to see if we need to show the more link.
+    o #1001304 by dereine: Fix init() declarations to not throw notices on PHP 5.3.
+    o #1078738 by dereine: Add a serialized data field handler and set users.data to it.
+    o #1080690 by dereine: Store the view object in the query object, so it can be used.
+    o #1062506 by dereine: Misnamed parameter for creation of broken handlers.
+    o #975400 follow up by bojanz: Give field::sanitize_value more power and fix some issues with get_value.
+    o #1090682 by dereine: Write a simpletest for the reset parameter of view::load.
+    o #1054272 by dagmar: String filters are non optional anymore.
+    o #1079178 by Manuel Garcia: Provide a views revert drush command.
+    o #1096548 by dww: Fix convert of taxonomy fields.
+    o #1096292 by bojanz: Provide better default for exposed_sorts_label.
+    o #1096834 by dww: Allow importing views code that starts with '<?php'.
+    o by dereine: Move get_value and sanitize_value into views_handler to support it for area handlers.
+    o #1096366 by jamsilver: Role access plugin: Replacing array_unshift() with reset().
+    o #1100052 by michielnugter: Fix strict warning of views_handler_argument::get_value.
+    o #1100776 by bojanz: Fix call for get_value in field_user_language handler.
 
 Views 6.x-3.0-alpha3
     o #705668 by dereine: Fix glossary view, add tests for glossary view.

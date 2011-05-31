@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_field_contact_link.inc,v 1.1.2.6 2011/01/10 23:14:26 merlinofchaos Exp $
 /**
  * A field that links to the user contact page, if access is permitted.
  */
@@ -56,7 +55,8 @@ class views_handler_field_contact_link extends views_handler_field_user_link {
 
     // Check access when we pull up the user account so we know
     // if the user has made the contact page available.
-    if (!_contact_user_tab_access($account) || empty($account->contact)) {
+    $menu_item = menu_get_item("user/$uid/contact");
+    if (!$menu_item['access'] || empty($account->contact)) {
       return;
     }
 

@@ -1,4 +1,3 @@
-// $Id: base.js,v 1.10.2.6 2010/10/15 00:53:57 merlinofchaos Exp $
 /**
  * @file base.js
  *
@@ -80,7 +79,7 @@ Drupal.Views.parseQueryString = function (query) {
       var pair = pairs[i].split('=');
       // Ignore the 'q' path argument, if present.
       if (pair[0] != 'q' && pair[1]) {
-        args[pair[0]] = decodeURIComponent(pair[1].replace(/\+/g, ' '));
+        args[decodeURIComponent(pair[0].replace(/\+/g, ' '))] = decodeURIComponent(pair[1].replace(/\+/g, ' '));
       }
     }
   }

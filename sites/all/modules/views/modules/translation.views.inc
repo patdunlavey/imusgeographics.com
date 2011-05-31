@@ -1,5 +1,4 @@
 <?php
-// $Id: translation.views.inc,v 1.8.2.2 2010/12/09 01:10:22 merlinofchaos Exp $
 
 /**
  * @file

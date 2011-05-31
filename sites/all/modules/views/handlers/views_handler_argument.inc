@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_argument.inc,v 1.7.2.14 2010/12/17 21:42:23 merlinofchaos Exp $
 
 /**
  * @defgroup views_argument_handlers Handlers for arguments
@@ -104,6 +103,7 @@ class views_handler_argument extends views_handler {
     $options['breadcrumb'] = array('default' => '', 'translatable' => TRUE);
     $options['default_argument_type'] = array('default' => 'fixed', 'export' => 'export_plugin');
     $options['default_argument_options'] = array('default' => array(), 'export' => FALSE);
+    $options['default_argument_skip_url'] = array('default' => FALSE);
     $options['validate_type'] = array('default' => 'none', 'export' => 'export_plugin');
     $options['validate_options'] = array('default' => array(), 'export' => FALSE);
     $options['validate_fail'] = array('default' => 'not found');
@@ -390,6 +390,13 @@ class views_handler_argument extends views_handler {
       '#dependency' => array('radio:options[default_action]' => array('default')),
     );
 
+    $form['default_argument_skip_url'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Skip default argument for view URL'),
+      '#default_value' => $this->options['default_argument_skip_url'],
+      '#description' => t('Select whether to include this default argument when constructing the URL for this view. Skipping default arguments is useful e.g. in the case of feeds.')
+    );
+
     $form['default_argument_type'] = array(
       '#prefix' => '<div id="edit-options-default-argument-type-wrapper">',
       '#suffix' => '</div>',
@@ -586,7 +593,7 @@ class views_handler_argument extends views_handler {
     if (isset($this->name_table)) {
       // if the alias is different then we're probably added, not ensured,
       // so look up the join and add it instead.
-      if ($this->table_alias != $this->table) {
+      if ($this->table_alias != $this->name_table) {
         $j = views_get_table_join($this->name_table, $this->table);
         if ($j) {
           $join = drupal_clone($j);
@@ -785,7 +792,7 @@ class views_handler_argument extends views_handler {
   /**
    * Get the value of this argument.
    */
-  function get_value() {
+  function get_value($values, $field = NULL) {
     // If we already processed this argument, we're done.
     if (isset($this->argument)) {
       return $this->argument;
@@ -810,6 +817,9 @@ class views_handler_argument extends views_handler {
     $argument = drupal_clone($this);
     if (!isset($arg) && $argument->has_default_argument()) {
       $arg = $argument->get_default_argument();
+
+      // remember that this argument was computed, not passed on the URL.
+      $this->is_default = TRUE;
     }
     // Set the argument, which will also validate that the argument can be set.
     if ($argument->set_argument($arg)) {

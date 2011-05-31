@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_argument_string.inc,v 1.4.2.5 2011/01/10 23:07:43 merlinofchaos Exp $
 
 /**
  * Basic argument handler to implement string arguments that may have length
@@ -136,11 +135,11 @@ class views_handler_argument_string extends views_handler_argument {
     if (empty($this->options['glossary'])) {
       // Add the field.
       if (empty($this->options['ignorecase'])){
-        $this->base_alias = $this->name_alias = $this->query->add_field($this->table_alias, $this->real_field);
+        $this->base_alias = $this->query->add_field($this->table_alias, $this->real_field);
         $this->query->set_count_field($this->table_alias, $this->real_field);
       }
       else {
-        $this->base_alias = $this->name_alias = $this->query->add_field($this->table_alias, 'LOWER(' . $this->real_field . ')');
+        $this->base_alias = $this->query->add_field($this->table_alias, 'LOWER(' . $this->real_field . ')');
         $this->query->set_count_field($this->table_alias, 'LOWER(' . $this->real_field . ')');
       }
     }
@@ -148,15 +147,16 @@ class views_handler_argument_string extends views_handler_argument {
       // Add the field.
       $formula = $this->get_formula();
       if (empty($this->options['ignorecase'])){
-        $this->base_alias = $this->name_alias = $this->query->add_field(NULL, $formula, $this->field . '_truncated');
+        $this->base_alias = $this->query->add_field(NULL, $formula, $this->field . '_truncated');
         $this->query->set_count_field(NULL, $formula, $this->field, $this->field . '_truncated');
       }
       else {
-        $this->base_alias = $this->name_alias = $this->query->add_field(NULL, 'LOWER(' . $formula . ')', $this->field . '_truncated');
+        $this->base_alias = $this->query->add_field(NULL, 'LOWER(' . $formula . ')', $this->field . '_truncated');
         $this->query->set_count_field(NULL, $formula, $this->field, $this->field . '_truncated');
       }
     }
 
+    $this->summary_name_field();
     return $this->summary_basics(FALSE);
   }
 
@@ -206,7 +206,7 @@ class views_handler_argument_string extends views_handler_argument {
 
     if (count($this->value) > 1) {
       $operator = 'IN';
-      $placeholders = implode(', ', array_fill(0, sizeof($this->value), "'%s'"));
+      $placeholders = '(' . implode(', ', array_fill(0, sizeof($this->value), "'%s'")) . ')';
       $argument = $this->value;
     }
     else {

@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_field_profile_date.inc,v 1.1.2.1 2011/01/10 23:14:26 merlinofchaos Exp $
 /**
  * Field handler display a profile date
  *
@@ -17,10 +16,10 @@ class views_handler_field_profile_date extends views_handler_field_date {
    * Display a profile field of type 'date'
    */
   function render($values) {
-    if (!$value->{$this->field_alias}) {
+    $value = $this->get_value($values);
+    if (!$value) {
       return;
     }
-    $value = $this->get_value($values);
     $value = unserialize($value);
     $format = $this->options['date_format'];
     switch ($format) {

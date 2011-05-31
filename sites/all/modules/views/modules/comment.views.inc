@@ -1,5 +1,4 @@
 <?php
-// $Id: comment.views.inc,v 1.32.2.10 2010/10/12 23:15:09 merlinofchaos Exp $
 /**
  * @file
  * Provide views data and handlers for comment.module

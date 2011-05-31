@@ -1,12 +1,11 @@
 <?php
-// $Id: views_handler_area.inc,v 1.1.2.3 2010/12/17 21:42:23 merlinofchaos Exp $
 /**
  * @file
  * Views area handlers.
  */
 
 /**
- * @defgroup views_area_handlers Views' relationship handlers
+ * @defgroup views_area_handlers Views' area handlers
  * @{
  * Handlers to tell Views what can display in header, footer
  * and empty text in a view.

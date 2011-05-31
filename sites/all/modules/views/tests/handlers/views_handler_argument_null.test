@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_argument_null.test,v 1.1.4.2 2010/12/24 07:46:00 dereine Exp $
 module_load_include('test', 'views', 'tests/views_query');
 
 class ViewsHandlerArgumentNullTest extends ViewsSqlTest {

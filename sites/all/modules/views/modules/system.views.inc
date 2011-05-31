@@ -1,5 +1,4 @@
 <?php
-// $Id: system.views.inc,v 1.7.2.3 2011/01/18 21:58:23 merlinofchaos Exp $
 /**
  * @file
  *

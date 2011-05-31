@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_filter_system_type.inc,v 1.1.2.1 2011/01/18 21:58:57 merlinofchaos Exp $
 
 /**
  * Filter by system type.

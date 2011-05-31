@@ -1,5 +1,4 @@
 <?php
-// $Id: view.inc,v 1.151.2.53 2011/01/18 23:00:16 merlinofchaos Exp $
 /**
  * @file view.inc
  * Provides the view object type and associated methods.
@@ -50,8 +49,43 @@ class view extends views_db_object {
   // Used to store views that were previously running if we recurse.
   var $old_view = array();
 
-  // Where the $query object will reside:
+  // Stores the next steps of form items to handle.
+  // It's an array of stack items, which contain the form id, the type of form,
+  // the view, the display and some additional arguments.
+  // @see views_ui_add_form_to_stack().
+  // var $stack;
+
+  /**
+   * Identifier of the current display.
+   *
+   * @var string
+   */
+  var $current_display;
+  
+  /**
+   * Where the $query object will reside:
+   *
+   * @var views_plugin_query
+   */
   var $query = NULL;
+
+  /**
+   * The current used display plugin.
+   *
+   * @var views_plugin_display
+   */
+  var $display_handler;
+
+  /**
+   * The current used style plugin.
+   *
+   * @var views_plugin_style
+   */
+   var $style_plugin;
+
+  /**
+   * The current 
+
   /**
    * Constructor
    */
@@ -470,6 +504,8 @@ class view extends views_db_object {
           if (isset($arg)) {
             $this->args[$position] = $arg;
           }
+          // remember that this argument was computed, not passed on the URL.
+          $argument->is_default = TRUE;
         }
 
         // Set the argument, which will also validate that the argument can be set.
@@ -521,7 +557,7 @@ class view extends views_db_object {
 
     // set the title in the build info.
     if (!empty($title)) {
-      $this->build_info['title'] = str_replace(array_keys($substitutions), $substitutions, $title);
+      $this->build_info['title'] = $title;
     }
 
     // Store the arguments for later use.
@@ -759,6 +795,10 @@ class view extends views_db_object {
       $cache = $this->display_handler->get_plugin('cache');
     }
     if ($cache && $cache->cache_get('results')) {
+      if($this->query->pager->use_pager()) {
+        $this->query->pager->total_items = $this->total_rows;
+        $this->query->pager->update_page_info();
+      }
       vpr('Used cached results');
     }
     else {
@@ -796,7 +836,7 @@ class view extends views_db_object {
     }
 
     $exposed_form = $this->display_handler->get_plugin('exposed_form');
-    $exposed_form->pre_render();
+    $exposed_form->pre_render($this->result);
 
     // Check for already-cached output.
     if (!empty($this->live_preview)) {
@@ -1081,6 +1121,24 @@ class view extends views_db_object {
   }
 
   /**
+   * Return the human readable name for a view.
+   *
+   * When a certain view doesn't have a human readable name return the machine readable name.
+   */
+  function get_human_name() {
+    if (!empty($this->human_name)) {
+      $human_name = $this->human_name;
+    }
+    else {
+      $human_name = $this->get_title();
+      if (empty($human_name)) {
+        $human_name = $this->name;
+      }
+    }
+    return $human_name;
+  }
+
+  /**
    * Get the view's current title. This can change depending upon how it
    * was built.
    */
@@ -1099,6 +1157,10 @@ class view extends views_db_object {
       $title = $this->display_handler->get_option('title');
     }
 
+    // Allow substitutions from the first row.
+    if ($this->init_style()) {
+      $title = $this->style_plugin->tokenize_value($title, 0);
+    }
     return $title;
   }
 
@@ -1126,6 +1188,17 @@ class view extends views_db_object {
     }
     if (!isset($args)) {
       $args = $this->args;
+
+      // Exclude arguments that were computed, not passed on the URL.
+      $position = 0;
+      if (!empty($this->argument)) {
+        foreach ($this->argument as $argument_id => $argument) {
+          if (!empty($argument->is_default) && !empty($argument->options['default_argument_skip_url'])) {
+            unset($args[$position]);
+          }
+          $position++;
+        }
+      }
     }
     // Don't bother working if there's nothing to do:
     if (empty($path) || (empty($args) && strpos($path, '%') === FALSE)) {
@@ -1289,7 +1362,8 @@ class view extends views_db_object {
    *  The name of the view or its internal view id (vid)
    * @param $reset
    *  If TRUE, reset this entry in the load cache.
-   * @return A view object or NULL if it was not available.
+   * @return view
+   *   A view object or NULL if it was not available.
    */
   function &load($arg, $reset = FALSE) {
     static $cache = array();
@@ -1415,6 +1489,8 @@ class view extends views_db_object {
       $this->_save_rows($key);
     }
 
+    $this->save_locale_strings();
+
     cache_clear_all('views_urls', 'cache_views');
     cache_clear_all(); // clear the page cache as well.
   }
@@ -1459,6 +1535,7 @@ class view extends views_db_object {
    */
   function export($indent = '') {
     $this->init_display();
+    $this->init_query();
     $output = '';
     $output .= $this->export_row('view', $indent);
     // Set the API version
@@ -1512,6 +1589,9 @@ class view extends views_db_object {
    * view. This gets ugly fast.
    *
    * This will completely wipe a view clean so it can be considered fresh.
+   *
+   * @return view
+   *    The cloned view.
    */
   function clone_view() {
     $clone = version_compare(phpversion(), '5.0') < 0 ? $this : clone($this);
@@ -1552,46 +1632,46 @@ class view extends views_db_object {
         $this->display[$display_id]->handler->destroy();
         unset($this->display[$display_id]->handler);
       }
-
-      foreach (views_object_types() as $type => $info) {
-        if (isset($this->$type)) {
-          $handlers = &$this->$type;
-          foreach ($handlers as $id => $item) {
-            $handlers[$id]->destroy();
-          }
-          unset($handlers);
-        }
-      }
-
-      if (isset($this->style_plugin)) {
-        $this->style_plugin->destroy();
-        unset($this->style_plugin);
-      }
-
-      // Clear these to make sure the view can be processed/used again.
-      if (isset($this->display_handler)) {
-        unset($this->display_handler);
-      }
-
-      if (isset($this->current_display)) {
-        unset($this->current_display);
-      }
-
-      if (isset($this->query)) {
-        unset($this->query);
-      }
-
-      $keys = array('current_display', 'display_handler', 'build_info', 'built', 'executed', 'attachment_before', 'attachment_after', 'field', 'argument', 'filter', 'sort', 'relationship', 'header', 'footer', 'empty', 'query', 'result', 'inited', 'style_plugin', 'plugin_name', 'exposed_data', 'exposed_input', 'many_to_one_tables');
-      foreach ($keys as $key) {
-        if (isset($this->$key)) {
-          unset($this->$key);
-        }
-      }
-      $this->built = $this->executed = FALSE;
-      $this->build_info = array();
-      $this->attachment_before = '';
-      $this->attachment_after = '';
     }
+
+    foreach (views_object_types() as $type => $info) {
+      if (isset($this->$type)) {
+        $handlers = &$this->$type;
+        foreach ($handlers as $id => $item) {
+          $handlers[$id]->destroy();
+        }
+        unset($handlers);
+      }
+    }
+
+    if (isset($this->style_plugin)) {
+      $this->style_plugin->destroy();
+      unset($this->style_plugin);
+    }
+
+    // Clear these to make sure the view can be processed/used again.
+    if (isset($this->display_handler)) {
+      unset($this->display_handler);
+    }
+
+    if (isset($this->current_display)) {
+      unset($this->current_display);
+    }
+
+    if (isset($this->query)) {
+      unset($this->query);
+    }
+
+    $keys = array('current_display', 'display_handler', 'build_info', 'built', 'executed', 'attachment_before', 'attachment_after', 'field', 'argument', 'filter', 'sort', 'relationship', 'header', 'footer', 'empty', 'query', 'result', 'inited', 'style_plugin', 'plugin_name', 'exposed_data', 'exposed_input', 'many_to_one_tables');
+    foreach ($keys as $key) {
+      if (isset($this->$key)) {
+        unset($this->$key);
+      }
+    }
+    $this->built = $this->executed = FALSE;
+    $this->build_info = array();
+    $this->attachment_before = '';
+    $this->attachment_after = '';
   }
 
   /**
@@ -1605,6 +1685,7 @@ class view extends views_db_object {
 
     $errors = array();
 
+    $current_display = $this->current_display;
     foreach ($this->display as $id => $display) {
       if ($display->handler) {
         if (!empty($display->deleted)) {
@@ -1619,6 +1700,7 @@ class view extends views_db_object {
       }
     }
 
+    $this->set_display($current_display);
     return $errors ? $errors : TRUE;
   }
 
@@ -1852,7 +1934,12 @@ class views_db_object {
       }
       $value = $this->$field;
       if ($info['type'] == 'int') {
-        $value = ($info['size'] == 'tiny') ? (bool) $value : (int) $value;
+        if (isset($info['size']) && $info['size'] == 'tiny') {
+          $value = (bool) $value;
+        }
+        else {
+          $value = (int) $value;
+        }
       }
 
       $output .= $indent . '$' . $identifier . '->' . $field . ' = ' . views_var_export($value, $indent) . ";\n";
@@ -1936,7 +2023,7 @@ class views_db_object {
    *   The title of the display; optional, may be filled in from default.
    * @param $id
    *   The id to use.
-   * @return
+   * @return views_plugin_display
    *   A reference to the new handler object.
    */
   function &new_display($type = 'page', $title = NULL, $id = NULL) {

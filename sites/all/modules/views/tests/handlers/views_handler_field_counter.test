@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_field_counter.test,v 1.1.4.2 2010/12/26 23:25:53 dereine Exp $
 module_load_include('test', 'views', 'tests/views_query');
 
 class viewsHandlerFilterCounterTest extends ViewsSqlTest {

@@ -1,5 +1,4 @@
 <?php
-// $Id: views.views.inc,v 1.6.2.4 2010/11/05 21:52:36 dereine Exp $
 /**
  * @file
  * Provide views data and handlers that aren't tied to any other module.

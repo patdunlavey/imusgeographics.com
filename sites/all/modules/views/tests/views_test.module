@@ -1,5 +1,4 @@
 <?php
-// $Id: views_test.module,v 1.1.4.8 2011/01/04 20:29:56 merlinofchaos Exp $
 
 /**
  * Implements hook_perm().

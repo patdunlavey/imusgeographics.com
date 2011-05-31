@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_field_comment_link_edit.inc,v 1.1.2.3 2011/01/10 23:14:26 merlinofchaos Exp $
 /**
  * Field handler to present a link node edit.
  */
@@ -43,6 +42,8 @@ class views_handler_field_comment_link_edit extends views_handler_field_comment_
     if (!empty($this->options['destination'])) {
       $this->options['alter']['query'] = drupal_get_destination();
     }
+
+    $this->options['alter']['path'] = "comment/edit/" . $comment->cid;
 
     return $text;
   }

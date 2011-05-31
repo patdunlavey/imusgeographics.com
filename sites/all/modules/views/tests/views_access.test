@@ -1,5 +1,4 @@
 <?php
-// $Id: views_access.test,v 1.1.2.3 2011/01/04 20:29:56 merlinofchaos Exp $
 
 module_load_include('test', 'views', 'tests/views_query');
 /**

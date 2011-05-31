@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_argument_numeric.inc,v 1.1.2.1 2010/11/18 01:11:58 merlinofchaos Exp $
 /**
  * @file
  * Contains the numeric argument handler.

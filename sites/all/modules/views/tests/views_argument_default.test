@@ -1,5 +1,4 @@
 <?php
-// $Id: views_argument_default.test,v 1.1.4.3 2010/04/16 22:11:07 dereine Exp $
 
 module_load_include('test', 'views', 'tests/views_query');
 

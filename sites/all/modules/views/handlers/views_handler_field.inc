@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_field.inc,v 1.14.2.58 2011/01/20 20:00:23 merlinofchaos Exp $
 /**
  * @defgroup views_field_handlers Views' field handlers
  * @{
@@ -146,7 +145,7 @@ class views_handler_field extends views_handler {
   /**
    * Return an HTML element based upon the field's element type.
    */
-  function element_type($none_supported = FALSE, $default_empty = FALSE) {
+  function element_type($none_supported = FALSE, $default_empty = FALSE, $inline = FALSE) {
     if ($none_supported) {
       if ($this->options['element_type'] === '0') {
         return '';
@@ -158,6 +157,10 @@ class views_handler_field extends views_handler {
 
     if ($default_empty) {
       return '';
+    }
+
+    if ($inline) {
+      return 'span';
     }
 
     if (isset($this->definition['element type'])) {
@@ -215,28 +218,33 @@ class views_handler_field extends views_handler {
    * rare occurence.
    */
   function get_elements() {
-    return array(
-      '' => t('- Use default -'),
-      '0' => t('- None -'),
-      'div' => t('DIV'),
-      'span' => t('SPAN'),
-      'h1' => t('H1'),
-      'h2' => t('H2'),
-      'h3' => t('H3'),
-      'h4' => t('H4'),
-      'h5' => t('H5'),
-      'h6' => t('H6'),
-      'p' => t('P'),
-      'strong' => t('STRONG'),
-      'em' => t('EM'),
-    );
+    static $elements = NULL;
+    if (!isset($elements)) {
+      $elements = variable_get('views_field_rewrite_elements', array(
+        '' => t('- Use default -'),
+        '0' => t('- None -'),
+        'div' => t('DIV'),
+        'span' => t('SPAN'),
+        'h1' => t('H1'),
+        'h2' => t('H2'),
+        'h3' => t('H3'),
+        'h4' => t('H4'),
+        'h5' => t('H5'),
+        'h6' => t('H6'),
+        'p' => t('P'),
+        'strong' => t('STRONG'),
+        'em' => t('EM'),
+      ));
+    }
+
+    return $elements;
   }
 
   /**
    * Return the class of the field.
    */
-  function element_classes() {
-    $classes = $this->tokenize_value($this->options['element_class']);
+  function element_classes($row_index = NULL) {
+    $classes = $this->tokenize_value($this->options['element_class'], $row_index);
     return views_css_safe($classes);
   }
 
@@ -246,23 +254,33 @@ class views_handler_field extends views_handler {
    * This function actually figures out which field was last and uses its
    * tokens so they will all be available.
    */
-  function tokenize_value($value) {
+  function tokenize_value($value, $row_index = NULL) {
     if (strpos($value, '[') !== FALSE || strpos($value, '!') !== FALSE || strpos($value, '%') !== FALSE) {
       $fake_item = array(
         'alter_text' => TRUE,
         'text' => $value,
       );
 
-      // Get tokens from the last field.
-      $last_field = end($this->view->field);
-      if (isset($last_field->last_tokens)) {
-        $tokens = $last_field->last_tokens;
+      // Use isset() because empty() will trigger on 0 and 0 is
+      // the first row.
+      if (isset($row_index) && isset($this->view->style_plugin->render_tokens[$row_index])) {
+        $tokens = $this->view->style_plugin->render_tokens[$row_index];
       }
       else {
-        $tokens = $last_field->get_render_tokens($fake_item);
+        // Get tokens from the last field.
+        $last_field = end($this->view->field);
+        if (isset($last_field->last_tokens)) {
+          $tokens = $last_field->last_tokens;
+        }
+        else {
+          $tokens = $last_field->get_render_tokens($fake_item);
+        }
       }
 
       $value = strip_tags($this->render_altered($fake_item, $tokens));
+      if (!empty($this->options['alter']['trim_whitespace'])) {
+        $value = trim($value);
+      }
     }
 
     return $value;
@@ -271,15 +289,17 @@ class views_handler_field extends views_handler {
   /**
    * Return the class of the field's label.
    */
-  function element_label_classes() {
-    return views_css_safe($this->options['element_label_class']);
+  function element_label_classes($row_index = NULL) {
+    $classes = $this->tokenize_value($this->options['element_label_class'], $row_index);
+    return views_css_safe($classes);
   }
 
   /**
    * Return the class of the field's wrapper.
    */
-  function element_wrapper_classes() {
-    return views_css_safe($this->options['element_wrapper_class']);
+  function element_wrapper_classes($row_index = NULL) {
+    $classes = $this->tokenize_value($this->options['element_wrapper_class'], $row_index);
+    return views_css_safe($classes);
   }
 
   function option_definition() {
@@ -295,18 +315,20 @@ class views_handler_field extends views_handler {
         'path' => array('default' => '', 'translatable' => TRUE),
         'absolute' => array('default' => '', 'translatable' => FALSE),
         'external' => array('default' => '', 'translatable' => FALSE),
+        'replace_spaces' => array('default' => '', 'translatable' => FALSE),
+        'trim_whitespace' => array('default' => FALSE),
         'alt' => array('default' => '', 'translatable' => TRUE),
         'rel' => array('default' => ''),
         'link_class' => array('default' => ''),
         'prefix' => array('default' => '', 'translatable' => TRUE),
         'suffix' => array('default' => '', 'translatable' => TRUE),
         'target' => array('default' => '', 'translatable' => TRUE),
-        'trim' => array('default' => FALSE),
         'nl2br' => array('default' => FALSE),
         'max_length' => array('default' => ''),
         'word_boundary' => array('default' => TRUE),
         'ellipsis' => array('default' => TRUE),
         'strip_tags' => array('default' => FALSE),
+        'trim' => array('default' => FALSE),
         'preserve_tags' => array('default' => ''),
         'html' => array('default' => FALSE),
       ),
@@ -465,6 +487,15 @@ class views_handler_field extends views_handler {
         '#type' => 'checkbox',
         '#title' => t('Use absolute path'),
         '#default_value' => $this->options['alter']['absolute'],
+        '#process' => array('views_process_dependency'),
+        '#dependency' => array(
+          'edit-options-alter-make-link' => array(1)
+        ),
+      );
+      $form['alter']['replace_spaces'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Replace spaces with dashes'),
+        '#default_value' => $this->options['alter']['replace_spaces'],
         '#process' => array('views_process_dependency'),
         '#dependency' => array(
           'edit-options-alter-make-link' => array(1)
@@ -648,6 +679,12 @@ If you would like to have the characters %5B and %5D please use the html entity 
         '#description' => t('If checked, all HTML tags will be stripped.'),
         '#default_value' => $this->options['alter']['strip_tags'],
       );
+      $form['alter']['trim_whitespace'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Remove whitespace'),
+        '#description' => t('If checked, all whitespaces at the beginning and the end of the output will be removed.'),
+        '#default_value' => $this->options['alter']['trim_whitespace'],
+      );
       $form['alter']['preserve_tags'] = array(
         '#type' => 'textfield',
         '#title' => t('Preserve certain tags'),
@@ -719,31 +756,6 @@ If you would like to have the characters %5B and %5D please use the html entity 
   function pre_render($values) { }
 
   /**
-   * Get the value that's supposed to be rendered.
-   *
-   * @param $values
-   *   The values retrieved from the database.
-   * @param $field
-   *   Optional field where the value is stored.
-   */
-  function get_value($values, $field = NULL) {
-    $alias = isset($field) ? $this->aliases[$field] : $this->field_alias;
-    if (isset($values->{$alias})) {
-      return $values->{$alias};
-    }
-  }
-
-  /**
-   * Sanitize the value for output.
-   *
-   * @param $value
-   *   The value being rendered.
-   */
-  function sanitize_value($value) {
-    return check_plain($value);
-  }
-
-  /**
    * Render the field.
    *
    * @param $values
@@ -811,7 +823,10 @@ If you would like to have the characters %5B and %5D please use the html entity 
    * each item to be handled individually.
    */
   function render_text($alter) {
-    $value = trim($this->last_render);
+    $value = $this->last_render;
+    if (!empty($this->options['alter']['trim_whitespace'])) {
+      $value = trim($value);
+    }
 
     if (!empty($alter['alter_text']) && $alter['text'] !== '') {
       $tokens = $this->get_render_tokens($alter);
@@ -894,6 +909,10 @@ If you would like to have the characters %5B and %5D please use the html entity 
       // However, we need to preserve special characters like " that
       // were removed by check_plain().
       $path = strip_tags(html_entity_decode(strtr($path, $tokens)));
+
+      if (!empty($alter['replace_spaces'])) {
+        $path = str_replace(' ', '-', $path);
+      }
     }
 
     // Parse the URL and move any query and fragment parameters out of the path.
@@ -1032,6 +1051,8 @@ If you would like to have the characters %5B and %5D please use the html entity 
       }
     }
 
+    // Store the tokens for the row so we can reference them later if necessary.
+    $this->view->style_plugin->render_tokens[$this->view->row_index] = $tokens;
     $this->last_tokens = $tokens;
     return $tokens;
   }
@@ -1159,8 +1180,9 @@ class views_handler_field_file_size extends views_handler_field {
  * A handler to run a field through simple XSS filtering
  */
 class views_handler_field_xss extends views_handler_field {
-  function sanitize_value($value) {
-    return filter_xss($value);
+  function render($values) {
+    $value = $this->get_value($values);
+    return $this->sanitize_value($value, 'xss');
   }
 }
 

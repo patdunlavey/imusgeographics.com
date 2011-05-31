@@ -1,5 +1,4 @@
 <?php
-// $Id: views_plugin_query_default.inc,v 1.1.2.28 2011/01/04 21:24:31 merlinofchaos Exp $
 /**
  * @file views_plugin_query_default.inc
  * Defines the default query object which builds SQL to execute using the
@@ -67,6 +66,13 @@ class views_plugin_query_default extends views_plugin_query{
   var $distinct = FALSE;
 
   var $has_aggregate = FALSE;
+
+  /**
+   * The current used pager plugin.
+   *
+   * @var views_plugin_pager
+   */
+   var $pager = NULL;
 
   /**
    * Constructor; Create the basic query object and fill with default values.
@@ -298,11 +304,11 @@ class views_plugin_query_default extends views_plugin_query{
   }
 
   /**
-   * Add a table to the query, without ensuring the path.
+   * Add a table to the query without ensuring the path.
    *
-   * This function will test to ensure that the path back to the primary
-   * table is valid and exists; if you do not wish for this testing to
-   * occur, use $query->queue_table() instead.
+   * This is a pretty internal function to Views and add_table() or
+   * ensure_table() should be used instead of this one, unless you are
+   * absolutely sure this is what you want.
    *
    * @param $table
    *   The name of the table to add. It needs to exist in the global table
@@ -1014,7 +1020,7 @@ class views_plugin_query_default extends views_plugin_query{
     if (count($this->having)) {
       $this->has_aggregate = TRUE;
     }
-    if ($this->has_aggregate || $this->groupby) {
+    if ($this->has_aggregate && (!empty($this->groupby) || !empty($non_aggregates))) {
       $groupby = "GROUP BY " . implode(', ', array_unique(array_merge($this->groupby, $non_aggregates))) . "\n";
       if ($this->having) {
         $having = $this->condition_sql('having');
@@ -1070,6 +1076,9 @@ class views_plugin_query_default extends views_plugin_query{
     if (!empty($this->options['distinct'])) {
       $this->set_distinct();
     }
+
+    // Store the view in the object to be able to use it later.
+    $this->view = $view;
 
     $view->init_pager();
 

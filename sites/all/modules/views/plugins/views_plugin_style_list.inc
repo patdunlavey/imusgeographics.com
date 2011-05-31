@@ -1,5 +1,4 @@
 <?php
-// $Id: views_plugin_style_list.inc,v 1.1.2.1 2010/12/04 00:15:14 merlinofchaos Exp $
 /**
  * @file
  * Contains the list style plugin.

@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_field_user_language.inc,v 1.1.2.3 2011/01/10 23:14:27 merlinofchaos Exp $
 /**
  * @file
  *   Views field handler for userlanguage.
@@ -25,7 +24,7 @@ class views_handler_field_user_language extends views_handler_field_user {
   }
 
   function render($values) {
-    $value = $this->get_value();
+    $value = $this->get_value($values);
     return $this->render_link($this->sanitize_value($value), $values);
   }
 }

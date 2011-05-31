@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_field_locale_link_edit.inc,v 1.1.2.3 2011/01/10 23:14:26 merlinofchaos Exp $
 
 /**
  * Field handler to present a link to edit a translation.
