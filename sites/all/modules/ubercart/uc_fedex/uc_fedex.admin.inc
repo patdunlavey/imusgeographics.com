@@ -1,12 +1,10 @@
 <?php
-// $Id: uc_fedex.admin.inc,v 1.12 2010/03/01 07:11:44 tr Exp $
 
 /**
  * @file
- * FedEx Shipping Quotes module administration menu and callbacks
+ * FedEx Shipping Quotes module administration menu and callbacks.
  *
  * @author Tim Rohaly.    <http://drupal.org/user/202830>
- * @version $Id: uc_fedex.admin.inc,v 1.12 2010/03/01 07:11:44 tr Exp $
  */
 
 
@@ -18,6 +16,9 @@
  *
  * @return
  *   Forms for store administrator to set configuration options.
+ *
+ * @see uc_fedex_admin_settings_validate()
+ * @ingroup forms
  */
 function uc_fedex_admin_settings() {
 
@@ -85,7 +86,7 @@ function uc_fedex_admin_settings() {
     '#collapsed'     => FALSE,
   );
 
-  // Form to restrict FedEx services available to customer
+  // Form to restrict FedEx Ground services available to customer
   $form['uc_fedex_service_selection']['uc_fedex_ground_services'] = array(
     '#type'          => 'checkboxes',
     '#title'         => t('FedEx Ground Services'),
@@ -94,7 +95,7 @@ function uc_fedex_admin_settings() {
     '#description'   => t('Select the FedEx Ground services customers are allowed to use.'),
   );
 
-  // Form to restrict FedEx services available to customer
+  // Form to restrict FedEx Express services available to customer
   $form['uc_fedex_service_selection']['uc_fedex_express_services'] = array(
     '#type'          => 'checkboxes',
     '#title'         => t('FedEx Express Services'),
@@ -103,13 +104,30 @@ function uc_fedex_admin_settings() {
     '#description'   => t('Select the FedEx Express services customers are allowed to use.'),
   );
 
-  // Form to restrict FedEx services available to customer
+  // Form to restrict FedEx Express Freight services available to customer
   $form['uc_fedex_service_selection']['uc_fedex_freight_services'] = array(
+    '#type'          => 'checkboxes',
+    '#title'         => t('FedEx Express Freight Services'),
+    '#default_value' => variable_get('uc_fedex_freight_services', _uc_fedex_freight_services()),
+    '#options'       => _uc_fedex_freight_services(),
+    '#description'   => t('Select the FedEx Express Freight services customers are allowed to use.'),
+  );
+
+  // Form to restrict FedEx Freight services available to customer
+  $form['uc_fedex_service_selection']['uc_fedex_freight'] = array(
     '#type'          => 'checkboxes',
     '#title'         => t('FedEx Freight Services'),
     '#default_value' => variable_get('uc_fedex_freight_services', _uc_fedex_freight_services()),
     '#options'       => _uc_fedex_freight_services(),
     '#description'   => t('Select the FedEx Freight services customers are allowed to use.'),
+  );
+
+  // Form to set freight account number
+  $form['uc_fedex_credentials']['uc_fedex_freight_account_number'] = array(
+    '#type'          => 'textfield',
+    '#title'         => t('FedEx Freight Account #'),
+    '#default_value' => variable_get('uc_fedex_freight_account_number', 0),
+    '#required'      => FALSE,
   );
 
   // Container for quote options forms
@@ -193,7 +211,7 @@ function uc_fedex_admin_settings() {
     ),
   );
 
-  // Form to select type of rate amount
+  // Form to select rate markup amount
   $form['uc_fedex_markups']['uc_fedex_rate_markup'] = array(
     '#type'          => 'textfield',
     '#title'         => t('FedEx Shipping Rate Markup'),
@@ -213,7 +231,7 @@ function uc_fedex_admin_settings() {
     ),
   );
 
-  // Form to select type of weight markup amount
+  // Form to select weight markup amount
   $form['uc_fedex_markups']['uc_fedex_weight_markup'] = array(
     '#type'          => 'textfield',
     '#title'         => t('FedEx Shipping Weight Markup'),
@@ -313,8 +331,9 @@ function uc_fedex_admin_settings() {
 /**
  * Validation handler for uc_fedex_admin_settings form.
  *
- * Require password only if it hasn't been set.
+ * Requires password only if it hasn't been set.
  *
+ * @see uc_fedex_admin_settings()
  */
 function uc_fedex_admin_settings_validate($form, &$form_state) {
 

@@ -1,5 +1,8 @@
-/* $Id: uc_fedex.css,v 1.3 2009/11/14 18:15:14 tr Exp $ */
 
+/**
+ * @file
+ * Styles for uc_fedex module.
+ */
 .fedex-logo {
   vertical-align: middle;
 }

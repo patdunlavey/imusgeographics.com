@@ -1,16 +1,14 @@
 <?php
-// $Id: uc_fedex.trck.inc,v 1.2 2009/12/19 07:16:29 tr Exp $
 
 /**
  * @file
- * FedEx Web Services Rate / Available Services Quote
+ * FedEx Web Services Rate / Available Services Quote.
  *
  * Shipping quote module that interfaces with the FedEx Web Services API
  * to get rates for small package shipments.  Implements a SOAP Web Service
  * client.
  *
  * @author Tim Rohaly.    <http://drupal.org/user/202830>
- * @version $Id: uc_fedex.trck.inc,v 1.2 2009/12/19 07:16:29 tr Exp $
  */
 
 
@@ -27,7 +25,7 @@
  * Associative array of DOM returned.
  *
  * @param $tracking_number
- *   FedEx Tracking number
+ *   FedEx Tracking number.
  *
  * @return
  *   Associative array mirroring contents of SOAP object returned from server.
@@ -36,9 +34,12 @@ function uc_fedex_tracking_request($tracking_number) {
 
   // Set up SOAP call.
   // Allow tracing so details of request can be retrieved for error logging
-  $client = new SoapClient(drupal_get_path('module', 'uc_fedex')
-              .'/wsdl-'. variable_get('uc_fedex_server_role', 'testing')
-              .'/TrackService_v4.wsdl', array('trace' => 1));
+  $client = new SoapClient(
+    drupal_get_path('module', 'uc_fedex') .
+      '/wsdl-' . variable_get('uc_fedex_server_role', 'testing') .
+      '/TrackService_v4.wsdl',
+    array('trace' => 1)
+  );
 
   // FedEx user key and password filled in by user on admin form
   $request['WebAuthenticationDetail'] = array(
@@ -106,7 +107,7 @@ function uc_fedex_tracking_request($tracking_number) {
       drupal_set_message(t('Error in processing FedEx tracking transaction.'), 'error');
       foreach ($response->Notifications as $notification) {
         if (is_array($response->Notifications)) {
-          drupal_set_message($notification->Severity .': '.
+          drupal_set_message($notification->Severity . ': ' .
                              $notification->Message, 'error');
         }
         else {
@@ -117,6 +118,6 @@ function uc_fedex_tracking_request($tracking_number) {
     return $response;
   }
   catch (SoapFault $exception) {
-    drupal_set_message('<h2>Fault</h2><br /><b>Code:</b>'. $exception->faultcode .'<br /><b>String:</b>'. $exception->faultstring .'<br />', 'error');
+    drupal_set_message('<h2>Fault</h2><br /><b>Code:</b>' . $exception->faultcode . '<br /><b>String:</b>' . $exception->faultstring . '<br />', 'error');
   }
 }
