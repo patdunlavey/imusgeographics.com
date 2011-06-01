@@ -1,0 +1,12 @@
+; $Id: jquery_media.info,v 1.1.4.1 2008/06/30 14:26:55 aaron Exp $
+name = jQuery Media
+description = Wrapper for the jQuery Media plugin, embedding virtually any media.
+package = User Interface
+core = 6.x
+
+; Information added by drupal.org packaging script on 2008-07-03
+version = "6.x-1.3"
+core = "6.x"
+project = "jquery_media"
+datestamp = "1215097220"
+

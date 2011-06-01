@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * @file
+ * A module that provides paged feeds views displays.
+ */
+
+/**
+ * Implementation of hook_views_api().
+ */
+function views_bonus_paged_feed_views_api() {
+  return array(
+    'api' => 2,
+  );
+}
