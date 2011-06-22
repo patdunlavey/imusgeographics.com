@@ -89,7 +89,13 @@ function igcustom_form_uc_cart_checkout_form_alter(&$form, &$form_state) {
     $warnings = array();
     $messages = array();
     //echo "Calculating discounts";
+    if(module_exists('uc_discounts')) {
     $discounts = get_discounts_for_order($order, $errors, $warnings, $messages);
+    }
+    else
+    {
+      drupal_set_message("uc_discounts not enabled/installed");
+    }
 
     //If there are no discounts, do not alter cart
     if (count($discounts) == 0)
