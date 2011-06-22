@@ -1,0 +1,12 @@
+name = Discount Coupon Purchase
+description = Allows coupons to be purchased as a product feature.
+dependencies[] = uc_coupon
+package = Ubercart - payment
+core = 6.x
+
+; Information added by drupal.org packaging script on 2011-06-03
+version = "6.x-1.6"
+core = "6.x"
+project = "uc_coupon"
+datestamp = "1307140323"
+
