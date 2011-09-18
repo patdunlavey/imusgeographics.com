@@ -163,22 +163,29 @@ function uc_export_orders_dump($order_ids = NULL) {
     $metadata['count'] += 1;
     $products = db_query("SELECT * FROM {uc_order_products} WHERE order_id = %d", $order['ODR_NUM']);
     $comments = db_query("SELECT message FROM {uc_order_comments} WHERE order_id = %d", $order['ODR_NUM']);
+    if(module_exists('uc_coupon')) {
+      $coupons = db_query("SELECT * FROM {uc_coupons_orders} WHERE oid = %d",$order['ODR_NUM']);
+    }
     $commentsarray = array();
     while($comment = db_fetch_array($comments)) {
       if(strlen($comment['message']) > 4) {
         $commentsarray[] = $comment['message'];
       }
     }
+    while($coupon = db_fetch_array($coupons)) {
+      if(strlen($coupon['code'])>7) {
+        $commentsarray[] = "COUPON CODE: " . $coupon['code'];
+      }
+    }
     $commentsstring = implode(" * ",$commentsarray);
     // need to split the order notes into five fields, each with a maximum of 240 characters
     $commentsstring = preg_replace('/\s+/',' ',$commentsstring);
     $ordnotes = str_split(substr(str_replace('"',"'", $commentsstring),0,1190),238);
-    //    echo "<pre>";print_r($ordnotes);echo"</pre>";
+//        echo "<pre>";print_r($ordnotes);echo"</pre>";
     foreach($ordnotes as $key => $note) {
       $ordnotefield = 'ORDNOTE'.($key + 1);
       $order[$ordnotefield] = $note;
     }
-
     $order['SHIPVIA'] = uc_export_orders_get_shipvia($order['SHIPVIA']);
     $order['ORDER_DATE'] = date("m/d/y",$order['ORDER_DATE']);
     $productcount = 1;
@@ -203,7 +210,7 @@ function uc_export_orders_dump($order_ids = NULL) {
     }
     $raworders[] = $order;
   }
-  //  print "<pre>";print_r($raworders);print "</pre>";
+//    print "<pre>";print_r($raworders);print "</pre>";
   if($metadata['count'] > 0) {
 
     $headers = array('Content-type' => 'text/octect-stream', 'Content-Disposition' => 'attachment;filename=data.csv');
