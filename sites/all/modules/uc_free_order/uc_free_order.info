@@ -1,0 +1,13 @@
+name = Free Order
+description = Enables a payment method to handle the possibility of free orders.
+dependencies[] = uc_order
+dependencies[] = uc_payment
+package = Ubercart - payment
+core = 6.x
+
+; Information added by drupal.org packaging script on 2011-02-25
+version = "6.x-1.x-dev"
+core = "6.x"
+project = "uc_free_order"
+datestamp = "1298620497"
+
