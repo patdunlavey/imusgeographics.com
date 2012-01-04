@@ -30,7 +30,7 @@ function _igcustom_uc_product_add_to_cart_form($form, &$form_state){
    * */
   $form['freeshippingnote'] = array (
   '#type' => 'markup',
-  '#value' => '<div class="highlight freeshipping"><span class="emphasis">Prices include Shippping</span><br>(Standard/Domestic)</div>',
+  '#value' => '<div class="highlight freeshipping"><span class="emphasis">Prices include Shipping</span><br>(Standard/Domestic)</div>',
   '#weight' => 1,
   );
 
