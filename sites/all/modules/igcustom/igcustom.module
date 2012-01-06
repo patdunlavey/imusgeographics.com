@@ -34,11 +34,11 @@ function _igcustom_uc_product_add_to_cart_form($form, &$form_state){
   '#weight' => 1,
   );
 
-  $form['save40percentnote'] = array (
-  '#type' => 'markup',
-  '#value' => '<div id="save40blurb" class="small">Save 40% per folded map when purchased in 10-packs</div>',
-  '#weight' => 0.002,
-  );
+  //$form['save40percentnote'] = array (
+  //'#type' => 'markup',
+  //'#value' => '<div id="save40blurb" class="small">Save 40% per folded map when purchased in 10-packs</div>',
+  //'#weight' => 0.002,
+  //);
   $form['submit']['#weight'] = 10;
   $title = $form['node']['#value']->title;
   if(is_array($form['attributes'])) {
@@ -51,7 +51,7 @@ function _igcustom_uc_product_add_to_cart_form($form, &$form_state){
   }
   $form['qty']['#size'] = 2;
   $form['qty']['#maxlength'] = 4;
-  
+
   return $form;
 }
 /**
