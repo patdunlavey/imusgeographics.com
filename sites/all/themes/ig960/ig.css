@@ -14,7 +14,7 @@
 
 body {
 	background:#ffffff url("images/header-black.gif") repeat-x 0 10px;
-	
+
 	color:#333333;
 	font-family: Verdana, sans-serif;
  	font-size: 10pt;
@@ -379,7 +379,7 @@ right:0px;
     margin-left:0;
     font-size:12px;
 }
-	
+
 #header ul.primary-links > li {
     float: left;
     padding:0;
@@ -591,7 +591,7 @@ input.node-add-to-cart:hover {
 */
 
 #freeshipping {
-/*	text-shadow: 1px 1px 0px #fd2; 
+/*	text-shadow: 1px 1px 0px #fd2;
 	font-weight:bold;
 	font-style:italic;*/
 	text-align:center;
@@ -769,7 +769,7 @@ div#content-trailer-right {float:right;width:264px;position:absolute;bottom:0;ri
 
 .AuthorizeNetSeal {
 	float:left;
-}	
+}
 .AuthorizeNetSeal-right {
 bottom:0;
 left:110px;
@@ -810,7 +810,7 @@ list-style:none outside none;
 #shopping_cart {
 	padding:6px;
 	border:1px solid #bbbbbb;
-	margin: 6px 0 12px 0;	
+	margin: 6px 0 12px 0;
 }
 
 .cart-block-items tr.odd, .cart-block-items tr.even {
@@ -860,4 +860,19 @@ margin-top:4px;
 
 .field-field-product-features {
 	margin-top:40px;
+}
+
+.uc_out_of_stock_throbbing {
+  display:none;
+  visibility:hidden;
+}
+
+#main .uc_out_of_stock_html p {
+  background:red;
+  color:white;
+  font-weight:bold;
+  display:block;
+  text-align:center;
+  padding:10px;
+  margin-top:6px;
 }

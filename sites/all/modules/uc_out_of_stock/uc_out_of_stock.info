@@ -1,0 +1,12 @@
+
+name = Out of stock notificator
+description = It tells the user if an item is out of stock. It supports attributes.
+core = 6.x
+dependencies[] =  uc_stock
+package = Ubercart - extra
+; Information added by drupal.org packaging script on 2011-11-27
+version = "6.x-1.7"
+core = "6.x"
+project = "uc_out_of_stock"
+datestamp = "1322426744"
+
