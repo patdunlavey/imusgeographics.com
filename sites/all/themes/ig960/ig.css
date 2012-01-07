@@ -870,9 +870,16 @@ margin-top:4px;
 #main .uc_out_of_stock_html p {
   background:red;
   color:white;
-  font-weight:bold;
+  font-weight:400;
   display:block;
   text-align:center;
   padding:10px;
   margin-top:6px;
+}
+#main .uc_out_of_stock_html a {
+  color:white;
+  font-weight:700;
+}
+#main .uc_out_of_stock_html a:hover {
+  text-decoration:underline;
 }
