@@ -28,12 +28,19 @@ function uc_export_orders_page() {
     else
     {
       if ($arg == 'latest') {
+        if(is_numeric(arg(5))) {
+          $export_count = arg(5);
+        }
+        else
+        {
+          $export_count = 100;
+        }
         $new_export = TRUE;
       }
     }
     // do the export, and incidentally, get a count of orders exported
     if($new_export) {
-      $export_info = uc_export_orders_dump();
+      $export_info = uc_export_orders_dump(array('count'=>$export_count));
     }
     else
     {
@@ -41,7 +48,7 @@ function uc_export_orders_page() {
     }
     if($new_export) {
       // update orders_export_history
-      $export_history = array_slice($export_history, 0, 9);
+      $export_history = array_slice($export_history, 0, 19);
       if($export_info['count'] > 0) {
         array_unshift($export_history, array('user'=>$user->uid, 'time' => $export_info['time'] ,'min_order_time'=>$export_info['min_order_time'], 'min_order_num'=>$export_info['min_order_num'], 'max_order_time'=>$export_info['max_order_time'], 'max_order_num'=>$export_info['max_order_num'], 'count'=>$export_info['count'], 'order_ids'=>$export_info['order_ids']));
         variable_set('order_export_history', $export_history);
@@ -72,10 +79,18 @@ function uc_export_orders_page() {
       $new_start_time = 0;
     }
     $pending_order_export_count = db_result(db_query("SELECT COUNT(*) FROM {uc_orders} uc_o WHERE uc_o.order_status = 'payment_received' ", $new_start_time));
+        if(is_numeric(arg(5))) {
+          $export_count = arg(5);
+        }
+        else
+        {
+          $export_count = 100;
+        }
     $content = '';
     if($pending_order_export_count > 0) {
       $content .='<h3>Number of new orders not yet exported: '.$pending_order_export_count.'&nbsp;&nbsp;&nbsp;';
-      $content .= l('Export Now','admin/store/orders/export/latest').' </h3>';
+      $current_export_count = $pending_order_export_count > $export_count ? $export_count : $pending_order_export_count;
+      $content .= l('Export Next ' . $current_export_count ,'admin/store/orders/export/latest').' </h3>';
     }
     else
     {
@@ -94,52 +109,58 @@ function uc_export_orders_dump($order_ids = NULL) {
     $end_time = time();
   }
   global $user;
-  if(!is_array($order_ids)) {
+  if(!is_array($order_ids) || isset($order_ids['count'])) {
     $whereclause = " uc_o.order_status = 'payment_received'";
   }
   else
   {
     $whereclause =  " uc_o.order_id IN (".implode(',',$order_ids).")";
   }
-  $result = db_query(
-  "SELECT
-  '8544' AS `CUSTNUM`, 
-  LEFT(uc_ol.title,12) AS `SHIPVIA`, 
-  uc_o.modified AS `ORDER_DATE`, 
-  uc_o.order_id AS `ODR_NUM`, 
+
+  $limit = isset($order_ids['count']) ? $order_ids['count'] : 100;
+
+
+
+  $args = array($limit);
+  $sql =  "SELECT
+  '8544' AS `CUSTNUM`,
+  LEFT(uc_ol.title,12) AS `SHIPVIA`,
+  uc_o.modified AS `ORDER_DATE`,
+  uc_o.order_id AS `ODR_NUM`,
   '' AS `CONTINUED`,
-  '' AS `PRODUCT01`, 
-  '' AS `QUANTITY01`, 
-  '' AS `PRODUCT02`, 
-  '' AS `QUANTITY02`, 
-  '' AS `PRODUCT03`, 
-  '' AS `QUANTITY03`, 
-  '' AS `PRODUCT04`, 
-  '' AS `QUANTITY04`, 
-  '' AS `PRODUCT05`, 
-  '' AS `QUANTITY05`, 
-  delivery_last_name AS `SLASTNAME`, 
-  delivery_first_name AS `SFIRSTNAME`, 
-  delivery_company AS `SCOMPANY0`, 
-  delivery_street1 AS `SADDRESS10`, 
-  delivery_street2 AS `SADDRESS20`, 
-  delivery_city AS `SCITY`, 
-  uc_z_ship.zone_code AS `SSTATE`, 
-  delivery_postal_code AS `SZIPCODE`, 
-  primary_email AS `SEMAIL`, 
+  '' AS `PRODUCT01`,
+  '' AS `QUANTITY01`,
+  '' AS `PRODUCT02`,
+  '' AS `QUANTITY02`,
+  '' AS `PRODUCT03`,
+  '' AS `QUANTITY03`,
+  '' AS `PRODUCT04`,
+  '' AS `QUANTITY04`,
+  '' AS `PRODUCT05`,
+  '' AS `QUANTITY05`,
+  delivery_last_name AS `SLASTNAME`,
+  delivery_first_name AS `SFIRSTNAME`,
+  delivery_company AS `SCOMPANY0`,
+  delivery_street1 AS `SADDRESS10`,
+  delivery_street2 AS `SADDRESS20`,
+  delivery_city AS `SCITY`,
+  uc_z_ship.zone_code AS `SSTATE`,
+  delivery_postal_code AS `SZIPCODE`,
+  primary_email AS `SEMAIL`,
   uc_c_ship.country_iso_code_3 AS `SCOUNTRY`,
   '' AS ORDNOTE1,
   '' AS ORDNOTE2,
   '' AS ORDNOTE3,
   '' AS ORDNOTE4,
   '' AS ORDNOTE5
-    
-  FROM {uc_orders} uc_o 
-  INNER JOIN {uc_zones} uc_z_ship ON (uc_o.delivery_zone = uc_z_ship.zone_id)
-  INNER JOIN {uc_countries} uc_c_ship ON (uc_c_ship.country_id = uc_o.delivery_country)
-  LEFT JOIN {uc_order_line_items} uc_ol ON (uc_o.order_id = uc_ol.order_id AND uc_ol.type = 'shipping')
-  WHERE ".$whereclause);
 
+  FROM {uc_orders} uc_o
+  LEFT JOIN {uc_zones} uc_z_ship ON (uc_o.delivery_zone = uc_z_ship.zone_id)
+  LEFT JOIN {uc_countries} uc_c_ship ON (uc_c_ship.country_id = uc_o.delivery_country)
+  LEFT JOIN {uc_order_line_items} uc_ol ON (uc_o.order_id = uc_ol.order_id AND uc_ol.type = 'shipping')
+  LEFT JOIN {uc_flatrate_methods} uc_m ON (uc_m.label = uc_ol.title)
+  WHERE ".$whereclause . " ORDER BY uc_m.base_rate DESC LIMIT 0, %d";
+  $result = db_query($sql, $args);
   $raworders = array();
   $metadata = array(
     'min_order_num'  => 99999999999999999999,
@@ -151,7 +172,7 @@ function uc_export_orders_dump($order_ids = NULL) {
     'order_ids' => array(),
   );
   while ($order = db_fetch_array($result)) {
-    if(!is_array($order_ids)) {
+    if(!is_array($order_ids) || isset($order_ids['count'])) {
       db_query("UPDATE {uc_orders} uc_o SET uc_o.order_status = 'completed' WHERE uc_o.order_id = %d", $order['ODR_NUM']);
       db_query("INSERT INTO {uc_order_comments} (order_id,uid,order_status,notified,message,created) VALUES (%d,%d,'completed',0,'%s',%d)", $order['ODR_NUM'], $user->uid, t('Automatically marked as completed by order export module'),time());
     }
