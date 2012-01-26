@@ -60,6 +60,7 @@ function _igcustom_uc_product_add_to_cart_form($form, &$form_state){
  * when form fieldsets are collapsible
  */
 function igcustom_form_uc_cart_checkout_form_alter(&$form, &$form_state) {
+  //dpm($form);
   //  dpm($_SERVER);
   //  if ( $pos = strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') ) {
   //    $IEVer = substr($_SERVER['HTTP_USER_AGENT'],$pos+5,1);
@@ -73,6 +74,9 @@ function igcustom_form_uc_cart_checkout_form_alter(&$form, &$form_state) {
   foreach (element_children($form['panes']) as $pane_id) {
     $form['panes'][$pane_id]['#collapsible'] = FALSE;
   }
+  $form['panes']['coupon']['#description'] = "If you are a NACIS Member, enter your coupon code here";
+  $form['panes']['coupon']['#title'] = "NACIS Member Discount";
+  $form['panes']['delivery']['#description'] = "Enter your delivery address and information here.<br><em>(Note that Free Shipping can only be made to valid US Postal Service addresses)</em>";
 
   }
 
