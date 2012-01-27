@@ -174,7 +174,7 @@ function uc_export_orders_dump($order_ids = NULL) {
   while ($order = db_fetch_array($result)) {
     if(!is_array($order_ids) || isset($order_ids['count'])) {
       db_query("UPDATE {uc_orders} uc_o SET uc_o.order_status = 'completed' WHERE uc_o.order_id = %d", $order['ODR_NUM']);
-      db_query("INSERT INTO {uc_order_comments} (order_id,uid,order_status,notified,message,created) VALUES (%d,%d,'completed',0,'%s',%d)", $order['ODR_NUM'], $user->uid, t('Automatically marked as completed by order export module'),time());
+      db_query("INSERT INTO {uc_order_comments} (order_id,uid,order_status,notified,message,created) VALUES (%d,%d,'completed',0,'%s',%d)", $order['ODR_NUM'], $user->uid, t('Order released to fulfillment. Free standard shipping 2-10 business days'),time());
     }
     $metadata['min_order_num'] = min($metadata['min_order_num'], $order['ODR_NUM']);
     $metadata['max_order_num'] = max($metadata['max_order_num'], $order['ODR_NUM']);
