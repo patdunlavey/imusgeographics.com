@@ -262,7 +262,7 @@
                 <td colspan="2">
                   <hr noshade="noshade" size="1" /><br />
 
-                  <p><b><?php print t('We have received and verified your order.') ."</b><br>" . t('Your order has not yet shipped. Be advised Ð folded maps and wall maps may not arrive on the same day. Please refer to order status message for order #!order_link for general shipping updates.',array('!order_link' => $order_link)); ?><br /></p>
+                  <p><b><?php print t('We have received and verified your order.') ."</b><br>" . t('Your order has not yet shipped. Be advised that folded maps and wall maps may not arrive on the same day. Please refer to order status message for order #!order_link and for general shipping updates.',array('!order_link' => $order_link)); ?><br /></p>
                 </td>
               </tr>
               <?php if ($help_text || $email_text || $store_footer) { ?>
