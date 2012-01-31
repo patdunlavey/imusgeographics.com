@@ -159,7 +159,7 @@ function uc_export_orders_dump($order_ids = NULL) {
   LEFT JOIN {uc_countries} uc_c_ship ON (uc_c_ship.country_id = uc_o.delivery_country)
   LEFT JOIN {uc_order_line_items} uc_ol ON (uc_o.order_id = uc_ol.order_id AND uc_ol.type = 'shipping')
   LEFT JOIN {uc_flatrate_methods} uc_m ON (uc_m.label = uc_ol.title)
-  WHERE ".$whereclause . " ORDER BY uc_m.base_rate DESC LIMIT 0, %d";
+  WHERE ".$whereclause . " ORDER BY /* uc_m.base_rate DESC, */ uc_o.order_id ASC LIMIT 0, %d";
   $result = db_query($sql, $args);
   $raworders = array();
   $metadata = array(
