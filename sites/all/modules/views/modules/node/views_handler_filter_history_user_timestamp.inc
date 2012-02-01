@@ -1,6 +1,8 @@
 <?php
 /**
  * Filter for new content
+ *
+ * @ingroup views_filter_handlers
  */
 class views_handler_filter_history_user_timestamp extends views_handler_filter {
   // Don't display empty space where the operator would be.
@@ -68,4 +70,3 @@ class views_handler_filter_history_user_timestamp extends views_handler_filter {
     }
   }
 }
-

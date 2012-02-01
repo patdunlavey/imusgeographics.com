@@ -117,17 +117,17 @@ class views_handler_sort extends views_handler {
    * Provide a list of options for the default sort form.
    * Should be overridden by classes that don't override sort_form
    */
-  function sort_options() { 
+  function sort_options() {
     return array(
-      'ASC' => t('Sort ascending'), 
+      'ASC' => t('Sort ascending'),
       'DESC' => t('Sort descending'),
-    ); 
+    );
   }
 
   /**
    * Since all exposed sorts are grouped into one select box.
    * We don't return nothing when views call to exposed_form()
-   */ 
+   */
   function exposed_form(&$form, &$form_state) { }
 
   /**
@@ -142,7 +142,7 @@ class views_handler_sort extends views_handler {
       '#size' => 40,
    );
   }
-  
+
   /**
    * Handle the 'right' side fo the exposed options form.
    */
@@ -166,6 +166,8 @@ class views_handler_sort extends views_handler {
 
 /**
  * A special handler to take the place of missing or broken handlers.
+ *
+ * @ingroup views_sort_handlers
  */
 class views_handler_sort_broken extends views_handler_sort {
   function ui_name($short = FALSE) {

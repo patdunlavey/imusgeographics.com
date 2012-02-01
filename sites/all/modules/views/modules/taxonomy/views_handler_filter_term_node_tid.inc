@@ -1,7 +1,9 @@
 <?php
 
 /**
- * Filter by term id
+ * Filter by term id.
+ *
+ * @ingroup views_filter_handlers
  */
 class views_handler_filter_term_node_tid extends views_handler_filter_many_to_one {
   function can_group() { return FALSE; }
@@ -119,7 +121,7 @@ class views_handler_filter_term_node_tid extends views_handler_filter_many_to_on
       else {
         $options = array();
         if ($this->options['limit']) {
-          $result = db_query(db_rewrite_sql("SELECT * FROM {term_data} t WHERE t.vid = %d ORDER BY t.weight, t.name", 't', 'tid'), $vocabulary->vid);
+          $result = db_query(db_rewrite_sql("SELECT t.* FROM {term_data} t WHERE t.vid = %d ORDER BY t.weight, t.name", 't', 'tid'), $vocabulary->vid);
         }
         else {
           $result = db_query(db_rewrite_sql("SELECT td.* FROM {term_data} td INNER JOIN {vocabulary} v ON td.vid = v.vid ORDER BY v.weight, v.name, td.weight, td.name", 'td', 'tid'));
@@ -165,7 +167,7 @@ class views_handler_filter_term_node_tid extends views_handler_filter_many_to_on
         '#default_value' => $default_value,
       );
 
-      if (!empty($form_state['exposed']) && !isset($form_state['input'][$identifier])) {
+      if (!empty($form_state['exposed']) && isset($identifier) && !isset($form_state['input'][$identifier])) {
         $form_state['input'][$identifier] = $default_value;
       }
     }

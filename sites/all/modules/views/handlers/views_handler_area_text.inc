@@ -1,14 +1,14 @@
 <?php
 
 /**
-* @file
-* Views area text handler.
-*/
+ * @file
+ * Contains views_handler_area_text handler.
+ */
 
 /**
+ * Views area text handler.
  * @ingroup views_area_handlers Views' area handlers
 */
-
 class views_handler_area_text extends views_handler_area {
 
   function option_definition() {
@@ -86,8 +86,9 @@ class views_handler_area_text extends views_handler_area {
   }
 
   function render($empty = FALSE) {
+    $format = isset($this->options['format']) ? $this->options['format'] : FILTER_FORMAT_DEFAULT;
     if (!$empty || !empty($this->options['empty'])) {
-      return $this->render_textarea($this->options['content'], $this->options['format']);
+      return $this->render_textarea($this->options['content'], $format);
     }
     return '';
   }
@@ -111,7 +112,9 @@ class views_handler_area_text extends views_handler_area {
     }
 
     if ($value) {
-      $value = $this->view->style_plugin->tokenize_value($value, 0);
+      if ($this->options['tokenize']) {
+        $value = $this->view->style_plugin->tokenize_value($value, 0);
+      }
       return check_markup($value, $format, FALSE);
     }
   }

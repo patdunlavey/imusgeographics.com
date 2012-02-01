@@ -19,6 +19,13 @@ class view extends views_db_object {
   var $db_table = 'views_view';
   var $base_table = 'node';
 
+  /**
+   * The id of the view, which is used only for views in the database.
+   *
+   * @var number
+   */
+  var $vid;
+
   // State variables
   var $built = FALSE;
   var $executed = FALSE;
@@ -61,7 +68,7 @@ class view extends views_db_object {
    * @var string
    */
   var $current_display;
-  
+
   /**
    * Where the $query object will reside:
    *
@@ -84,7 +91,68 @@ class view extends views_db_object {
    var $style_plugin;
 
   /**
-   * The current 
+   * Allow to override the path used for generated urls.
+   *
+   * @var string
+   */
+  var $override_path = NULL;
+
+  /**
+   * Stores all the views substitutions.
+   */
+  var $substitutions = array();
+
+  /**
+   * Here comes a list of the possible handler which are active on this view.
+   */
+
+  /**
+   * Stores the field handlers which are initialized on this view.
+   * @var array[views_handler_field]
+   */
+  var $field;
+
+  /**
+   * Stores the argument handlers which are initialized on this view.
+   * @var array[views_handler_argument]
+   */
+  var $argument;
+
+  /**
+   * Stores the sort handlers which are initialized on this view.
+   * @var array[views_handler_sort]
+   */
+  var $sort;
+
+  /**
+   * Stores the filter handlers which are initialized on this view.
+   * @var array[views_handler_filter]
+   */
+  var $filter;
+
+  /**
+   * Stores the relationship handlers which are initialized on this view.
+   * @var array[views_handler_relationship]
+   */
+  var $relationship;
+
+  /**
+   * Stores the area handlers for the header which are initialized on this view.
+   * @var array[views_handler_area]
+   */
+  var $header;
+
+  /**
+   * Stores the area handlers for the footer which are initialized on this view.
+   * @var array[views_handler_area]
+   */
+  var $footer;
+
+  /**
+   * Stores the area handlers for the empty text which are initialized on this view.
+   * @var array[views_handler_area]
+   */
+  var $empty;
 
   /**
    * Constructor
@@ -179,6 +247,15 @@ class view extends views_db_object {
     // If the pager is already initialized, pass it through to the pager.
     if (!empty($this->query->pager)) {
       $this->query->pager->set_offset($offset);
+    }
+  }
+
+  /**
+   * Determine if the pager actually uses a pager.
+   */
+  function use_pager() {
+    if (!empty($this->query->pager)) {
+      return $this->query->pager->use_pager();
     }
   }
 
@@ -439,6 +516,16 @@ class view extends views_db_object {
   }
 
   /**
+   * Get's all the substitutions and store them.
+   */
+  function substitutions($reset = FALSE) {
+    if ($reset || empty($this->substitutions)) {
+      $this->substitutions = module_invoke_all('views_query_substitutions', $this);
+    }
+    return $this->substitutions;
+  }
+
+  /**
    * Attach all of the handlers for each type.
    *
    * @param $key
@@ -524,6 +611,7 @@ class view extends views_db_object {
 
         // Add this argument's substitution
         $substitutions['%' . ($position + 1)] = $arg_title;
+        $substitutions['!' . ($position + 1)] = strip_tags(html_entity_decode($arg));
 
         // Since we're really generating the breadcrumb for the item above us,
         // check the default action of this argument.
@@ -701,6 +789,11 @@ class view extends views_db_object {
       $this->style_plugin->build_sort_post();
     }
 
+    // Allow area handlers to affect the query.
+    $this->_build('header');
+    $this->_build('footer');
+    $this->_build('empty');
+
     // Allow display handler to affect the query:
     $this->display_handler->query($this->display_handler->use_group_by());
 
@@ -853,8 +946,23 @@ class view extends views_db_object {
         $cache->cache_start();
       }
 
+      // Run pre_render for the pager as it might change the result.
+      if (!empty($this->query->pager)) {
+        $this->query->pager->pre_render($this->result);
+      }
+
       // Initialize the style plugin.
       $this->init_style();
+
+      // Give field handlers the opportunity to perform additional queries
+      // using the entire resultset prior to rendering.
+      if ($this->style_plugin->uses_fields()) {
+        foreach ($this->field as $id => $handler) {
+          if (!empty($this->field[$id])) {
+            $this->field[$id]->pre_render($this->result);
+          }
+        }
+      }
 
       $this->style_plugin->pre_render($this->result);
 
@@ -867,18 +975,9 @@ class view extends views_db_object {
       // Let the theme play too, because pre render is a very themey thing.
       $function = $GLOBALS['theme'] . '_views_pre_render';
       if (function_exists($function)) {
-        $function($this, $this->display_handler->output, $cache);
+        $function($this);
       }
 
-      // Give field handlers the opportunity to perform additional queries
-      // using the entire resultset prior to rendering.
-      if ($this->style_plugin->uses_fields()) {
-        foreach ($this->field as $id => $handler) {
-          if (!empty($this->field[$id])) {
-            $this->field[$id]->pre_render($this->result);
-          }
-        }
-      }
       $this->display_handler->output = $this->display_handler->render();
       if ($cache) {
         $cache->cache_set('output');
@@ -994,19 +1093,17 @@ class view extends views_db_object {
     views_set_current_view($this);
     $display_id = $this->current_display;
 
-    // Let modules modify the view just prior to executing it.
-    foreach (module_implements('views_pre_view') as $module) {
-      $function = $module . '_views_pre_view';
-      $function($this, $display_id, $args);
-    }
-
     // Prepare the view with the information we have, but only if we were
     // passed arguments, as they may have been set previously.
     if ($args) {
       $this->set_arguments($args);
     }
 
-//    $this->attach_displays();
+    // Let modules modify the view just prior to executing it.
+    foreach (module_implements('views_pre_view') as $module) {
+      $function = $module . '_views_pre_view';
+      $function($this, $display_id, $this->args);
+    }
 
     // Allow the display handler to set up for execution
     $this->display_handler->pre_execute();
@@ -1056,7 +1153,7 @@ class view extends views_db_object {
    * @param $callbacks
    *   A menu callback array passed from views_menu_alter().
    */
-  function execute_hook_menu($display_id = NULL, $callbacks = array()) {
+  function execute_hook_menu($display_id = NULL, &$callbacks = array()) {
     // Prepare the view with the information we have.
 
     // This was probably already called, but it's good to be safe.
@@ -1130,10 +1227,7 @@ class view extends views_db_object {
       $human_name = $this->human_name;
     }
     else {
-      $human_name = $this->get_title();
-      if (empty($human_name)) {
-        $human_name = $this->name;
-      }
+      $human_name = $this->name;
     }
     return $human_name;
   }
@@ -1163,6 +1257,16 @@ class view extends views_db_object {
     }
     return $title;
   }
+
+  /**
+   * Override the view's current title.
+   *
+   * The tokens in the title get's replaced before rendering.
+   */
+  function set_title($title) {
+     $this->build_info['title'] = $title;
+     return TRUE;
+   }
 
   /**
    * Force the view to build a title.
@@ -1712,7 +1816,7 @@ class view extends views_db_object {
       return TRUE;
     }
 
-    $this->localization_plugin = views_get_plugin('localization', variable_get('views_localization_plugin', 'core'));
+    $this->localization_plugin = views_get_plugin('localization', views_get_localization_plugin());
 
     if (empty($this->localization_plugin)) {
       return FALSE;

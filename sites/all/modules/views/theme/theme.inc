@@ -109,11 +109,10 @@ function template_preprocess_views_view(&$vars) {
   // It is true that the DIV wrapper has classes denoting the name of the view
   // and its display ID, but this is not enough to unequivocally match a view
   // with its HTML, because one view may appear several times on the page. So
-  // we set up a running counter, $dom_id, to issue a "unique" identifier for
+  // we set up a hash with the current time, $dom_id, to issue a "unique" identifier for
   // each view. This identifier is written to both Drupal.settings and the DIV
   // wrapper.
-  static $dom_id = 1;
-  $vars['dom_id'] = !empty($view->dom_id) ? $view->dom_id : $dom_id++;
+  $vars['dom_id'] = !empty($view->dom_id) ? $view->dom_id : md5($view->name . time() . rand());
   $vars['classes_array'][] = 'view-dom-id-' . $vars['dom_id'];
 
   // If using AJAX, send identifying data about this view.
@@ -122,7 +121,7 @@ function template_preprocess_views_view(&$vars) {
       'views' => array(
         'ajax_path' => url('views/ajax'),
         'ajaxViews' => array(
-          array(
+          'views_dom_id:' . $vars['dom_id'] => array(
             'view_name' => $view->name,
             'view_display_id' => $view->current_display,
             'view_args' => check_plain(implode('/', $view->args)),
@@ -145,16 +144,8 @@ function template_preprocess_views_view(&$vars) {
   // Flatten the classes to a string for the template file.
   $vars['classes'] = implode(' ', $vars['classes_array']);
 
-  // Check the fields on the View to see if any are adding form elements.
-  $has_form_fields = FALSE;
-  foreach ($view->field as $field_name => $field) {
-    if (property_exists($field, 'views_form_callback') || method_exists($field, 'views_form')) {
-      $has_form_fields = TRUE;
-      break;
-    }
-  }
   // If form fields were found in the View, reformat the View output as a form.
-  if ($has_form_fields) {
+  if (views_view_has_form_elements($view)) {
     $vars['rows']  = drupal_get_form(views_form_id($view), $view, $vars['rows']);
     // The form is requesting that all non-essential views elements be hidden,
     // usually because the rendered step is not a view result.
@@ -273,7 +264,7 @@ function template_preprocess_views_view_fields(&$vars) {
         if ($object->element_label_type) {
           $class = '';
           if ($object->handler->options['element_default_classes']) {
-            $class = 'views-label-' . $object->class;
+            $class = 'views-label views-label-' . $object->class;
           }
 
           $element_label_class = $object->handler->element_label_classes($view->row_index);
@@ -405,6 +396,7 @@ function template_preprocess_views_view_table(&$vars) {
   $result   = $vars['result'] = $vars['rows'];
   $vars['rows'] = array();
   $vars['field_classes'] = array();
+  $vars['header'] = array();
 
   $options  = $view->style_plugin->options;
   $handler  = $view->style_plugin;
@@ -415,15 +407,11 @@ function template_preprocess_views_view_table(&$vars) {
   $active   = !empty($handler->active) ? $handler->active : '';
   $order    = !empty($handler->order) ? $handler->order : 'asc';
 
-  $query    = tablesort_get_querystring();
-  if ($query) {
-    $query = '&' . $query;
-  }
+  parse_str(tablesort_get_querystring(), $query);
   if (isset($view->exposed_raw_input)) {
-    $query .= implode('&', $view->exposed_raw_input);
+    $query += $view->exposed_raw_input;
   }
-
-  $header = array();
+  $query = empty($query) ? '' : '&' . http_build_query($query, '', '&');
 
   // Fields must be rendered in order as of Views 2.3, so we will pre-render
   // everything.
@@ -827,7 +815,7 @@ function template_preprocess_views_exposed_form(&$vars) {
     // set up defaults so that there's always something there.
     $widget->label = $widget->operator = $widget->widget = NULL;
 
-    $widget->id = $form[$info['value']]['#id'];
+    $widget->id = isset($form[$info['value']]['#id']) ? $form[$info['value']]['#id'] : '';
     if (!empty($info['label'])) {
       $widget->label = $info['label'];
     }
@@ -843,6 +831,7 @@ function template_preprocess_views_exposed_form(&$vars) {
     $widget = new stdClass;
     // set up defaults so that there's always something there.
     $widget->label = $widget->operator = $widget->widget = NULL;
+    $widget->id = 'checkboxes';
     $widget->widget = $checkboxes;
     $vars['widgets']['checkboxes'] = $widget;
   }

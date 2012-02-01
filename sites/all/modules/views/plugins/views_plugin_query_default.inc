@@ -209,7 +209,7 @@ class views_plugin_query_default extends views_plugin_query{
    * @param $alias
    *   What this relationship will be called, and is also the alias
    *   for the table.
-   * @param $join
+   * @param views_join $join
    *   A views_join object (or derived object) to join the alias in.
    * @param $base
    *   The name of the 'base' table this relationship represents; this
@@ -281,7 +281,7 @@ class views_plugin_query_default extends views_plugin_query{
    *   tables exist and are properly aliased. If set to NULL the path to
    *   the primary table will be ensured. If the path cannot be made, the
    *   table will NOT be added.
-   * @param $join
+   * @param views_join $join
    *   In some join configurations this table may actually join back through
    *   a different method; this is most likely to be used when tracing
    *   a hierarchy path. (node->parent->parent2->parent3). This parameter
@@ -300,7 +300,11 @@ class views_plugin_query_default extends views_plugin_query{
       return FALSE;
     }
 
-    return $this->queue_table($table, $relationship, $this->adjust_join($join, $relationship), $alias);
+    if ($join && $relationship) {
+      $join = $this->adjust_join($join, $relationship);
+    }
+
+    return $this->queue_table($table, $relationship, $join, $alias);
   }
 
   /**
@@ -316,7 +320,7 @@ class views_plugin_query_default extends views_plugin_query{
    * @param $relationship
    *   The primary table alias this table is related to. If not set, the
    *   primary table will be used.
-   * @param $join
+   * @param views_join $join
    *   In some join configurations this table may actually join back through
    *   a different method; this is most likely to be used when tracing
    *   a hierarchy path. (node->parent->parent2->parent3). This parameter
@@ -428,7 +432,7 @@ class views_plugin_query_default extends views_plugin_query{
    *   The relationship to ensure the table links to. Each relationship will
    *   get a unique instance of the table being added. If not specified,
    *   will be the primary table.
-   * @param $join
+   * @param views_join $join
    *   A views_join object (or derived object) to join the alias in.
    *
    * @return
@@ -616,7 +620,7 @@ class views_plugin_query_default extends views_plugin_query{
    * @param $base_table
    *   The path we're following to get this join.
    *
-   * @return
+   * @return views_join
    *   A views_join object or child object, if one exists.
    */
   function get_join_data($table, $base_table) {
@@ -1114,7 +1118,7 @@ class views_plugin_query_default extends views_plugin_query{
 
     $items = array();
     if ($query) {
-      $replacements = module_invoke_all('views_query_substitutions', $view);
+      $replacements = $this->view->substitutions();
       $query = str_replace(array_keys($replacements), $replacements, $query);
       $count_query = 'SELECT COUNT(*) FROM (' . str_replace(array_keys($replacements), $replacements, $count_query) . ') count_alias';
 
@@ -1126,7 +1130,7 @@ class views_plugin_query_default extends views_plugin_query{
 
       // Detect an external database.
       if (isset($view->base_database)) {
-        db_set_active($view->base_database);
+        $this->db_set_active($view->base_database);
         $external = TRUE;
       }
 
@@ -1150,7 +1154,7 @@ class views_plugin_query_default extends views_plugin_query{
       }
 
       $view->result = array();
-      while ($item = db_fetch_object($result)) {
+      while ($item = $this->db_fetch_object($result)) {
         $view->result[] = $item;
       }
 
@@ -1161,7 +1165,7 @@ class views_plugin_query_default extends views_plugin_query{
       }
 
       if ($external) {
-        db_set_active();
+        $this->db_set_active();
       }
     }
     $view->execute_time = views_microtime() - $start;
@@ -1211,6 +1215,26 @@ class views_plugin_query_default extends views_plugin_query{
    */
   function db_result($result) {
     return db_result($result);
+  }
+
+  /**
+   * Wrapper method for db_fetch_object().
+   *
+   * @param $result
+   *   A database result used for db_fetch_object().
+   */
+  function db_fetch_object($result) {
+    return db_fetch_object($result);
+  }
+
+  /**
+   * Wrapper method for db_set_active().
+   *
+   * @param $name
+   *   The database name you want to activate.
+   */
+  function db_set_active($name = 'default') {
+    return db_set_active($name);
   }
 
 

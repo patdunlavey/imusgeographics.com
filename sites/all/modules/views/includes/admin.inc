@@ -134,6 +134,7 @@ function template_preprocess_views_ui_list_views(&$vars) {
     }
 
     $item->ops = implode(' | ', $item->ops);
+    $item->path = '';
     if (empty($view->display)) {
       $item->path = t('Warning! Broken view!');
     }
@@ -163,7 +164,7 @@ function template_preprocess_views_ui_list_views(&$vars) {
     $item->name = $view->name;
 
     if (!empty($view->tag)) {
-      $item->tag = $view->tag;
+      $item->tag = check_plain($view->tag);
     }
 
     $item->title = $view->get_title();
@@ -793,6 +794,11 @@ function views_ui_import_page(&$form_state) {
     '#description' => t('Enter the name to use for this view if it is different from the source view. Leave blank to use the name of the view.'),
   );
 
+  $form['name_override'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Replace an existing view if one exists with the same name'),
+  );
+
   $form['view'] = array(
     '#type' => 'textarea',
     '#title' => t('Paste view code here'),
@@ -853,53 +859,24 @@ function views_ui_import_validate($form, &$form_state) {
   }
 
   $test = views_get_view($view->name);
-  if ($test && $test->type != t('Default')) {
-    form_set_error('', t('A view by that name already exists; please choose a different name'));
+  if (!$form_state['values']['name_override']) {
+    if ($test && $test->type != t('Default')) {
+      form_set_error('', t('A view by that name already exists; please choose a different name'));
+    }
   }
-
-  $view->init_display();
-
-  $broken = FALSE;
-  // Make sure that all plugins and handlers needed by this view actually exist.
-  foreach ($view->display as $id => $display) {
-    if (empty($display->handler) || !empty($display->handler->broken)) {
-      drupal_set_message(t('Display plugin @plugin is not available.', array('@plugin' => $display->display_plugin)), 'error');
-      $broken = TRUE;
-      continue;
-    }
-
-    $plugin = views_get_plugin('style', $display->handler->get_option('style_plugin'));
-    if (!$plugin) {
-      drupal_set_message(t('Style plugin @plugin is not available.', array('@plugin' => $display->handler->get_option('style_plugin'))), 'error');
-      $broken = TRUE;
-    }
-    else if ($plugin->uses_row_plugin()) {
-      $plugin = views_get_plugin('row', $display->handler->get_option('row_plugin'));
-      if (!$plugin) {
-        drupal_set_message(t('Row plugin @plugin is not available.', array('@plugin' => $display->handler->get_option('row_plugin'))), 'error');
-        $broken = TRUE;
-      }
-    }
-
-    foreach (views_object_types() as $type => $info) {
-      $handlers = $display->handler->get_handlers($type);
-      if ($handlers) {
-        foreach ($handlers as $id => $handler) {
-          if ($handler->broken()) {
-            drupal_set_message(t('@type handler @table.@field is not available.', array(
-              '@type' => $info['stitle'],
-              '@table' => $handler->table,
-              '@field' => $handler->field,
-            )), 'error');
-            $broken = TRUE;
-          }
-        }
-      }
+  else {
+    if ($test->vid) {
+      $view->vid = $test->vid;
     }
   }
 
-  if ($broken) {
-    form_set_error('', t('Unable to import view.'));
+  views_include('analyze');
+  if ($messages = views_analyze_view($view)) {
+    foreach ($messages as $message) {
+      if ($message['type'] == 'error') {
+        drupal_set_message($message['message'], 'error');
+      }
+    }
   }
 
   $form_state['view'] = &$view;
@@ -977,8 +954,23 @@ function views_ui_edit_view_form_submit($form, &$form_state) {
     }
   }
 
+  // Direct the user to the right url, if the path of the display has changed.
+  if (!empty($_GET['destination'])) {
+    $destination = $_GET['destination'];
+    // Find out the first display which has a changed path and redirect to this url.
+    $old_view = views_get_view($form_state['view']->name);
+    foreach ($old_view->display as $id => $display) {
+      $old_path = $display->display_options['path'];
+      if (($display->display_plugin == 'page') && ($old_path == $destination) && ($old_path != $form_state['view']->display[$id]->display_options['path'])) {
+        $destination = $form_state['view']->display[$id]->display_options['path'];
+        unset($_GET['destination']);
+      }
+    }
+    $form_state['redirect'] = $destination;
+  }
+
   $form_state['view']->save();
-  drupal_set_message(t('The view %name has been saved.', array('%name' => $form_state['view']->name)));
+  drupal_set_message(t('The view %name has been saved.', array('%name' => $form_state['view']->get_human_name())));
 
   // Make sure menu items get rebuilt as neces
   menu_rebuild();
@@ -1170,7 +1162,7 @@ function template_preprocess_views_ui_edit_tab(&$vars) {
         $title = t('Description');
         break;
     }
-    $value = empty($view->{$property}) ? t('None') : check_plain($view->{$property});
+    $value = empty($view->{$property}) ? t('None') : $view->{$property};
     $vars['details'][$property] = $title . ': ' . l($value, "admin/build/views/nojs/$property/$view->name", array('attributes' => array('class' => 'views-ajax-link')));
   }
 
@@ -1370,7 +1362,7 @@ function template_preprocess_views_ui_edit_item(&$vars) {
     }
     $fields[$id]['info'] = $handler->admin_summary();
 
-    if ($display->handler->use_group_by()) {
+    if ($display->handler->use_group_by() && $handler->use_group_by()) {
       $fields[$id]['links'] = l('<span>' . t('Group settings') . '</span>', "admin/build/views/nojs/config-item-group/$view->name/$display->id/$type/$id", array('attributes' => array('class' => 'views-button-configure views-ajax-link', 'title' => t('Group settings')), 'html' => true));
     }
     if ($handler->has_extra_options()) {
@@ -1843,7 +1835,7 @@ function views_ui_add_display_form(&$form_state) {
 
   $form['display']['display'] = array(
     '#type' => 'select',
-    '#options' => views_fetch_plugin_names('display'),
+    '#options' => views_fetch_plugin_names('display', NULL, array($view->base_table)),
     '#default_value' => 'page',
   );
 
@@ -3107,12 +3099,17 @@ function views_ui_add_item_form_submit($form, &$form_state) {
       $id = $form_state['view']->add_item($form_state['display_id'], $type, $table, $field);
 
       // check to see if we have group by settings
-      if ($form_state['view']->display_handler->use_group_by()) {
+      $key = $type;
+      // Footer,header and empty text have a different internal handler type(area).
+      if (isset($types[$type]['type'])) {
+        $key = $types[$type]['type'];
+      }
+      $handler = views_get_handler($table, $field, $key);
+      if ($form_state['view']->display_handler->use_group_by() && $handler->use_group_by()) {
         views_ui_add_form_to_stack('config-item-group', $form_state['view'], $form_state['display_id'], array($type, $id));
       }
 
       // check to see if this type has settings, if so add the settings form first
-      $handler = views_get_handler($table, $field, $type);
       if ($handler && $handler->has_extra_options()) {
         views_ui_add_form_to_stack('config-item-extra', $form_state['view'], $form_state['display_id'], array($type, $id));
       }
@@ -3739,7 +3736,7 @@ function views_ui_admin_tools() {
     '#type' => 'radios',
     '#title' => t('Translation method'),
     '#options' => views_fetch_plugin_names('localization', NULL, array(), TRUE),
-    '#default_value' => variable_get('views_localization_plugin', 'core'),
+    '#default_value' => views_get_localization_plugin(),
     '#description' => t('Select a translation method to use for Views data like header, footer, and empty text.'),
   );
 
@@ -3759,6 +3756,21 @@ function views_ui_admin_tools() {
     '#options' => array('old_any' => '<Any>', 'new_any' => t('- Any -')),
     '#default_value' => variable_get('views_exposed_filter_any_label', 'old_any'),
   );
+
+  $options = views_fetch_plugin_names('display_extender');
+  if (!empty($options)) {
+    $form['extenders'] = array(
+      '#type' => 'fieldset',
+    );
+    ;
+    $form['extenders']['views_display_extenders'] = array(
+      '#title' => t('Display extenders'),
+      '#default_value' => variable_get('views_display_extenders', array()),
+      '#options' => $options,
+      '#type' => 'checkboxes',
+      '#description' => t('Select extensions of the views interface.')
+    );
+  }
 
   return system_settings_form($form);
 }
@@ -4086,4 +4098,3 @@ function theme_views_ui_style_plugin_table($form) {
   $output .= drupal_render($form);
   return $output;
 }
-

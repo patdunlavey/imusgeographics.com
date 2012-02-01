@@ -45,7 +45,7 @@ class ViewsHandlersTest extends ViewsSqlTest {
     $empty_stdclass = new stdClass();
     $empty_stdclass->operator = 'or';
     $empty_stdclass->value = array();
-    
+
     $null = NULL;
     // check defaults
     $this->assertEqual($empty_stdclass, views_break_phrase_string('', $null));
@@ -67,6 +67,10 @@ class ViewsHandlersTest extends ViewsSqlTest {
     $this->assertEqualValue(array('word1', 'word2', 'word'), views_break_phrase_string('word1,word2,word', $handler));
     $this->assertEqual('and', $handler->operator);
     $this->assertEqualValue(array('word1', 'word2', 'word'), views_break_phrase_string('word1,,word2,word', $handler));
+    $this->assertEqual('and', $handler->operator);
+    $this->assertEqualValue(array('word1 word2', 'word'), views_break_phrase_string('word1 word2,word', $handler));
+    $this->assertEqual('and', $handler->operator);
+    $this->assertEqualValue(array('word1', 'word2 word'), views_break_phrase_string('word1,word2 word', $handler));
     $this->assertEqual('and', $handler->operator);
   }
 

@@ -61,6 +61,10 @@ function taxonomy_views_data() {
   $data['vocabulary']['vid'] = array(
     'title' => t('Vocabulary ID'), // The item it appears as on the UI,
     'help' => t('The taxonomy vocabulary ID'),
+    'field' => array(
+      'handler' => 'views_handler_field_numeric',
+      'click sortable' => TRUE,
+    ),
     'argument' => array(
       'handler' => 'views_handler_argument_vocabulary_vid',
       'name field' => 'name',
@@ -112,7 +116,7 @@ function taxonomy_views_data() {
       'handler' => 'views_handler_sort',
     ),
     'argument' => array(
-      'handler' => 'views_handler_argument_numeric',
+      'handler' => 'views_handler_argument_taxonomy',
       'name field' => 'name',
       'skip base' => array('node', 'node_revision'),
       'zero is null' => TRUE,
@@ -153,11 +157,14 @@ function taxonomy_views_data() {
     'title' => t('Weight'),
     'help' => t('The term weight field'),
     'field' => array(
-      'handler' => 'views_handler_field',
+      'handler' => 'views_handler_field_numeric',
       'click sortable' => TRUE,
     ),
     'sort' => array(
       'handler' => 'views_handler_sort',
+    ),
+    'filter' => array(
+      'handler' => 'views_handler_filter_numeric',
     ),
   );
 
@@ -299,7 +306,7 @@ function taxonomy_views_data() {
     'argument' => array(
       'help' => t('A related term of the term.'),
       'handler' => 'views_handler_argument_numeric',
-    ),    
+    ),
   );
 
   // ----------------------------------------------------------------------
@@ -342,7 +349,7 @@ function taxonomy_views_data() {
     ),
     'argument' => array(
       'help' => t('The parent term of the term.'),
-      'handler' => 'views_handler_argument_numeric',
+      'handler' => 'views_handler_argument_taxonomy',
     ),
   );
 
@@ -437,10 +444,10 @@ function taxonomy_views_handlers() {
         'parent' => 'views_handler_argument',
       ),
       'views_handler_argument_taxonomy' => array(
-        'parent' => 'views_handler_argument',
+        'parent' => 'views_handler_argument_numeric',
       ),
       'views_handler_argument_vocabulary_vid' => array(
-        'parent' => 'views_handler_argument',
+        'parent' => 'views_handler_argument_numeric',
       ),
       'views_handler_argument_term_node_tid' => array(
         'parent' => 'views_handler_argument_many_to_one',

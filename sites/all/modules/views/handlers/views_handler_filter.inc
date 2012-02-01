@@ -25,6 +25,17 @@
  */
 class views_handler_filter extends views_handler {
   /**
+   * Contains the actual value of the field,either configured in the views ui
+   * or entered in the exposed filters.
+   */
+  var $value = NULL;
+
+  /**
+   * Contains the operator which is used on the query.
+   */
+  var $operator = '=';
+
+  /**
    * Provide some extra help to get the operator/value easier to use.
    *
    * This likely has to be overridden by filters which are more complex
@@ -438,7 +449,7 @@ class views_handler_filter extends views_handler {
    * Tell the renderer about our exposed form. This only needs to be
    * overridden for particularly complex forms. And maybe not even then.
    *
-   * @return
+   * @return array|null
    *   An array with the following keys:
    *   - operator: The $form key of the operator. Set to NULL if no operator.
    *   - value: The $form key of the value. Set to NULL if no value.
@@ -569,6 +580,8 @@ class views_handler_filter extends views_handler {
    * with OR groups. Some filters must also use HAVING which also makes
    * them not groupable. These filters will end up in a special group
    * if OR grouping is in use.
+   *
+   * @return bool
    */
    function can_group() {
      return TRUE;
@@ -578,6 +591,8 @@ class views_handler_filter extends views_handler {
 
 /**
  * A special handler to take the place of missing or broken handlers.
+ *
+ * @ingroup views_filter_handlers
  */
 class views_handler_filter_broken extends views_handler_filter {
   function ui_name($short = FALSE) {

@@ -41,6 +41,7 @@ function views_views_plugins() {
         'uses hook menu' => TRUE,
         'use ajax' => TRUE,
         'use pager' => TRUE,
+        'use more' => TRUE,
         'accept attachments' => TRUE,
         'admin' => t('Page'),
         'help topic' => 'display-page',
@@ -80,6 +81,15 @@ function views_views_plugins() {
         'accept attachments' => FALSE,
         'admin' => t('Feed'),
         'help topic' => 'display-feed',
+      ),
+    ),
+    'display_extender' => array(
+      // Default settings for all display_extender plugins.
+      'default' => array(
+        'title' => t('Empty display extender'),
+        'help' => t('Default settings for this view.'),
+        'handler' => 'views_plugin_display_extender',
+        'no ui' => TRUE,
       ),
     ),
     'style' => array(
@@ -198,6 +208,10 @@ function views_views_plugins() {
       'php' => array(
         'title' => t('PHP Code'),
         'handler' => 'views_plugin_argument_default_php',
+      ),
+      'raw' => array(
+        'title' => t('Raw value from URL'),
+        'handler' => 'views_plugin_argument_default_raw',
       ),
     ),
     'argument validator' => array(
@@ -449,17 +463,22 @@ function views_discover_plugins() {
 class views_plugin extends views_object {
   /**
    * The top object of a view.
-   * 
+   *
    * @var view
    */
   var $view = NULL;
-  
+
   /**
-   * The current used display plugin.
+   * The current used views display.
    *
-   * @var views_plugin_display
+   * @var views_display
    */
   var $display = NULL;
+
+  /**
+   * The plugin type of this plugin, for example style or query.
+   */
+  var $plugin_type = NULL;
 
   /**
    * Provide a form to edit options for this plugin.
@@ -510,4 +529,3 @@ class views_plugin extends views_object {
    */
   function validate() { return array(); }
 }
-

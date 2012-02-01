@@ -2,6 +2,8 @@
 
 /**
  * Simple filter to handle greater than/less than filters
+ *
+ * @ingroup views_filter_handlers
  */
 class views_handler_filter_numeric extends views_handler_filter {
   var $no_single = TRUE;
@@ -15,7 +17,7 @@ class views_handler_filter_numeric extends views_handler_filter {
         'value' => array('default' => ''),
       ),
     );
-    
+
     $options['allow_null'] = array('default' => TRUE);
 
     return $options;
@@ -116,7 +118,7 @@ class views_handler_filter_numeric extends views_handler_filter {
 
     return $options;
   }
-  
+
   function options_form(&$form, &$form_state) {
     parent::options_form($form, $form_state);
     $form['allow_null'] = array(
@@ -126,8 +128,8 @@ class views_handler_filter_numeric extends views_handler_filter {
       '#description' => t('Treats NULL as zero (0).'),
     );
   }
-  
-  
+
+
   /**
    * Provide a simple textfield for equality
    */
@@ -273,7 +275,7 @@ class views_handler_filter_numeric extends views_handler_filter {
       $this->query->add_where($this->options['group'], "$field <= %d OR $field >= %d $is_null", $this->value['min'], $this->value['max']);
     }
   }
-  
+
   function check_for_null($field) {
     $is_null = $this->options['allow_null'] ? "OR $field IS NULL" : FALSE;
     switch ($this->operator) {
@@ -285,7 +287,7 @@ class views_handler_filter_numeric extends views_handler_filter {
           $is_null = FALSE;
         }
     }
-    
+
     return $is_null;
   }
 

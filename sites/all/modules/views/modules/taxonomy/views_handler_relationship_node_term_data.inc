@@ -4,6 +4,12 @@
  * Views' relationship handlers.
  */
 
+
+/**
+ * Relationship handler to return the taxonomy terms of nodes.
+ *
+ * @ingroup views_relationship_handlers
+ */
 class views_handler_relationship_node_term_data extends views_handler_relationship  {
   function option_definition() {
     $options = parent::option_definition();
@@ -42,7 +48,6 @@ class views_handler_relationship_node_term_data extends views_handler_relationsh
     $def['table'] = 'term_data';
 
     if (!empty($this->options['required']) || !array_filter($this->options['vids'])) {
-      $term_node = $this->query->add_table('term_node', $this->relationship);
       $def['left_table'] = 'term_node';
       $def['left_field'] = 'tid';
       $def['field'] = 'tid';

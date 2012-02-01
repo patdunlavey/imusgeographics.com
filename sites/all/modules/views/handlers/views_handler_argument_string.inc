@@ -100,7 +100,7 @@ class views_handler_argument_string extends views_handler_argument {
     if (!empty($this->definition['many to one'])) {
       $form['add_table'] = array(
         '#type' => 'checkbox',
-        '#title' => t('Allow multiple arguments to work together.'),
+        '#title' => t('Allow multiple arguments to work together'),
         '#description' => t('If selected, multiple instances of this argument can work together, as though multiple terms were supplied to the same argument. This setting is not compatible with the "Reduce duplicates" setting.'),
         '#default_value' => !empty($this->options['add_table']),
       );
@@ -111,11 +111,11 @@ class views_handler_argument_string extends views_handler_argument {
         '#default_value' => !empty($this->options['require_value']),
       );
     }
- 
+
     // allow + for or, , for and
     $form['break_phrase'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Allow multiple terms per argument.'),
+      '#title' => t('Allow multiple terms per argument'),
       '#description' => t('If selected, users can enter multiple arguments in the form of 1+2+3 or 1,2,3.'),
       '#default_value' => !empty($this->options['break_phrase']),
     );
@@ -232,7 +232,7 @@ class views_handler_argument_string extends views_handler_argument {
 
   function case_transform($string, $option) {
 		global $multibyte;
-		
+
     switch ($this->options[$option]) {
       default:
         return $string;
@@ -258,7 +258,7 @@ class views_handler_argument_string extends views_handler_argument {
     }
 
     if (!empty($this->options['break_phrase'])) {
-      views_break_phrase($this->argument, $this);
+      views_break_phrase_string($this->argument, $this);
     }
     else {
       $this->value = array($this->argument);
@@ -275,7 +275,7 @@ class views_handler_argument_string extends views_handler_argument {
 
     return implode($this->operator == 'or' ? ' + ' : ', ', $this->title_query());
   }
-  
+
   /**
    * Override for specific title lookups.
    */
@@ -288,4 +288,3 @@ class views_handler_argument_string extends views_handler_argument {
   }
 
 }
-

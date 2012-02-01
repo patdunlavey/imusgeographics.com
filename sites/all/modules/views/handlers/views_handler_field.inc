@@ -22,6 +22,13 @@ class views_handler_field extends views_handler {
   var $aliases = array();
 
   /**
+   * @var array
+   * Stores additional fields which get's added to the query.
+   * The generated aliases are stored in $aliases.
+   */
+  var $additional_fields = array();
+
+  /**
    * Construct a new field handler.
    */
   function construct() {
@@ -49,10 +56,6 @@ class views_handler_field extends views_handler {
 
   function init(&$view, $options) {
     parent::init($view, $options);
-
-    $this->options += array(
-      'exclude' => FALSE,
-    );
   }
 
   /**
@@ -223,17 +226,17 @@ class views_handler_field extends views_handler {
       $elements = variable_get('views_field_rewrite_elements', array(
         '' => t('- Use default -'),
         '0' => t('- None -'),
-        'div' => t('DIV'),
-        'span' => t('SPAN'),
-        'h1' => t('H1'),
-        'h2' => t('H2'),
-        'h3' => t('H3'),
-        'h4' => t('H4'),
-        'h5' => t('H5'),
-        'h6' => t('H6'),
-        'p' => t('P'),
-        'strong' => t('STRONG'),
-        'em' => t('EM'),
+        'div' => 'DIV',
+        'span' => 'SPAN',
+        'h1' => 'H1',
+        'h2' => 'H2',
+        'h3' => 'H3',
+        'h4' => 'H4',
+        'h5' => 'H5',
+        'h6' => 'H6',
+        'p' => 'P',
+        'strong' => 'STRONG',
+        'em' => 'EM',
       ));
     }
 
@@ -302,6 +305,21 @@ class views_handler_field extends views_handler {
     return views_css_safe($classes);
   }
 
+  /**
+   * Get the value that's supposed to be rendered.
+   *
+   * @param $values
+   *   An object containing all retrieved values.
+   * @param $field
+   *   Optional name of the field where the value is stored.
+   */
+  function get_value($values, $field = NULL) {
+    $alias = isset($field) ? $this->aliases[$field] : $this->field_alias;
+    if (isset($values->{$alias})) {
+      return $values->{$alias};
+    }
+  }
+
   function option_definition() {
     $options = parent::option_definition();
 
@@ -348,6 +366,7 @@ class views_handler_field extends views_handler {
     $options['empty'] = array('default' => '', 'translatable' => TRUE);
     $options['hide_empty'] = array('default' => FALSE);
     $options['empty_zero'] = array('default' => FALSE);
+    $options['hide_alter_empty'] = array('default' => TRUE);
 
     return $options;
   }
@@ -523,10 +542,10 @@ class views_handler_field extends views_handler {
         ),
       );
       $form['alter']['alt'] = array(
-        '#title' => t('Alt text'),
+        '#title' => t('Title text'),
         '#type' => 'textfield',
         '#default_value' => $this->options['alter']['alt'],
-        '#description' => t('Text to place as "alt" text which most browsers display as a tooltip when hovering over the link.'),
+        '#description' => t('Text to place as "title" text which most browsers display as a tooltip when hovering over the link.'),
         '#process' => array('views_process_dependency'),
         '#dependency' => array(
           'edit-options-alter-make-link' => array(1)
@@ -711,10 +730,10 @@ If you would like to have the characters %5B and %5D please use the html entity 
     );
 
     $form['empty'] = array(
-      '#type' => 'textfield',
+      '#type' => 'textarea',
       '#title' => t('Empty text'),
       '#default_value' => $this->options['empty'],
-      '#description' => t('If the field is empty, display this text instead.'),
+      '#description' => t('Provide text to display if this field returns no results. You may include HTML. You may enter data from this view as per the "Replacement patterns" in the "Rewrite Results" section below.'),
     );
 
     $form['empty_zero'] = array(
@@ -728,7 +747,16 @@ If you would like to have the characters %5B and %5D please use the html entity 
       '#type' => 'checkbox',
       '#title' => t('Hide if empty'),
       '#default_value' => $this->options['hide_empty'],
-      '#description' => t('Do not display anything for this field if it is empty. Note that the field label may still be displayed. Check style or row style settings to hide labels for empty fields.'),
+      '#description' => t('Enable to hide this field if it is empty. Note that the field label or rewritten output may still be displayed. To hide labels, check the style or row style settings for empty fields. To hide rewritten content, check the "Hide rewriting if empty" checkbox.'),
+      '#fieldset' => 'empty_field_behavior',
+    );
+
+    $form['hide_alter_empty'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Hide rewriting if empty'),
+      '#default_value' => $this->options['hide_alter_empty'],
+      '#description' => t('Do not display rewritten content if this field is empty.'),
+      '#fieldset' => 'empty_field_behavior',
     );
 
     $form['empty_suffix'] = array(
@@ -833,7 +861,13 @@ If you would like to have the characters %5B and %5D please use the html entity 
       $value = $this->render_altered($alter, $tokens);
     }
 
-    if ($this->options['hide_empty'] && empty($value) && ($value !== 0 || $this->options['empty_zero'])) {
+    // Check whether the value is empty and return nothing, so the field isn't rendered.
+    // First check whether the field should be hidden if the value(hide_alter_empty = TRUE) /the rewrite is empty (hide_alter_empty = FALSE).
+    // For numeric values you can specify whether "0"/0 should be empty.
+    if ((($this->options['hide_empty'] && empty($value))
+        || ($this->options['hide_alter_empty'] && empty($this->original_value)))
+      && (($value !== 0 && $value !== '0')
+        || $this->options['empty_zero'])) {
       return '';
     }
 
@@ -926,7 +960,7 @@ If you would like to have the characters %5B and %5D please use the html entity 
     // If the path is empty do not build a link around the given text and return
     // it as is.
     // http://www.example.com URLs will not have a $url['path'], so check host as well.
-    if (empty($url['path']) && empty($url['host'])) {
+    if (empty($url['path']) && empty($url['host']) && empty($url['fragment'])) {
       return $text;
     }
 
@@ -1114,6 +1148,8 @@ If you would like to have the characters %5B and %5D please use the html entity 
 
 /**
  * A special handler to take the place of missing or broken handlers.
+ *
+ * @ingroup views_field_handlers
  */
 class views_handler_field_broken extends views_handler_field {
   function ui_name($short = FALSE) {
@@ -1137,6 +1173,8 @@ class views_handler_field_broken extends views_handler_field {
 
 /**
  * Render a numeric value as a size.
+ *
+ * @ingroup views_field_handlers
  */
 class views_handler_field_file_size extends views_handler_field {
   function option_definition() {
@@ -1177,7 +1215,9 @@ class views_handler_field_file_size extends views_handler_field {
 }
 
 /**
- * A handler to run a field through simple XSS filtering
+ * A handler to run a field through simple XSS filtering.
+ *
+ * @ingroup views_field_handlers
  */
 class views_handler_field_xss extends views_handler_field {
   function render($values) {

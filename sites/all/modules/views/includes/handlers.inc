@@ -263,6 +263,11 @@ class views_handler extends views_object {
   var $query = NULL;
 
   /**
+   * The type of the handler, for example filter/footer/field.
+   */
+  var $handler_type = NULL;
+
+  /**
    * init the handler with necessary data.
    * @param $view
    *   The $view object this handler is attached to.
@@ -289,7 +294,7 @@ class views_handler extends views_object {
       $display_id,
       $this->handler_type,
       $options['table'],
-      $options['field']
+      $options['id']
     );
 
     $this->unpack_options($this->options, $options);
@@ -371,21 +376,6 @@ class views_handler extends views_object {
   }
 
   /**
-   * Get the value that's supposed to be rendered.
-   *
-   * @param $values
-   *   An object containing all retrieved values.
-   * @param $field
-   *   Optional name of the field where the value is stored.
-   */
-  function get_value($values, $field = NULL) {
-    $alias = isset($field) ? $this->aliases[$field] : $this->field_alias;
-    if (isset($values->{$alias})) {
-      return $values->{$alias};
-    }
-  }
-
-  /**
    * Sanitize the value for output.
    *
    * @param $value
@@ -426,6 +416,14 @@ class views_handler extends views_object {
    * There is no need for this function to actually store the data.
    */
   function options_submit($form, &$form_state) { }
+
+  /**
+   * Provides the handler some groupby.
+   */
+  function use_group_by() {
+    return TRUE;
+  }
+
 
   /**
    * If a handler has 'extra options' it will get a little settings widget and
@@ -799,7 +797,7 @@ class views_many_to_one_helper {
    */
   function add_table($join = NULL, $alias = NULL) {
     // This is used for lookups in the many_to_one table.
-    $field = $this->handler->table . '.' . $this->handler->field;
+    $field = $this->handler->relationship . '_' . $this->handler->table . '.' . $this->handler->field;
 
     if (empty($join)) {
       $join = $this->get_join();
@@ -852,7 +850,7 @@ class views_many_to_one_helper {
    * it will cooperate with other arguments if possible.
    */
   function summary_join() {
-    $field = $this->handler->table . '.' . $this->handler->field;
+    $field = $this->handler->relationship . '_' . $this->handler->table . '.' . $this->handler->field;
     $join = $this->get_join();
 
     // shortcuts
@@ -891,13 +889,15 @@ class views_many_to_one_helper {
   function ensure_my_table() {
     if (!isset($this->handler->table_alias)) {
       // For 'or' if we're not reducing duplicates, we get the absolute simplest:
-      $field = $this->handler->table . '.' . $this->handler->field;
+      $field = $this->handler->relationship . '_' . $this->handler->table . '.' . $this->handler->field;
       if ($this->handler->operator == 'or' && empty($this->handler->options['reduce_duplicates'])) {
         if (empty($this->handler->options['add_table']) && empty($this->handler->view->many_to_one_tables[$field])) {
           // query optimization, INNER joins are slightly faster, so use them
           // when we know we can.
           $join = $this->get_join();
-          $join->type = 'INNER';
+          if (isset($join)) {
+            $join->type = 'INNER';
+          }
           $this->handler->table_alias = $this->handler->query->ensure_table($this->handler->table, $this->handler->relationship, $join);
           $this->handler->view->many_to_one_tables[$field] = $this->handler->value;
         }
@@ -1055,7 +1055,7 @@ function views_break_phrase_string($str, &$handler) {
     $handler->operator = 'or';
     $handler->value = preg_split('/[+ ]/', $str);
   }
-  else if (preg_match('/^(\w+,)*\w+$/', $str)) {
+  else if (preg_match('/^((\w|\s)+,)*(\w|\s)+$/', $str)) {
     $handler->operator = 'and';
     $handler->value = explode(',', $str);
   }
@@ -1150,7 +1150,10 @@ function views_get_timezone() {
       if ($GLOBALS['db_type'] == 'pgsql') {
         db_query("SET TIME ZONE INTERVAL '$offset' HOUR TO MINUTE");
       }
-      elseif ($GLOBALS['db_type'] == 'mysqli' || version_compare(mysql_get_server_info(), '4.1.3', '>=')) {
+      elseif ($GLOBALS['db_type'] == 'mysqli') {
+        db_query("SET @@session.time_zone = '$offset'");
+      }
+      elseif ($GLOBALS['db_type'] == 'mysql' && version_compare(db_version(), '4.1.3', '>=')) {
         db_query("SET @@session.time_zone = '$offset'");
       }
 
@@ -1572,6 +1575,14 @@ function views_views_handlers() {
  *   - extra type: How all the extras will be combined. Either AND or OR. Defaults to AND.
  */
 class views_join {
+  var $table = NULL;
+  var $left_table = NULL;
+  var $left_field = NULL;
+  var $field = NULL;
+  var $extra = NULL;
+  var $type = NULL;
+  var $definition = array();
+
   /**
    * Construct the views_join object.
    */
@@ -1624,6 +1635,15 @@ class views_join {
     }
 
     $output = " $this->type JOIN $right_table $table[alias] ON $left_field = $table[alias].$this->field";
+    // Load query tokens replacements.
+    $view = views_get_current_view();
+    $replacements = array();
+    if (!empty($view)) {
+      $replacements = $view->substitutions();
+    }
+    else {
+      vpr('The current view is not set, maybe some code missed to execute $view->pre_execute()');
+    }
 
     // Tack on the extra.
     if (isset($this->extra)) {
@@ -1641,10 +1661,13 @@ class views_join {
             $join_table = $info['table'] . '.';
           }
 
+          // Apply query token replacements.
+          $info['value'] = str_replace(array_keys($replacements), $replacements, $info['value']);
+
           // And now deal with the value and the operator.  Set $q to
           // a single-quote for non-numeric values and the
           // empty-string for numeric values, then wrap all values in $q.
-          $raw_value = $this->db_safe($info['value']);
+          $raw_value = $this->db_safe($info['value'], $info);
           $q = (empty($info['numeric']) ? "'" : '');
 
           if (is_array($raw_value)) {
@@ -1686,7 +1709,7 @@ class views_join {
    * so something that needs floats in their joins needs to do their
    * own type checking.
    */
-  function db_safe($input) {
+  function db_safe($input, $info) {
     if (is_array($input)) {
       $output = array();
       foreach ($input as $value) {

@@ -1,6 +1,8 @@
 <?php
 /**
  * Field handler to present a link node translate.
+ *
+ * @ingroup views_field_handlers
  */
 class views_handler_field_node_link_translate extends views_handler_field_node_link {
   function construct() {
@@ -28,4 +30,3 @@ class views_handler_field_node_link_translate extends views_handler_field_node_l
     return l($text, "node/$node->nid/translate", array('query' => drupal_get_destination()));
   }
 }
-

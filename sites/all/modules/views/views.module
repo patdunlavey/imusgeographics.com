@@ -12,7 +12,7 @@
  * Advertise the current views api version
  */
 function views_api_version() {
-  return '3.0-alpha1';
+  return '3.0';
 }
 
 /**
@@ -83,6 +83,11 @@ function views_theme($existing, $type, $theme, $path) {
     'display' => array('view' => NULL),
     'style' => array('view' => NULL, 'options' => NULL, 'rows' => NULL, 'title' => NULL),
     'row' => array('view' => NULL, 'options' => NULL, 'row' => NULL, 'field_alias' => NULL),
+    'exposed_form' => array('view' => NULL, 'options' => NULL),
+    'pager' => array(
+      'view' => NULL, 'options' => NULL,
+      'tags' => array(), 'quantity' => 10, 'element' => 0, 'parameters' => array()
+    ),
   );
 
   // Default view themes
@@ -169,6 +174,7 @@ function views_theme($existing, $type, $theme, $path) {
  * @see drupal_find_theme_templates
  */
 function _views_find_module_templates($cache, $path) {
+  $templates = array();
   $regex = '\.tpl\.php' . '$';
 
   // Because drupal_system_listing works the way it does, we check for real
@@ -553,6 +559,35 @@ function views_block($op = 'list', $delta = 0, $edit = array()) {
   }
 }
 
+ /**
++ * Returns an array of language names.
++ *
++ * This is a one to one copy of locale_language_list because we can't rely on enabled locale module.
++ *
++ * @param $field
++ *   'name' => names in current language, localized
++ *   'native' => native names
++ * @param $all
++ *   Boolean to return all languages or only enabled ones
++ *
++ * @see locale_language_list
++ */
+function views_language_list($field = 'name', $all = FALSE) {
+  if ($all) {
+    $languages = language_list();
+  }
+  else {
+    $languages = language_list('enabled');
+    $languages = $languages[1];
+  }
+  $list = array();
+  foreach ($languages as $language) {
+    $list[$language->language] = ($field == 'name') ? t($language->name) : $language->$field;
+  }
+  return $list;
+}
+
+
 /**
  * Implementation of hook_flush_caches().
  */
@@ -816,12 +851,13 @@ function views_include_default_views($reset = FALSE) {
  *   aggregation when the handler is redirected to the aggregation
  *   handler.
  *
- * @return
+ * @return views_handler
  *   An instance of a handler object. May be views_handler_broken.
  */
 function views_get_handler($table, $field, $key, $override = NULL) {
   $data = views_fetch_data($table);
   $handler = NULL;
+  views_include('handlers');
 
   if (isset($data[$field][$key])) {
     // Set up a default handler:
@@ -871,12 +907,36 @@ function views_fetch_plugin_data($type = NULL, $plugin = NULL, $reset = FALSE) {
 
 /**
  * Get a handler for a plugin
+ *
+ * @return views_plugin
+ *
+ * The created plugin object.
  */
 function views_get_plugin($type, $plugin, $reset = FALSE) {
   $definition = views_fetch_plugin_data($type, $plugin, $reset);
   if (!empty($definition)) {
     return _views_create_handler($definition, $type);
   }
+}
+
+/**
+ * Load the current enabled localization plugin.
+ *
+ * @return The name of the localization plugin.
+ */
+function views_get_localization_plugin() {
+  $plugin = variable_get('views_localization_plugin', '');
+  // Provide sane default values for the localization plugin.
+  if (empty($plugin)) {
+    if (module_exists('locale')) {
+      $plugin = 'core';
+    }
+    else {
+      $plugin = 'none';
+    }
+  }
+
+  return $plugin;
 }
 
 // -----------------------------------------------------------------------
@@ -916,7 +976,7 @@ function &views_get_default_view($view_name, $reset = FALSE) {
 /**
  * Create an empty view to work with.
  *
- * @return
+ * @return view
  *   A fully formed, empty $view object. This object must be populated before
  *   it can be successfully saved.
  */
@@ -1045,7 +1105,7 @@ function views_get_all_views($reset = FALSE) {
  *   The name of the view.
  * @param $reset
  *   If TRUE, reset this entry in the load cache.
- * @return $view
+ * @return view
  *   A reference to the $view object. Use $reset if you're sure you want
  *   a fresh one.
  */
@@ -1136,9 +1196,29 @@ function vpr_trace() {
 // Views form (View with form elements)
 
 /**
+ * Returns TRUE if the passed-in view contains handlers with views form
+ * implementations, FALSE otherwise.
+ */
+function views_view_has_form_elements($view) {
+  foreach ($view->field as $field) {
+    if (property_exists($field, 'views_form_callback') || method_exists($field, 'views_form')) {
+      return TRUE;
+    }
+  }
+  $area_handlers = array_merge(array_values($view->header), array_values($view->footer));
+  $empty = empty($view->result);
+  foreach ($area_handlers as $area) {
+    if (method_exists($area, 'views_form') && !$area->views_form_empty($empty)) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+/**
  * This is the entry function. Just gets the form for the current step.
  * The form is always assumed to be multistep, even if it has only one
- * step (the default 'views_form_vews_form' step). That way it is actually
+ * step (the default 'views_form_views_form' step). That way it is actually
  * possible for modules to have a multistep form if they need to.
  */
 function views_form(&$form_state, $view, $output) {
@@ -1226,6 +1306,15 @@ function views_form_views_form($form, &$form_state, $view, $output) {
     }
   }
 
+  // Give the area handlers a chance to extend the form.
+  $area_handlers = array_merge(array_values($view->header), array_values($view->footer));
+  $empty = empty($view->result);
+  foreach ($area_handlers as $area) {
+    if (method_exists($area, 'views_form') && !$area->views_form_empty($empty)) {
+      $area->views_form($form, $form_state);
+    }
+  }
+
   $form['#substitutions'] = array(
     '#type' => 'value',
     '#value' => $substitutions,
@@ -1253,6 +1342,15 @@ function views_form_views_form_validate($form, &$form_state) {
       $field->views_form_validate($form, $form_state);
     }
   }
+
+  // Call the validate method on every area handler that has it.
+  foreach (array('header', 'footer') as $area) {
+    foreach ($view->{$area} as $area_name => $area_handler) {
+      if (method_exists($area_handler, 'views_form_validate')) {
+        $area_handler->views_form_validate($form, $form_state);
+      }
+    }
+  }
 }
 
 /**
@@ -1267,6 +1365,15 @@ function views_form_views_form_submit($form, &$form_state) {
   foreach ($view->field as $field_name => $field) {
     if (method_exists($field, 'views_form_submit')) {
       $field->views_form_submit($form, $form_state);
+    }
+  }
+
+  // Call the submit method on every area handler that has it.
+  foreach (array('header', 'footer') as $area) {
+    foreach ($view->{$area} as $area_name => $area_handler) {
+      if (method_exists($area_handler, 'views_form_submit')) {
+        $area_handler->views_form_submit($form, $form_state);
+      }
     }
   }
 }
@@ -1637,7 +1744,7 @@ function views_microtime() {
  * @param $alter
  *   - max_length: Maximum lenght of the string, the rest gets truncated.
  *   - word_boundary: Trim only on a word boundary.
- *   - ellipsis: Trim only on a word boundary.
+ *   - ellipsis: Show an ellipsis (...) at the end of the trimmed string.
  *   - html: Take sure that the html is correct.
  */
 function views_trim_text($alter, $value) {

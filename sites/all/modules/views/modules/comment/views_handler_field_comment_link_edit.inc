@@ -1,6 +1,8 @@
 <?php
 /**
  * Field handler to present a link node edit.
+ *
+ * @ingroup views_field_handlers
  */
 class views_handler_field_comment_link_edit extends views_handler_field_comment_link {
   function construct() {
@@ -48,4 +50,3 @@ class views_handler_field_comment_link_edit extends views_handler_field_comment_
     return $text;
   }
 }
-

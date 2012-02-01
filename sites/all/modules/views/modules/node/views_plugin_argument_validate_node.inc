@@ -62,9 +62,9 @@ class views_plugin_argument_validate_node extends views_plugin_argument_validate
 
   function convert_options(&$options) {
     if (!isset($options['types']) && !empty($this->argument->options['validate_argument_node_type'])) {
-      $options['types'] = $this->argument->options['validate_argument_node_type'];
+      $options['types'] = isset($this->argument->options['validate_argument_node_type']) ? $this->argument->options['validate_argument_node_type'] : array();
       $options['access'] = !empty($this->argument->options['validate_argument_node_access']);
-      $options['access_op'] = $this->argument->options['validate_argument_node_access_op'];
+      $options['access_op'] = isset($this->argument->options['validate_argument_node_access_op']) ? $this->argument->options['validate_argument_node_access_op'] : 'view';
       $options['nid_type'] = $this->argument->options['validate_argument_nid_type'];
     }
   }
@@ -101,7 +101,7 @@ class views_plugin_argument_validate_node extends views_plugin_argument_validate
         $nids = new stdClass();
         $nids->value = array($argument);
         $nids = views_break_phrase($argument, $nids);
-        if ($nids->value == -1) {
+        if ($nids->value == array(-1)) {
           return FALSE;
         }
 
@@ -132,4 +132,3 @@ class views_plugin_argument_validate_node extends views_plugin_argument_validate
     }
   }
 }
-
