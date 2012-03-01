@@ -1,0 +1,99 @@
+ Administration                    Administration Development tools (admin_devel)               Module  Enabled        6.x-3.x-dev   
+ Administration                    Administration menu (admin_menu)                             Module  Enabled        6.x-3.x-dev   
+ Administration                    Administration menu Toolbar style (admin_menu_toolbar)       Module  Enabled        6.x-3.x-dev   
+ CCK                               Content (content)                                            Module  Enabled        6.x-2.9       
+ CCK                               Content Copy (content_copy)                                  Module  Enabled        6.x-2.9       
+ CCK                               Fieldgroup (fieldgroup)                                      Module  Enabled        6.x-2.9       
+ CCK                               FileField (filefield)                                        Module  Enabled        6.x-3.10      
+ CCK                               FileField Sources (filefield_sources)                        Module  Enabled        6.x-1.4       
+ CCK                               ImageField (imagefield)                                      Module  Enabled        6.x-3.10      
+ CCK                               Node Reference (nodereference)                               Module  Enabled        6.x-2.9       
+ CCK                               Number (number)                                              Module  Enabled        6.x-2.9       
+ CCK                               Option Widgets (optionwidgets)                               Module  Enabled        6.x-2.9       
+ CCK                               Text (text)                                                  Module  Enabled        6.x-2.9       
+ Chaos tool suite                  Chaos tools (ctools)                                         Module  Enabled        6.x-1.8       
+ Chaos tool suite                  Custom content panes (ctools_custom_content)                 Module  Enabled        6.x-1.8       
+ Chaos tool suite                  Page manager (page_manager)                                  Module  Enabled        6.x-1.8       
+ Chaos tool suite                  Views content panes (views_content)                          Module  Enabled        6.x-1.8       
+ Core - optional                   Contact (contact)                                            Module  Enabled        6.22          
+ Core - optional                   Database logging (dblog)                                     Module  Enabled        6.22          
+ Core - optional                   Help (help)                                                  Module  Enabled        6.22          
+ Core - optional                   Menu (menu)                                                  Module  Enabled        6.22          
+ Core - optional                   Path (path)                                                  Module  Enabled        6.22          
+ Core - optional                   PHP filter (php)                                             Module  Enabled        6.22          
+ Core - optional                   Statistics (statistics)                                      Module  Enabled        6.22          
+ Core - optional                   Syslog (syslog)                                              Module  Enabled        6.22          
+ Core - optional                   Update status (update)                                       Module  Enabled        6.22          
+ Core - required                   Block (block)                                                Module  Enabled        6.22          
+ Core - required                   Filter (filter)                                              Module  Enabled        6.22          
+ Core - required                   Node (node)                                                  Module  Enabled        6.22          
+ Core - required                   System (system)                                              Module  Enabled        6.22          
+ Core - required                   User (user)                                                  Module  Enabled        6.22          
+ Custom                            Custom Module for Imus Geographics (igcustom)                Module  Enabled        6.x-dev       
+ Date/Time                         Date (date)                                                  Module  Enabled        6.x-2.7       
+ Date/Time                         Date API (date_api)                                          Module  Enabled        6.x-2.7       
+ Date/Time                         Date Popup (date_popup)                                      Module  Enabled        6.x-2.7       
+ Date/Time                         Date Timezone (date_timezone)                                Module  Enabled        6.x-2.7       
+ ImageCache                        ImageAPI (imageapi)                                          Module  Enabled        6.x-1.10      
+ ImageCache                        ImageAPI GD2 (imageapi_gd)                                   Module  Enabled        6.x-1.10      
+ ImageCache                        ImageCache (imagecache)                                      Module  Enabled        6.x-2.x-dev   
+ ImageCache                        Imagecache Canvas Actions (imagecache_canvasactions)         Module  Enabled        6.x-1.8       
+ ImageCache                        Imagecache Color Actions (imagecache_coloractions)           Module  Enabled        6.x-1.8       
+ ImageCache                        Imagecache Custom Actions (imagecache_customactions)         Module  Enabled        6.x-1.8       
+ ImageCache                        Imagecache Text Actions (imagecache_textactions)             Module  Enabled        6.x-1.8       
+ ImageCache                        ImageCache UI (imagecache_ui)                                Module  Enabled        6.x-2.x-dev   
+ Other                             Backup and Migrate (backup_migrate)                          Module  Enabled        6.x-2.x-dev   
+ Other                             Component (component)                                        Module  Enabled        6.x-1.x-dev   
+ Other                             Global Redirect (globalredirect)                             Module  Enabled        6.x-1.2       
+ Other                             Page Title (page_title)                                      Module  Enabled        6.x-2.x-dev   
+ Other                             Path redirect (path_redirect)                                Module  Enabled        6.x-1.0-rc2   
+ Other                             Pathauto (pathauto)                                          Module  Enabled        6.x-1.5       
+ Other                             Secure Pages (securepages)                                   Module  Enabled        6.x-1.9       
+ Other                             SEO Checklist (seochecklist)                                 Module  Enabled        6.x-3.0       
+ Other                             Thickbox (thickbox)                                          Module  Enabled        6.x-1.x-dev   
+ Other                             Token (token)                                                Module  Enabled        6.x-1.16      
+ Other                             Transliteration (transliteration)                            Module  Enabled        6.x-3.x-dev   
+ Panels                            Panel nodes (panels_node)                                    Module  Enabled        6.x-3.x-dev   
+ Panels                            Panels (panels)                                              Module  Enabled        6.x-3.x-dev   
+ Panels                            Panels In-Place Editor (panels_ipe)                          Module  Enabled        6.x-3.x-dev   
+ Statistics                        Google Analytics (googleanalytics)                           Module  Enabled        6.x-3.3       
+ Ubercart - contrib                Ubercart Export Orders to CSV (uc_export_orders)             Module  Enabled        6.x-1.1       
+ Ubercart - core                   Cart (uc_cart)                                               Module  Enabled        6.x-2.4       
+ Ubercart - core                   Conditional Actions (ca)                                     Module  Enabled        6.x-2.4       
+ Ubercart - core                   Order (uc_order)                                             Module  Enabled        6.x-2.4       
+ Ubercart - core                   Product (uc_product)                                         Module  Enabled        6.x-2.4       
+ Ubercart - core                   Store (uc_store)                                             Module  Enabled        6.x-2.4       
+ Ubercart - core (optional)        Attribute (uc_attribute)                                     Module  Enabled        6.x-2.4       
+ Ubercart - core (optional)        Discounts (uc_discounts)                                     Module  Enabled        6.x-2.2       
+ Ubercart - core (optional)        Payment (uc_payment)                                         Module  Enabled        6.x-2.4       
+ Ubercart - core (optional)        Reports (uc_reports)                                         Module  Enabled        6.x-2.4       
+ Ubercart - core (optional)        Shipping (uc_shipping)                                       Module  Enabled        6.x-2.4       
+ Ubercart - core (optional)        Shipping Quotes (uc_quote)                                   Module  Enabled        6.x-2.4       
+ Ubercart - core (optional)        Tax Report (uc_tax_report)                                   Module  Enabled        6.x-2.4       
+ Ubercart - core (optional)        Taxes (uc_taxes)                                             Module  Enabled        6.x-2.4       
+ Ubercart - extra                  Cart Links (uc_cart_links)                                   Module  Enabled        6.x-2.4       
+ Ubercart - extra                  Google Analytics for Ubercart (uc_googleanalytics)           Module  Enabled        6.x-2.4       
+ Ubercart - extra                  Out of stock notificator (uc_out_of_stock)                   Module  Enabled        6.x-1.7       
+ Ubercart - extra                  Stock (uc_stock)                                             Module  Enabled        6.x-2.4       
+ Ubercart - fulfillment            FedEx (uc_fedex)                                             Module  Enabled        6.x-2.x-dev   
+ Ubercart - fulfillment            Flatrate (uc_flatrate)                                       Module  Enabled        6.x-2.4       
+ Ubercart - fulfillment            U.S. Postal Service (uc_usps)                                Module  Enabled        6.x-2.4       
+ Ubercart - fulfillment            UPS (uc_ups)                                                 Module  Enabled        6.x-2.4       
+ Ubercart - payment                Authorize.net (uc_authorizenet)                              Module  Enabled        6.x-2.4       
+ Ubercart - payment                Credit Card (uc_credit)                                      Module  Enabled        6.x-2.4       
+ Ubercart - payment                Discount Coupons (uc_coupon)                                 Module  Enabled        6.x-1.x-dev   
+ Ubercart - payment                Free Order (uc_free_order)                                   Module  Enabled        6.x-1.x-dev   
+ Ubercart - payment                Payment Method Pack (uc_payment_pack)                        Module  Enabled        6.x-2.4       
+ Ubercart - payment                Test Gateway (test_gateway)                                  Module  Enabled        6.x-2.4       
+ User interface                    jQuery UI (jquery_ui)                                        Module  Enabled        6.x-1.4       
+ User interface                    jQuery Update (jquery_update)                                Module  Enabled        6.x-2.x-dev   
+ User interface                    Vertical Tabs (vertical_tabs)                                Module  Enabled        6.x-1.x-dev   
+ User interface                    Wysiwyg (wysiwyg)                                            Module  Enabled        6.x-2.x-dev   
+ Views                             Views (views)                                                Module  Enabled        6.x-3.x-dev   
+ Views                             Views exporter (views_export)                                Module  Enabled        6.x-3.x-dev   
+ Views                             Views Slideshow (views_slideshow)                            Module  Enabled        6.x-3.0-beta1 
+ Views                             Views Slideshow: Cycle (views_slideshow_cycle)               Module  Enabled        6.x-3.0-beta1 
+ Views                             Views UI (views_ui)                                          Module  Enabled        6.x-3.x-dev   
+ Webform                           Webform (webform)                                            Module  Enabled        6.x-3.15      
+ Other                             Imus Geographics Theme (ig960)                               Theme   Enabled                      
+ Other                             RootCandy Dark (rootcandy_dark)                              Theme   Enabled        6.x-1.8       
