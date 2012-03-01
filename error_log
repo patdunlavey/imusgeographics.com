@@ -1495,3 +1495,451 @@
 [12-Jan-2011 13:53:52] PHP Warning:  Module 'imagick' already loaded in Unknown on line 0
 [12-Jan-2011 13:54:01] PHP Warning:  Module 'imagick' already loaded in Unknown on line 0
 [12-Jan-2011 13:54:03] PHP Warning:  Module 'imagick' already loaded in Unknown on line 0
+[07-Jan-2012 05:08:48] PHP Fatal error:  Allowed memory size of 67108864 bytes exhausted (tried to allocate 125 bytes) in /home/imusgeog/public_html/includes/menu.inc on line 1791
+[07-Jan-2012 05:10:14] PHP Fatal error:  Allowed memory size of 67108864 bytes exhausted (tried to allocate 30720 bytes) in /home/imusgeog/public_html/sites/all/modules/imagecache/imagecache_actions.inc on line 137
+[07-Jan-2012 05:10:30] PHP Fatal error:  Allowed memory size of 67108864 bytes exhausted (tried to allocate 30720 bytes) in /home/imusgeog/public_html/sites/all/modules/imagecache/imagecache_actions.inc on line 137
+[07-Jan-2012 05:27:12] PHP Fatal error:  Allowed memory size of 67108864 bytes exhausted (tried to allocate 122880 bytes) in /home/imusgeog/public_html/sites/all/modules/views/includes/admin.inc on line 2774
+[23-Jan-2012 09:41:21] PHP Fatal error:  Allowed memory size of 67108864 bytes exhausted (tried to allocate 103 bytes) in /home/imusgeog/public_html/includes/menu.inc on line 1791
+[30-Jan-2012 17:00:43] PHP Fatal error:  Allowed memory size of 67108864 bytes exhausted (tried to allocate 144152 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/S3.php on line 1903
+[31-Jan-2012 16:54:37] PHP Fatal error:  Allowed memory size of 67108864 bytes exhausted (tried to allocate 122881 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/S3.php on line 1903
+[01-Feb-2012 05:19:22] PHP Fatal error:  Allowed memory size of 67108864 bytes exhausted (tried to allocate 122880 bytes) in /home/imusgeog/public_html/sites/all/modules/ctools/views_content/plugins/content_types/views.inc on line 190
+[01-Feb-2012 12:11:31] PHP Fatal error:  Allowed memory size of 67108864 bytes exhausted (tried to allocate 7680 bytes) in /home/imusgeog/public_html/sites/all/modules/ubercart/uc_order/uc_order.admin.inc on line 1733
+[01-Feb-2012 16:54:42] PHP Fatal error:  Allowed memory size of 67108864 bytes exhausted (tried to allocate 262145 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/S3.php on line 1903
+[02-Feb-2012 16:59:34] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 72 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/destinations.inc on line 554
+[02-Feb-2012 16:59:34] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:385:\&quot;MySQL server has gone away\nquery: INSERT INTO watchdog\n    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)\n    VALUES\n    (0, &amp;#039;cron&amp;#039;, &amp;#039;Cron run exceeded the time limit and was aborted.&amp;#039;, &amp;#039;a:0:{}&amp;#039;, 4, &amp;#039;&amp;#039;, &amp;#039;http://imusgeographics.com/cron.php&amp;#039;, &amp;#039;&amp;#039;, &amp;#039;50.23.235.117&amp;#039;, 1328230774)\&quot;;s:5:\&quot;%file\&quot;;s:53:\&quot;/home/imusgeog/public_html/modules/dblog/dblog.module\&quot;;s:5:\&quot;%line\&quot;;i:146;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.11 in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[02-Feb-2012 16:59:34] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:94:\&quot;MySQL server has gone away\nquery: DELETE FROM variable WHERE name = &amp;#039;cron_semaphore&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:49:\&quot;/home/imusgeog/public_html/includes/bootstrap.inc\&quot;;s:5:\&quot;%line\&quot;;i:633;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1328230774) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[02-Feb-2012 16:59:34] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:85:\&quot;MySQL server has gone away\nquery: DELETE FROM cache WHERE cid = &amp;#039;variables&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:45:\&quot;/home/imusgeog/public_html/includes/cache.inc\&quot;;s:5:\&quot;%line\&quot;;i:178;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1328230774) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[02-Feb-2012 16:59:34] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:152:\&quot;MySQL server has gone away\nquery: SELECT t.word AS realword, i.word FROM search_total t LEFT JOIN search_index i ON t.word = i.word WHERE i.word IS NULL\&quot;;s:5:\&quot;%file\&quot;;s:55:\&quot;/home/imusgeog/public_html/modules/search/search.module\&quot;;s:5:\&quot;%line\&quot;;i:295;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1328230774) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[03-Feb-2012 16:59:36] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 79 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/files.inc on line 58
+[03-Feb-2012 16:59:36] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:385:\&quot;MySQL server has gone away\nquery: INSERT INTO watchdog\n    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)\n    VALUES\n    (0, &amp;#039;cron&amp;#039;, &amp;#039;Cron run exceeded the time limit and was aborted.&amp;#039;, &amp;#039;a:0:{}&amp;#039;, 4, &amp;#039;&amp;#039;, &amp;#039;http://imusgeographics.com/cron.php&amp;#039;, &amp;#039;&amp;#039;, &amp;#039;50.23.235.117&amp;#039;, 1328317176)\&quot;;s:5:\&quot;%file\&quot;;s:53:\&quot;/home/imusgeog/public_html/modules/dblog/dblog.module\&quot;;s:5:\&quot;%line\&quot;;i:146;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.11 in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[03-Feb-2012 16:59:36] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:94:\&quot;MySQL server has gone away\nquery: DELETE FROM variable WHERE name = &amp;#039;cron_semaphore&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:49:\&quot;/home/imusgeog/public_html/includes/bootstrap.inc\&quot;;s:5:\&quot;%line\&quot;;i:633;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1328317176) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[03-Feb-2012 16:59:36] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:85:\&quot;MySQL server has gone away\nquery: DELETE FROM cache WHERE cid = &amp;#039;variables&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:45:\&quot;/home/imusgeog/public_html/includes/cache.inc\&quot;;s:5:\&quot;%line\&quot;;i:178;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1328317176) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[03-Feb-2012 16:59:36] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:152:\&quot;MySQL server has gone away\nquery: SELECT t.word AS realword, i.word FROM search_total t LEFT JOIN search_index i ON t.word = i.word WHERE i.word IS NULL\&quot;;s:5:\&quot;%file\&quot;;s:55:\&quot;/home/imusgeog/public_html/modules/search/search.module\&quot;;s:5:\&quot;%line\&quot;;i:295;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1328317176) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[04-Feb-2012 16:59:21] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 113 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/destinations.s3.inc on line 70
+[04-Feb-2012 16:59:21] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:385:\&quot;MySQL server has gone away\nquery: INSERT INTO watchdog\n    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)\n    VALUES\n    (0, &amp;#039;cron&amp;#039;, &amp;#039;Cron run exceeded the time limit and was aborted.&amp;#039;, &amp;#039;a:0:{}&amp;#039;, 4, &amp;#039;&amp;#039;, &amp;#039;http://imusgeographics.com/cron.php&amp;#039;, &amp;#039;&amp;#039;, &amp;#039;50.23.235.117&amp;#039;, 1328403561)\&quot;;s:5:\&quot;%file\&quot;;s:53:\&quot;/home/imusgeog/public_html/modules/dblog/dblog.module\&quot;;s:5:\&quot;%line\&quot;;i:146;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.11 in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[04-Feb-2012 16:59:21] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:94:\&quot;MySQL server has gone away\nquery: DELETE FROM variable WHERE name = &amp;#039;cron_semaphore&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:49:\&quot;/home/imusgeog/public_html/includes/bootstrap.inc\&quot;;s:5:\&quot;%line\&quot;;i:633;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1328403561) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[04-Feb-2012 16:59:21] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:85:\&quot;MySQL server has gone away\nquery: DELETE FROM cache WHERE cid = &amp;#039;variables&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:45:\&quot;/home/imusgeog/public_html/includes/cache.inc\&quot;;s:5:\&quot;%line\&quot;;i:178;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1328403561) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[04-Feb-2012 16:59:21] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:152:\&quot;MySQL server has gone away\nquery: SELECT t.word AS realword, i.word FROM search_total t LEFT JOIN search_index i ON t.word = i.word WHERE i.word IS NULL\&quot;;s:5:\&quot;%file\&quot;;s:55:\&quot;/home/imusgeog/public_html/modules/search/search.module\&quot;;s:5:\&quot;%line\&quot;;i:295;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1328403561) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[05-Feb-2012 16:59:43] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 74 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/files.inc on line 58
+[06-Feb-2012 16:59:31] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 24 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/filters.encryption.inc on line 73
+[06-Feb-2012 16:59:31] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:385:\&quot;MySQL server has gone away\nquery: INSERT INTO watchdog\n    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)\n    VALUES\n    (0, &amp;#039;cron&amp;#039;, &amp;#039;Cron run exceeded the time limit and was aborted.&amp;#039;, &amp;#039;a:0:{}&amp;#039;, 4, &amp;#039;&amp;#039;, &amp;#039;http://imusgeographics.com/cron.php&amp;#039;, &amp;#039;&amp;#039;, &amp;#039;50.23.235.117&amp;#039;, 1328576371)\&quot;;s:5:\&quot;%file\&quot;;s:53:\&quot;/home/imusgeog/public_html/modules/dblog/dblog.module\&quot;;s:5:\&quot;%line\&quot;;i:146;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.11 in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[06-Feb-2012 16:59:31] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:94:\&quot;MySQL server has gone away\nquery: DELETE FROM variable WHERE name = &amp;#039;cron_semaphore&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:49:\&quot;/home/imusgeog/public_html/includes/bootstrap.inc\&quot;;s:5:\&quot;%line\&quot;;i:633;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1328576371) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[06-Feb-2012 16:59:31] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:85:\&quot;MySQL server has gone away\nquery: DELETE FROM cache WHERE cid = &amp;#039;variables&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:45:\&quot;/home/imusgeog/public_html/includes/cache.inc\&quot;;s:5:\&quot;%line\&quot;;i:178;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1328576371) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[06-Feb-2012 16:59:31] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:152:\&quot;MySQL server has gone away\nquery: SELECT t.word AS realword, i.word FROM search_total t LEFT JOIN search_index i ON t.word = i.word WHERE i.word IS NULL\&quot;;s:5:\&quot;%file\&quot;;s:55:\&quot;/home/imusgeog/public_html/modules/search/search.module\&quot;;s:5:\&quot;%line\&quot;;i:295;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1328576371) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[07-Feb-2012 16:59:33] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 74 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/files.inc on line 58
+[07-Feb-2012 16:59:33] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:385:\&quot;MySQL server has gone away\nquery: INSERT INTO watchdog\n    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)\n    VALUES\n    (0, &amp;#039;cron&amp;#039;, &amp;#039;Cron run exceeded the time limit and was aborted.&amp;#039;, &amp;#039;a:0:{}&amp;#039;, 4, &amp;#039;&amp;#039;, &amp;#039;http://imusgeographics.com/cron.php&amp;#039;, &amp;#039;&amp;#039;, &amp;#039;50.23.235.117&amp;#039;, 1328662773)\&quot;;s:5:\&quot;%file\&quot;;s:53:\&quot;/home/imusgeog/public_html/modules/dblog/dblog.module\&quot;;s:5:\&quot;%line\&quot;;i:146;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.11 in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[07-Feb-2012 16:59:33] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:94:\&quot;MySQL server has gone away\nquery: DELETE FROM variable WHERE name = &amp;#039;cron_semaphore&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:49:\&quot;/home/imusgeog/public_html/includes/bootstrap.inc\&quot;;s:5:\&quot;%line\&quot;;i:633;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1328662773) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[07-Feb-2012 16:59:33] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:85:\&quot;MySQL server has gone away\nquery: DELETE FROM cache WHERE cid = &amp;#039;variables&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:45:\&quot;/home/imusgeog/public_html/includes/cache.inc\&quot;;s:5:\&quot;%line\&quot;;i:178;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1328662773) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[07-Feb-2012 16:59:33] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:152:\&quot;MySQL server has gone away\nquery: SELECT t.word AS realword, i.word FROM search_total t LEFT JOIN search_index i ON t.word = i.word WHERE i.word IS NULL\&quot;;s:5:\&quot;%file\&quot;;s:55:\&quot;/home/imusgeog/public_html/modules/search/search.module\&quot;;s:5:\&quot;%line\&quot;;i:295;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1328662773) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[08-Feb-2012 16:59:23] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 24 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/filters.encryption.inc on line 73
+[08-Feb-2012 16:59:23] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:385:\&quot;MySQL server has gone away\nquery: INSERT INTO watchdog\n    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)\n    VALUES\n    (0, &amp;#039;cron&amp;#039;, &amp;#039;Cron run exceeded the time limit and was aborted.&amp;#039;, &amp;#039;a:0:{}&amp;#039;, 4, &amp;#039;&amp;#039;, &amp;#039;http://imusgeographics.com/cron.php&amp;#039;, &amp;#039;&amp;#039;, &amp;#039;50.23.235.117&amp;#039;, 1328749163)\&quot;;s:5:\&quot;%file\&quot;;s:53:\&quot;/home/imusgeog/public_html/modules/dblog/dblog.module\&quot;;s:5:\&quot;%line\&quot;;i:146;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.11 in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[08-Feb-2012 16:59:23] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:94:\&quot;MySQL server has gone away\nquery: DELETE FROM variable WHERE name = &amp;#039;cron_semaphore&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:49:\&quot;/home/imusgeog/public_html/includes/bootstrap.inc\&quot;;s:5:\&quot;%line\&quot;;i:633;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1328749163) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[08-Feb-2012 16:59:23] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:85:\&quot;MySQL server has gone away\nquery: DELETE FROM cache WHERE cid = &amp;#039;variables&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:45:\&quot;/home/imusgeog/public_html/includes/cache.inc\&quot;;s:5:\&quot;%line\&quot;;i:178;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1328749163) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[08-Feb-2012 16:59:23] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:152:\&quot;MySQL server has gone away\nquery: SELECT t.word AS realword, i.word FROM search_total t LEFT JOIN search_index i ON t.word = i.word WHERE i.word IS NULL\&quot;;s:5:\&quot;%file\&quot;;s:55:\&quot;/home/imusgeog/public_html/modules/search/search.module\&quot;;s:5:\&quot;%line\&quot;;i:295;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1328749163) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[09-Feb-2012 16:59:33] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 40 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/filters.inc on line 30
+[09-Feb-2012 16:59:33] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:385:\&quot;MySQL server has gone away\nquery: INSERT INTO watchdog\n    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)\n    VALUES\n    (0, &amp;#039;cron&amp;#039;, &amp;#039;Cron run exceeded the time limit and was aborted.&amp;#039;, &amp;#039;a:0:{}&amp;#039;, 4, &amp;#039;&amp;#039;, &amp;#039;http://imusgeographics.com/cron.php&amp;#039;, &amp;#039;&amp;#039;, &amp;#039;50.23.235.117&amp;#039;, 1328835573)\&quot;;s:5:\&quot;%file\&quot;;s:53:\&quot;/home/imusgeog/public_html/modules/dblog/dblog.module\&quot;;s:5:\&quot;%line\&quot;;i:146;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.11 in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[09-Feb-2012 16:59:33] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:94:\&quot;MySQL server has gone away\nquery: DELETE FROM variable WHERE name = &amp;#039;cron_semaphore&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:49:\&quot;/home/imusgeog/public_html/includes/bootstrap.inc\&quot;;s:5:\&quot;%line\&quot;;i:633;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1328835573) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[09-Feb-2012 16:59:33] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:85:\&quot;MySQL server has gone away\nquery: DELETE FROM cache WHERE cid = &amp;#039;variables&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:45:\&quot;/home/imusgeog/public_html/includes/cache.inc\&quot;;s:5:\&quot;%line\&quot;;i:178;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1328835573) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[10-Feb-2012 16:59:35] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 80 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/files.inc on line 58
+[10-Feb-2012 16:59:35] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:385:\&quot;MySQL server has gone away\nquery: INSERT INTO watchdog\n    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)\n    VALUES\n    (0, &amp;#039;cron&amp;#039;, &amp;#039;Cron run exceeded the time limit and was aborted.&amp;#039;, &amp;#039;a:0:{}&amp;#039;, 4, &amp;#039;&amp;#039;, &amp;#039;http://imusgeographics.com/cron.php&amp;#039;, &amp;#039;&amp;#039;, &amp;#039;50.23.235.117&amp;#039;, 1328921975)\&quot;;s:5:\&quot;%file\&quot;;s:53:\&quot;/home/imusgeog/public_html/modules/dblog/dblog.module\&quot;;s:5:\&quot;%line\&quot;;i:146;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.11 in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[10-Feb-2012 16:59:35] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:94:\&quot;MySQL server has gone away\nquery: DELETE FROM variable WHERE name = &amp;#039;cron_semaphore&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:49:\&quot;/home/imusgeog/public_html/includes/bootstrap.inc\&quot;;s:5:\&quot;%line\&quot;;i:633;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1328921975) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[10-Feb-2012 16:59:35] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:85:\&quot;MySQL server has gone away\nquery: DELETE FROM cache WHERE cid = &amp;#039;variables&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:45:\&quot;/home/imusgeog/public_html/includes/cache.inc\&quot;;s:5:\&quot;%line\&quot;;i:178;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1328921975) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[11-Feb-2012 16:59:35] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 79 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/files.inc on line 58
+[11-Feb-2012 16:59:35] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:385:\&quot;MySQL server has gone away\nquery: INSERT INTO watchdog\n    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)\n    VALUES\n    (0, &amp;#039;cron&amp;#039;, &amp;#039;Cron run exceeded the time limit and was aborted.&amp;#039;, &amp;#039;a:0:{}&amp;#039;, 4, &amp;#039;&amp;#039;, &amp;#039;http://imusgeographics.com/cron.php&amp;#039;, &amp;#039;&amp;#039;, &amp;#039;50.23.235.117&amp;#039;, 1329008375)\&quot;;s:5:\&quot;%file\&quot;;s:53:\&quot;/home/imusgeog/public_html/modules/dblog/dblog.module\&quot;;s:5:\&quot;%line\&quot;;i:146;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.11 in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[11-Feb-2012 16:59:35] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:94:\&quot;MySQL server has gone away\nquery: DELETE FROM variable WHERE name = &amp;#039;cron_semaphore&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:49:\&quot;/home/imusgeog/public_html/includes/bootstrap.inc\&quot;;s:5:\&quot;%line\&quot;;i:633;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1329008375) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[11-Feb-2012 16:59:35] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:85:\&quot;MySQL server has gone away\nquery: DELETE FROM cache WHERE cid = &amp;#039;variables&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:45:\&quot;/home/imusgeog/public_html/includes/cache.inc\&quot;;s:5:\&quot;%line\&quot;;i:178;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1329008375) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[11-Feb-2012 16:59:35] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:152:\&quot;MySQL server has gone away\nquery: SELECT t.word AS realword, i.word FROM search_total t LEFT JOIN search_index i ON t.word = i.word WHERE i.word IS NULL\&quot;;s:5:\&quot;%file\&quot;;s:55:\&quot;/home/imusgeog/public_html/modules/search/search.module\&quot;;s:5:\&quot;%line\&quot;;i:295;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1329008375) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[12-Feb-2012 16:59:41] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 24 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/filters.encryption.inc on line 71
+[12-Feb-2012 16:59:41] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:385:\&quot;MySQL server has gone away\nquery: INSERT INTO watchdog\n    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)\n    VALUES\n    (0, &amp;#039;cron&amp;#039;, &amp;#039;Cron run exceeded the time limit and was aborted.&amp;#039;, &amp;#039;a:0:{}&amp;#039;, 4, &amp;#039;&amp;#039;, &amp;#039;http://imusgeographics.com/cron.php&amp;#039;, &amp;#039;&amp;#039;, &amp;#039;50.23.235.117&amp;#039;, 1329094781)\&quot;;s:5:\&quot;%file\&quot;;s:53:\&quot;/home/imusgeog/public_html/modules/dblog/dblog.module\&quot;;s:5:\&quot;%line\&quot;;i:146;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.11 in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[12-Feb-2012 16:59:41] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:94:\&quot;MySQL server has gone away\nquery: DELETE FROM variable WHERE name = &amp;#039;cron_semaphore&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:49:\&quot;/home/imusgeog/public_html/includes/bootstrap.inc\&quot;;s:5:\&quot;%line\&quot;;i:633;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1329094781) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[12-Feb-2012 16:59:41] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:85:\&quot;MySQL server has gone away\nquery: DELETE FROM cache WHERE cid = &amp;#039;variables&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:45:\&quot;/home/imusgeog/public_html/includes/cache.inc\&quot;;s:5:\&quot;%line\&quot;;i:178;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1329094781) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[12-Feb-2012 16:59:41] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:152:\&quot;MySQL server has gone away\nquery: SELECT t.word AS realword, i.word FROM search_total t LEFT JOIN search_index i ON t.word = i.word WHERE i.word IS NULL\&quot;;s:5:\&quot;%file\&quot;;s:55:\&quot;/home/imusgeog/public_html/modules/search/search.module\&quot;;s:5:\&quot;%line\&quot;;i:295;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1329094781) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[13-Feb-2012 16:59:23] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 74 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/files.inc on line 58
+[13-Feb-2012 16:59:23] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:385:\&quot;MySQL server has gone away\nquery: INSERT INTO watchdog\n    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)\n    VALUES\n    (0, &amp;#039;cron&amp;#039;, &amp;#039;Cron run exceeded the time limit and was aborted.&amp;#039;, &amp;#039;a:0:{}&amp;#039;, 4, &amp;#039;&amp;#039;, &amp;#039;http://imusgeographics.com/cron.php&amp;#039;, &amp;#039;&amp;#039;, &amp;#039;50.23.235.117&amp;#039;, 1329181163)\&quot;;s:5:\&quot;%file\&quot;;s:53:\&quot;/home/imusgeog/public_html/modules/dblog/dblog.module\&quot;;s:5:\&quot;%line\&quot;;i:146;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.11 in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[13-Feb-2012 16:59:23] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:94:\&quot;MySQL server has gone away\nquery: DELETE FROM variable WHERE name = &amp;#039;cron_semaphore&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:49:\&quot;/home/imusgeog/public_html/includes/bootstrap.inc\&quot;;s:5:\&quot;%line\&quot;;i:633;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1329181163) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[13-Feb-2012 16:59:23] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:85:\&quot;MySQL server has gone away\nquery: DELETE FROM cache WHERE cid = &amp;#039;variables&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:45:\&quot;/home/imusgeog/public_html/includes/cache.inc\&quot;;s:5:\&quot;%line\&quot;;i:178;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1329181163) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[13-Feb-2012 16:59:23] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:152:\&quot;MySQL server has gone away\nquery: SELECT t.word AS realword, i.word FROM search_total t LEFT JOIN search_index i ON t.word = i.word WHERE i.word IS NULL\&quot;;s:5:\&quot;%file\&quot;;s:55:\&quot;/home/imusgeog/public_html/modules/search/search.module\&quot;;s:5:\&quot;%line\&quot;;i:295;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1329181163) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[14-Feb-2012 16:59:33] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 79 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/files.inc on line 58
+[15-Feb-2012 16:59:35] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 24 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/files.inc on line 58
+[15-Feb-2012 16:59:35] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:385:\&quot;MySQL server has gone away\nquery: INSERT INTO watchdog\n    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)\n    VALUES\n    (0, &amp;#039;cron&amp;#039;, &amp;#039;Cron run exceeded the time limit and was aborted.&amp;#039;, &amp;#039;a:0:{}&amp;#039;, 4, &amp;#039;&amp;#039;, &amp;#039;http://imusgeographics.com/cron.php&amp;#039;, &amp;#039;&amp;#039;, &amp;#039;50.23.235.117&amp;#039;, 1329353975)\&quot;;s:5:\&quot;%file\&quot;;s:53:\&quot;/home/imusgeog/public_html/modules/dblog/dblog.module\&quot;;s:5:\&quot;%line\&quot;;i:146;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.11 in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[16-Feb-2012 16:59:36] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 74 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/files.inc on line 58
+[17-Feb-2012 16:59:37] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 78 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/files.inc on line 58
+[17-Feb-2012 16:59:37] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:385:\&quot;MySQL server has gone away\nquery: INSERT INTO watchdog\n    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)\n    VALUES\n    (0, &amp;#039;cron&amp;#039;, &amp;#039;Cron run exceeded the time limit and was aborted.&amp;#039;, &amp;#039;a:0:{}&amp;#039;, 4, &amp;#039;&amp;#039;, &amp;#039;http://imusgeographics.com/cron.php&amp;#039;, &amp;#039;&amp;#039;, &amp;#039;50.23.235.117&amp;#039;, 1329526777)\&quot;;s:5:\&quot;%file\&quot;;s:53:\&quot;/home/imusgeog/public_html/modules/dblog/dblog.module\&quot;;s:5:\&quot;%line\&quot;;i:146;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.11 in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[17-Feb-2012 16:59:37] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:94:\&quot;MySQL server has gone away\nquery: DELETE FROM variable WHERE name = &amp;#039;cron_semaphore&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:49:\&quot;/home/imusgeog/public_html/includes/bootstrap.inc\&quot;;s:5:\&quot;%line\&quot;;i:633;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1329526777) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[17-Feb-2012 16:59:37] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:85:\&quot;MySQL server has gone away\nquery: DELETE FROM cache WHERE cid = &amp;#039;variables&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:45:\&quot;/home/imusgeog/public_html/includes/cache.inc\&quot;;s:5:\&quot;%line\&quot;;i:178;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1329526777) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[17-Feb-2012 16:59:37] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:152:\&quot;MySQL server has gone away\nquery: SELECT t.word AS realword, i.word FROM search_total t LEFT JOIN search_index i ON t.word = i.word WHERE i.word IS NULL\&quot;;s:5:\&quot;%file\&quot;;s:55:\&quot;/home/imusgeog/public_html/modules/search/search.module\&quot;;s:5:\&quot;%line\&quot;;i:295;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1329526777) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[18-Feb-2012 16:59:28] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 78 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/files.inc on line 58
+[18-Feb-2012 16:59:28] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:385:\&quot;MySQL server has gone away\nquery: INSERT INTO watchdog\n    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)\n    VALUES\n    (0, &amp;#039;cron&amp;#039;, &amp;#039;Cron run exceeded the time limit and was aborted.&amp;#039;, &amp;#039;a:0:{}&amp;#039;, 4, &amp;#039;&amp;#039;, &amp;#039;http://imusgeographics.com/cron.php&amp;#039;, &amp;#039;&amp;#039;, &amp;#039;50.23.235.117&amp;#039;, 1329613168)\&quot;;s:5:\&quot;%file\&quot;;s:53:\&quot;/home/imusgeog/public_html/modules/dblog/dblog.module\&quot;;s:5:\&quot;%line\&quot;;i:146;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.11 in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[18-Feb-2012 16:59:28] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:94:\&quot;MySQL server has gone away\nquery: DELETE FROM variable WHERE name = &amp;#039;cron_semaphore&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:49:\&quot;/home/imusgeog/public_html/includes/bootstrap.inc\&quot;;s:5:\&quot;%line\&quot;;i:633;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1329613168) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[18-Feb-2012 16:59:28] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:85:\&quot;MySQL server has gone away\nquery: DELETE FROM cache WHERE cid = &amp;#039;variables&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:45:\&quot;/home/imusgeog/public_html/includes/cache.inc\&quot;;s:5:\&quot;%line\&quot;;i:178;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1329613168) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[18-Feb-2012 16:59:28] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:152:\&quot;MySQL server has gone away\nquery: SELECT t.word AS realword, i.word FROM search_total t LEFT JOIN search_index i ON t.word = i.word WHERE i.word IS NULL\&quot;;s:5:\&quot;%file\&quot;;s:55:\&quot;/home/imusgeog/public_html/modules/search/search.module\&quot;;s:5:\&quot;%line\&quot;;i:295;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1329613168) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[19-Feb-2012 16:59:48] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 78 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/files.inc on line 58
+[19-Feb-2012 16:59:48] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:385:\&quot;MySQL server has gone away\nquery: INSERT INTO watchdog\n    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)\n    VALUES\n    (0, &amp;#039;cron&amp;#039;, &amp;#039;Cron run exceeded the time limit and was aborted.&amp;#039;, &amp;#039;a:0:{}&amp;#039;, 4, &amp;#039;&amp;#039;, &amp;#039;http://imusgeographics.com/cron.php&amp;#039;, &amp;#039;&amp;#039;, &amp;#039;50.23.235.117&amp;#039;, 1329699588)\&quot;;s:5:\&quot;%file\&quot;;s:53:\&quot;/home/imusgeog/public_html/modules/dblog/dblog.module\&quot;;s:5:\&quot;%line\&quot;;i:146;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.11 in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[19-Feb-2012 16:59:48] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:94:\&quot;MySQL server has gone away\nquery: DELETE FROM variable WHERE name = &amp;#039;cron_semaphore&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:49:\&quot;/home/imusgeog/public_html/includes/bootstrap.inc\&quot;;s:5:\&quot;%line\&quot;;i:633;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1329699588) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[19-Feb-2012 16:59:48] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:85:\&quot;MySQL server has gone away\nquery: DELETE FROM cache WHERE cid = &amp;#039;variables&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:45:\&quot;/home/imusgeog/public_html/includes/cache.inc\&quot;;s:5:\&quot;%line\&quot;;i:178;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1329699588) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[20-Feb-2012 16:59:34] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 79 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/files.inc on line 58
+[20-Feb-2012 16:59:34] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:385:\&quot;MySQL server has gone away\nquery: INSERT INTO watchdog\n    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)\n    VALUES\n    (0, &amp;#039;cron&amp;#039;, &amp;#039;Cron run exceeded the time limit and was aborted.&amp;#039;, &amp;#039;a:0:{}&amp;#039;, 4, &amp;#039;&amp;#039;, &amp;#039;http://imusgeographics.com/cron.php&amp;#039;, &amp;#039;&amp;#039;, &amp;#039;50.23.235.117&amp;#039;, 1329785974)\&quot;;s:5:\&quot;%file\&quot;;s:53:\&quot;/home/imusgeog/public_html/modules/dblog/dblog.module\&quot;;s:5:\&quot;%line\&quot;;i:146;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.11 in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[20-Feb-2012 16:59:34] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:94:\&quot;MySQL server has gone away\nquery: DELETE FROM variable WHERE name = &amp;#039;cron_semaphore&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:49:\&quot;/home/imusgeog/public_html/includes/bootstrap.inc\&quot;;s:5:\&quot;%line\&quot;;i:633;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1329785974) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[20-Feb-2012 16:59:34] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:85:\&quot;MySQL server has gone away\nquery: DELETE FROM cache WHERE cid = &amp;#039;variables&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:45:\&quot;/home/imusgeog/public_html/includes/cache.inc\&quot;;s:5:\&quot;%line\&quot;;i:178;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1329785974) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[20-Feb-2012 16:59:34] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:152:\&quot;MySQL server has gone away\nquery: SELECT t.word AS realword, i.word FROM search_total t LEFT JOIN search_index i ON t.word = i.word WHERE i.word IS NULL\&quot;;s:5:\&quot;%file\&quot;;s:55:\&quot;/home/imusgeog/public_html/modules/search/search.module\&quot;;s:5:\&quot;%line\&quot;;i:295;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1329785974) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[21-Feb-2012 16:59:33] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 79 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/files.inc on line 58
+[21-Feb-2012 16:59:34] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:385:\&quot;MySQL server has gone away\nquery: INSERT INTO watchdog\n    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)\n    VALUES\n    (0, &amp;#039;cron&amp;#039;, &amp;#039;Cron run exceeded the time limit and was aborted.&amp;#039;, &amp;#039;a:0:{}&amp;#039;, 4, &amp;#039;&amp;#039;, &amp;#039;http://imusgeographics.com/cron.php&amp;#039;, &amp;#039;&amp;#039;, &amp;#039;50.23.235.117&amp;#039;, 1329872374)\&quot;;s:5:\&quot;%file\&quot;;s:53:\&quot;/home/imusgeog/public_html/modules/dblog/dblog.module\&quot;;s:5:\&quot;%line\&quot;;i:146;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.11 in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[21-Feb-2012 16:59:34] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:94:\&quot;MySQL server has gone away\nquery: DELETE FROM variable WHERE name = &amp;#039;cron_semaphore&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:49:\&quot;/home/imusgeog/public_html/includes/bootstrap.inc\&quot;;s:5:\&quot;%line\&quot;;i:633;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1329872374) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[21-Feb-2012 16:59:34] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:85:\&quot;MySQL server has gone away\nquery: DELETE FROM cache WHERE cid = &amp;#039;variables&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:45:\&quot;/home/imusgeog/public_html/includes/cache.inc\&quot;;s:5:\&quot;%line\&quot;;i:178;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1329872374) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[22-Feb-2012 16:59:37] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 71 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/filters.backup_restore.inc on line 153
+[23-Feb-2012 16:59:38] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 79 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/files.inc on line 58
+[23-Feb-2012 16:59:38] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:385:\&quot;MySQL server has gone away\nquery: INSERT INTO watchdog\n    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)\n    VALUES\n    (0, &amp;#039;cron&amp;#039;, &amp;#039;Cron run exceeded the time limit and was aborted.&amp;#039;, &amp;#039;a:0:{}&amp;#039;, 4, &amp;#039;&amp;#039;, &amp;#039;http://imusgeographics.com/cron.php&amp;#039;, &amp;#039;&amp;#039;, &amp;#039;50.23.235.117&amp;#039;, 1330045178)\&quot;;s:5:\&quot;%file\&quot;;s:53:\&quot;/home/imusgeog/public_html/modules/dblog/dblog.module\&quot;;s:5:\&quot;%line\&quot;;i:146;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.11 in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[24-Feb-2012 16:59:28] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 78 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/files.inc on line 58
+[24-Feb-2012 16:59:28] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:385:\&quot;MySQL server has gone away\nquery: INSERT INTO watchdog\n    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)\n    VALUES\n    (0, &amp;#039;cron&amp;#039;, &amp;#039;Cron run exceeded the time limit and was aborted.&amp;#039;, &amp;#039;a:0:{}&amp;#039;, 4, &amp;#039;&amp;#039;, &amp;#039;http://imusgeographics.com/cron.php&amp;#039;, &amp;#039;&amp;#039;, &amp;#039;50.23.235.117&amp;#039;, 1330131568)\&quot;;s:5:\&quot;%file\&quot;;s:53:\&quot;/home/imusgeog/public_html/modules/dblog/dblog.module\&quot;;s:5:\&quot;%line\&quot;;i:146;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.11 in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[24-Feb-2012 16:59:28] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:94:\&quot;MySQL server has gone away\nquery: DELETE FROM variable WHERE name = &amp;#039;cron_semaphore&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:49:\&quot;/home/imusgeog/public_html/includes/bootstrap.inc\&quot;;s:5:\&quot;%line\&quot;;i:633;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1330131568) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[24-Feb-2012 16:59:28] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:85:\&quot;MySQL server has gone away\nquery: DELETE FROM cache WHERE cid = &amp;#039;variables&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:45:\&quot;/home/imusgeog/public_html/includes/cache.inc\&quot;;s:5:\&quot;%line\&quot;;i:178;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1330131568) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[24-Feb-2012 16:59:28] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:152:\&quot;MySQL server has gone away\nquery: SELECT t.word AS realword, i.word FROM search_total t LEFT JOIN search_index i ON t.word = i.word WHERE i.word IS NULL\&quot;;s:5:\&quot;%file\&quot;;s:55:\&quot;/home/imusgeog/public_html/modules/search/search.module\&quot;;s:5:\&quot;%line\&quot;;i:295;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1330131568) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[25-Feb-2012 16:59:35] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 72 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/destinations.inc on line 554
+[25-Feb-2012 16:59:35] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:385:\&quot;MySQL server has gone away\nquery: INSERT INTO watchdog\n    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)\n    VALUES\n    (0, &amp;#039;cron&amp;#039;, &amp;#039;Cron run exceeded the time limit and was aborted.&amp;#039;, &amp;#039;a:0:{}&amp;#039;, 4, &amp;#039;&amp;#039;, &amp;#039;http://imusgeographics.com/cron.php&amp;#039;, &amp;#039;&amp;#039;, &amp;#039;50.23.235.117&amp;#039;, 1330217975)\&quot;;s:5:\&quot;%file\&quot;;s:53:\&quot;/home/imusgeog/public_html/modules/dblog/dblog.module\&quot;;s:5:\&quot;%line\&quot;;i:146;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.11 in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[25-Feb-2012 16:59:35] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:94:\&quot;MySQL server has gone away\nquery: DELETE FROM variable WHERE name = &amp;#039;cron_semaphore&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:49:\&quot;/home/imusgeog/public_html/includes/bootstrap.inc\&quot;;s:5:\&quot;%line\&quot;;i:633;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1330217975) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[25-Feb-2012 16:59:35] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:85:\&quot;MySQL server has gone away\nquery: DELETE FROM cache WHERE cid = &amp;#039;variables&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:45:\&quot;/home/imusgeog/public_html/includes/cache.inc\&quot;;s:5:\&quot;%line\&quot;;i:178;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1330217975) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[26-Feb-2012 16:59:29] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 78 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/files.inc on line 58
+[26-Feb-2012 16:59:29] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:385:\&quot;MySQL server has gone away\nquery: INSERT INTO watchdog\n    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)\n    VALUES\n    (0, &amp;#039;cron&amp;#039;, &amp;#039;Cron run exceeded the time limit and was aborted.&amp;#039;, &amp;#039;a:0:{}&amp;#039;, 4, &amp;#039;&amp;#039;, &amp;#039;http://imusgeographics.com/cron.php&amp;#039;, &amp;#039;&amp;#039;, &amp;#039;50.23.235.117&amp;#039;, 1330304369)\&quot;;s:5:\&quot;%file\&quot;;s:53:\&quot;/home/imusgeog/public_html/modules/dblog/dblog.module\&quot;;s:5:\&quot;%line\&quot;;i:146;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.11 in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[26-Feb-2012 16:59:29] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:94:\&quot;MySQL server has gone away\nquery: DELETE FROM variable WHERE name = &amp;#039;cron_semaphore&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:49:\&quot;/home/imusgeog/public_html/includes/bootstrap.inc\&quot;;s:5:\&quot;%line\&quot;;i:633;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1330304369) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[26-Feb-2012 16:59:29] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:85:\&quot;MySQL server has gone away\nquery: DELETE FROM cache WHERE cid = &amp;#039;variables&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:45:\&quot;/home/imusgeog/public_html/includes/cache.inc\&quot;;s:5:\&quot;%line\&quot;;i:178;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1330304369) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[26-Feb-2012 16:59:29] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:152:\&quot;MySQL server has gone away\nquery: SELECT t.word AS realword, i.word FROM search_total t LEFT JOIN search_index i ON t.word = i.word WHERE i.word IS NULL\&quot;;s:5:\&quot;%file\&quot;;s:55:\&quot;/home/imusgeog/public_html/modules/search/search.module\&quot;;s:5:\&quot;%line\&quot;;i:295;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1330304369) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[27-Feb-2012 16:59:47] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 24 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/filters.encryption.inc on line 71
+[27-Feb-2012 16:59:47] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:385:\&quot;MySQL server has gone away\nquery: INSERT INTO watchdog\n    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)\n    VALUES\n    (0, &amp;#039;cron&amp;#039;, &amp;#039;Cron run exceeded the time limit and was aborted.&amp;#039;, &amp;#039;a:0:{}&amp;#039;, 4, &amp;#039;&amp;#039;, &amp;#039;http://imusgeographics.com/cron.php&amp;#039;, &amp;#039;&amp;#039;, &amp;#039;50.23.235.117&amp;#039;, 1330390787)\&quot;;s:5:\&quot;%file\&quot;;s:53:\&quot;/home/imusgeog/public_html/modules/dblog/dblog.module\&quot;;s:5:\&quot;%line\&quot;;i:146;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.11 in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[28-Feb-2012 16:59:43] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 79 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/files.inc on line 58
+[28-Feb-2012 16:59:43] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:385:\&quot;MySQL server has gone away\nquery: INSERT INTO watchdog\n    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)\n    VALUES\n    (0, &amp;#039;cron&amp;#039;, &amp;#039;Cron run exceeded the time limit and was aborted.&amp;#039;, &amp;#039;a:0:{}&amp;#039;, 4, &amp;#039;&amp;#039;, &amp;#039;http://imusgeographics.com/cron.php&amp;#039;, &amp;#039;&amp;#039;, &amp;#039;50.23.235.117&amp;#039;, 1330477183)\&quot;;s:5:\&quot;%file\&quot;;s:53:\&quot;/home/imusgeog/public_html/modules/dblog/dblog.module\&quot;;s:5:\&quot;%line\&quot;;i:146;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.11 in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[28-Feb-2012 16:59:43] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:94:\&quot;MySQL server has gone away\nquery: DELETE FROM variable WHERE name = &amp;#039;cron_semaphore&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:49:\&quot;/home/imusgeog/public_html/includes/bootstrap.inc\&quot;;s:5:\&quot;%line\&quot;;i:633;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1330477183) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[28-Feb-2012 16:59:43] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:85:\&quot;MySQL server has gone away\nquery: DELETE FROM cache WHERE cid = &amp;#039;variables&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:45:\&quot;/home/imusgeog/public_html/includes/cache.inc\&quot;;s:5:\&quot;%line\&quot;;i:178;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1330477183) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[28-Feb-2012 16:59:43] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:152:\&quot;MySQL server has gone away\nquery: SELECT t.word AS realword, i.word FROM search_total t LEFT JOIN search_index i ON t.word = i.word WHERE i.word IS NULL\&quot;;s:5:\&quot;%file\&quot;;s:55:\&quot;/home/imusgeog/public_html/modules/search/search.module\&quot;;s:5:\&quot;%line\&quot;;i:295;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1330477183) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[29-Feb-2012 16:59:30] PHP Fatal error:  Allowed memory size of 268435456 bytes exhausted (tried to allocate 80 bytes) in /home/imusgeog/public_html/sites/all/modules/backup_migrate/includes/files.inc on line 58
+[29-Feb-2012 16:59:30] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:385:\&quot;MySQL server has gone away\nquery: INSERT INTO watchdog\n    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)\n    VALUES\n    (0, &amp;#039;cron&amp;#039;, &amp;#039;Cron run exceeded the time limit and was aborted.&amp;#039;, &amp;#039;a:0:{}&amp;#039;, 4, &amp;#039;&amp;#039;, &amp;#039;http://imusgeographics.com/cron.php&amp;#039;, &amp;#039;&amp;#039;, &amp;#039;50.23.235.117&amp;#039;, 1330563570)\&quot;;s:5:\&quot;%file\&quot;;s:53:\&quot;/home/imusgeog/public_html/modules/dblog/dblog.module\&quot;;s:5:\&quot;%line\&quot;;i:146;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.11 in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[29-Feb-2012 16:59:30] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:94:\&quot;MySQL server has gone away\nquery: DELETE FROM variable WHERE name = &amp;#039;cron_semaphore&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:49:\&quot;/home/imusgeog/public_html/includes/bootstrap.inc\&quot;;s:5:\&quot;%line\&quot;;i:633;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1330563570) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[29-Feb-2012 16:59:30] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:85:\&quot;MySQL server has gone away\nquery: DELETE FROM cache WHERE cid = &amp;#039;variables&amp;#039;\&quot;;s:5:\&quot;%file\&quot;;s:45:\&quot;/home/imusgeog/public_html/includes/cache.inc\&quot;;s:5:\&quot;%line\&quot;;i:178;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1330563570) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
+[29-Feb-2012 16:59:30] PHP Warning:  MySQL server has gone away
+query: INSERT INTO watchdog
+    (uid, type, message, variables, severity, link, location, referer, hostname, timestamp)
+    VALUES
+    (0, &#039;php&#039;, &#039;%message in %file on line %line.&#039;, &#039;a:4:{s:6:\&quot;%error\&quot;;s:12:\&quot;user warning\&quot;;s:8:\&quot;%message\&quot;;s:152:\&quot;MySQL server has gone away\nquery: SELECT t.word AS realword, i.word FROM search_total t LEFT JOIN search_index i ON t.word = i.word WHERE i.word IS NULL\&quot;;s:5:\&quot;%file\&quot;;s:55:\&quot;/home/imusgeog/public_html/modules/search/search.module\&quot;;s:5:\&quot;%line\&quot;;i:295;}&#039;, 3, &#039;&#039;, &#039;http://imusgeographics.com/cron.php&#039;, &#039;&#039;, &#039;50.23.235.117&#039;, 1330563570) in /home/imusgeog/public_html/includes/database.mysqli.inc on line 134
