@@ -55,7 +55,7 @@
       <?php if ($node->content['field_full_title']['#children']): ?>
         <?php print $node->content['field_full_title']['#children']; ?>
       <?php endif; ?>
-      
+
       <table id="content-top-table"><tr>
         <td class="product content-top left">
       <div id="node-content-top-left" class="node-content-top">
@@ -76,13 +76,13 @@
         </tr></table>
       </div>
   <div id="content-columns">
-    
-    <div id="right-content">  
+
+    <div id="right-content">
       <?php if ($node->content['add_to_cart']['#value']): ?>
         <div id="product-cart-stuff">
         <div id="buynow">
           <?php //<div id="freeshipping" class="clearfix"><span class="freeshipping">Free Shipping</span><span class="standard-domestic">(Standard / Domestic)</span> </div> ?>
-          <div class="highlight">Select laminated, flat, folded or 10-pack, enter quantity, and click "Add to Cart"</div>
+          <div class="highlight">Select laminated, flat, folded or 6-pack, enter quantity, and click "Add to Cart"</div>
         <?php print $node->content['add_to_cart']['#value']; ?>
       </div>
       <?php if ($shopping_cart): ?>
@@ -103,7 +103,7 @@
 
     <!-- right-content --></div>
     <div id="left-content">
-    
+
     <?php if ($node->content['image']['#value']): ?>
       <div id="product-images">
       <?php print $node->content['image']['#value']; ?>
