@@ -150,3 +150,7 @@ function ig960_uc_cart_block_summary($item_count, $item_text, $total, $summary_l
 
   return $output;
 }
+
+function ig960_preprocess_page(&$vars) {
+  drupal_add_js('sites/default/files/Zoomify/js/ZoomifyImageViewer.js');
+}
